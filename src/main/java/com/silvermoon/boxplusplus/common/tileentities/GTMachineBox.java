@@ -1,0 +1,1805 @@
+package com.silvermoon.boxplusplus.common.tileentities;
+
+import appeng.container.ContainerNull;
+import com.github.bartimaeusnek.bartworks.common.tileentities.multis.GT_TileEntity_ElectricImplosionCompressor;
+import com.github.bartimaeusnek.bartworks.util.BWRecipes;
+import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
+import com.gtnewhorizon.structurelib.structure.StructureDefinition;
+import com.gtnewhorizons.modularui.api.drawable.AdaptableUITexture;
+import com.gtnewhorizons.modularui.api.drawable.IDrawable;
+import com.gtnewhorizons.modularui.api.drawable.Text;
+import com.gtnewhorizons.modularui.api.drawable.UITexture;
+import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
+import com.gtnewhorizons.modularui.api.math.Alignment;
+import com.gtnewhorizons.modularui.api.math.Color;
+import com.gtnewhorizons.modularui.api.screen.ModularWindow;
+import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
+import com.gtnewhorizons.modularui.common.widget.*;
+import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
+import com.silvermoon.boxplusplus.Tags;
+import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import com.silvermoon.boxplusplus.util.*;
+import gregtech.api.enums.ItemList;
+import gregtech.api.enums.Textures;
+import gregtech.api.gui.modularui.GT_UIInfos;
+import gregtech.api.gui.modularui.GT_UITextures;
+import gregtech.api.interfaces.IGlobalWirelessEnergy;
+import gregtech.api.interfaces.IIconContainer;
+import gregtech.api.interfaces.ITexture;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_ExtendedPowerMultiBlockBase;
+import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_InputBus;
+import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
+import gregtech.api.render.TextureFactory;
+import gregtech.api.util.*;
+import gregtech.common.tileentities.machines.multi.GT_MetaTileEntity_FusionComputer;
+import gregtech.common.tileentities.machines.multi.GT_MetaTileEntity_MultiFurnace;
+import gtPlusPlus.xmod.gregtech.common.tileentities.machines.multi.production.chemplant.GregtechMTE_ChemicalPlant;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizons.modularui.api.math.Alignment.TopCenter;
+import static com.gtnewhorizons.modularui.api.math.Alignment.TopLeft;
+import static com.silvermoon.boxplusplus.common.BoxModule.getModuleByIndex;
+import static com.silvermoon.boxplusplus.common.BoxModule.transMachinesToModule;
+import static com.silvermoon.boxplusplus.util.Util.*;
+import static gregtech.api.enums.GT_HatchElement.*;
+import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
+import static gregtech.api.util.GT_StructureUtility.buildHatchAdder;
+import static gregtech.common.blocks.GT_Item_Machines.getMetaTileEntity;
+
+public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox> implements IGlobalWirelessEnergy {
+    private static final String STRUCTURE_PIECE_MainFrames = "Mainframes";
+    private static final String STRUCTURE_PIECE_FirstRing = "FirstRing";
+    private static final String STRUCTURE_PIECE_SecondRing = "SecondRing";
+    private static final String STRUCTURE_PIECE_Final = "Final";
+    private static final IIconContainer BoxActive=new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER_ACTIVE");
+    private static final IIconContainer BoxInactive=new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER");
+    private int mCasing = 0;
+    private int RoutingCount = 1;
+    private final boolean[] moduleSwitch=new boolean[14];
+    private boolean[] moduleActive=new boolean[15];
+    private final int[] moduleTier=new int[15];
+    private final ArrayList<BoxRoutings> RoutingMap = new ArrayList<>();
+    public int CurrentSN =1;
+    public int RingCount = 1;
+    public int wiki=1;
+    public int RingCountSet = 1;
+    private int routingstatus=0;
+    private int maxParallel = 16;
+    private int maxRouting = 10;
+    //What's that?
+    private static final char[] coreElement = {'Z','Y','X','W','V','U','T','S','R','Q','P','O','O','N'};
+    private BoxRecipe recipe=new BoxRecipe();
+    protected TeBoxRing teBoxRing;
+    public String userUUID;
+    public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
+    static {
+        StructureDefinition.Builder<GTMachineBox> A = IStructureDefinition.<GTMachineBox>builder()
+            .addShape(
+                STRUCTURE_PIECE_MainFrames,
+                transpose(
+                    new String[][]{
+                        {"       ", "   C   ", "  CCC  ", " CCCCC ", "  CCC  ", "   C   ", "       ", "       ", "       ", "       ", "       "},
+                        {"   C   ", " CCCCC ", " CC CC ", "CC   CC", " CC CC ", " CCCCC ", "   C   ", "       ", "       ", "       ", "       "},
+                        {"  CCC  ", " CC CC ", "CC   CC", "C     C", "CC   CC", " CC CC ", "  CCC  ", "       ", "       ", "       ", "       "},
+                        {" CC~CC ", "CC   CC", "C     C", "C  D  C", "C     C", "CC   CC", " CCCCC ", "   C   ", "   C   ", "   C   ", "   C   "},
+                        {"  CCC  ", " CC CC ", "CC   CC", "C     C", "CC   CC", " CC CC ", "  CCC  ", "       ", "       ", "       ", "       "},
+                        {"   C   ", " CCCCC ", " CC CC ", "CC   CC", " CC CC ", " CCCCC ", "   C   ", "       ", "       ", "       ", "       "},
+                        {"       ", "   C   ", "  CCC  ", " CCCCC ", "  CCC  ", "   C   ", "       ", "       ", "       ", "       ", "       "}}))
+            .addShape(
+                STRUCTURE_PIECE_FirstRing,
+                transpose(
+                    new String[][]{
+                        {"           E           ", "                       ", "           E           ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "E E                 E E", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "           E           ", "                       ", "           E           "},
+                        {"          EEE          ", "                       ", "          EEE          ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "E E                 E E", "E E                 E E", "E E                 E E", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "          EEE          ", "                       ", "          EEE          "},
+                        {"         EEEEE         ", "      EEEEEEEEEEE      ", "     EEE EEEEE EEE     ", "    EE     E     EE    ", "   EE      E      EE   ", "  EE               EE  ", " EE                 EE ", " EE                 EE ", " E                   E ", "EEE                 EEE", "EEE                 EEE", "EEEEE             EEEEE", "EEE                 EEE", "EEE                 EEE", " E                   E ", " EE                 EE ", " EE                 EE ", "  EE               EE  ", "   EE      E      EE   ", "    EE     E     EE    ", "     EEE EEEEE EEE     ", "      EEEEEEEEEEE      ", "         EEEEE         "},
+                        {"        EEE EEE        ", "          E E          ", "        EEE EEE        ", "          E E          ", "          E E          ", "                       ", "                       ", "                       ", "E E                 E E", "E E                 E E", "EEEEE             EEEEE", "                       ", "EEEEE             EEEEE", "E E                 E E", "E E                 E E", "                       ", "                       ", "                       ", "          E E          ", "          E E          ", "        EEE EEE        ", "          E E          ", "        EEE EEE        "},
+                        {"         EEEEE         ", "      EEEEEEEEEEE      ", "     EEE EEEEE EEE     ", "    EE     E     EE    ", "   EE      E      EE   ", "  EE               EE  ", " EE                 EE ", " EE                 EE ", " E                   E ", "EEE                 EEE", "EEE                 EEE", "EEEEE             EEEEE", "EEE                 EEE", "EEE                 EEE", " E                   E ", " EE                 EE ", " EE                 EE ", "  EE               EE  ", "   EE      E      EE   ", "    EE     E     EE    ", "     EEE EEEEE EEE     ", "      EEEEEEEEEEE      ", "         EEEEE         "},
+                        {"          EEE          ", "                       ", "          EEE          ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "E E                 E E", "E E                 E E", "E E                 E E", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "          EEE          ", "                       ", "          EEE          "},
+                        {"           E           ", "                       ", "           E           ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "E E                 E E", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "                       ", "           E           ", "                       ", "           E           "}}))
+            .addShape(
+                STRUCTURE_PIECE_SecondRing,
+                transpose(
+                    new String[][]{
+                        {"                 F                 ", "                                   ", "                 F                 ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "F F                             F F", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                 F                 ", "                                   ", "                 F                 "},
+                        {"                FFF                ", "                                   ", "                FFF                ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "F F                             F F", "F F                             F F", "F F                             F F", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                FFF                ", "                                   ", "                FFF                "},
+                        {"                F F                ", "                                   ", "                F F                ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "F F                             F F", "                                   ", "F F                             F F", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                F F                ", "                                   ", "                F F                "},
+                        {"              FFFFFFF              ", "           FFFFFFFFFFFFF           ", "         FFFF FFFFFFF FFFF         ", "        FF       F       FF        ", "      FFF        F        FFF      ", "     FF          F          FF     ", "    FF                       FF    ", "    F                         F    ", "   FF                         FF   ", "  FF                           FF  ", "  F                             F  ", " FF                             FF ", " FF                             FF ", " F                               F ", "FFF                             FFF", "FFF                             FFF", "FFF                             FFF", "FFFFFF                       FFFFFF", "FFF                             FFF", "FFF                             FFF", "FFF                             FFF", " F                               F ", " FF                             FF ", " FF                             FF ", "  F                             F  ", "  FF                           FF  ", "   FF                         FF   ", "    F                         F    ", "    FF                       FF    ", "     FF          F          FF     ", "      FFF        F        FFF      ", "        FF       F       FF        ", "         FFFF FFFFFFF FFFF         ", "           FFFFFFFFFFFFF           ", "              FFFFFFF              "},
+                        {"             FF F F FF             ", "                F F                ", "             FF F F FF             ", "                F F                ", "                F F                ", "                F F                ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "F F                             F F", "F F                             F F", "                                   ", "FFFFFF                       FFFFFF", "                                   ", "FFFFFF                       FFFFFF", "                                   ", "F F                             F F", "F F                             F F", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                F F                ", "                F F                ", "                F F                ", "             FF F F FF             ", "                F F                ", "             FF F F FF             "},
+                        {"              FFFFFFF              ", "           FFFFFFFFFFFFF           ", "         FFFF FFFFFFF FFFF         ", "        FF       F       FF        ", "      FFF        F        FFF      ", "     FF          F          FF     ", "    FF                       FF    ", "    F                         F    ", "   FF                         FF   ", "  FF                           FF  ", "  F                             F  ", " FF                             FF ", " FF                             FF ", " F                               F ", "FFF                             FFF", "FFF                             FFF", "FFF                             FFF", "FFFFFF                       FFFFFF", "FFF                             FFF", "FFF                             FFF", "FFF                             FFF", " F                               F ", " FF                             FF ", " FF                             FF ", "  F                             F  ", "  FF                           FF  ", "   FF                         FF   ", "    F                         F    ", "    FF                       FF    ", "     FF          F          FF     ", "      FFF        F        FFF      ", "        FF       F       FF        ", "         FFFF FFFFFFF FFFF         ", "           FFFFFFFFFFFFF           ", "              FFFFFFF              "},
+                        {"                F F                ", "                                   ", "                F F                ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "F F                             F F", "                                   ", "F F                             F F", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                F F                ", "                                   ", "                F F                "},
+                        {"                FFF                ", "                                   ", "                FFF                ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "F F                             F F", "F F                             F F", "F F                             F F", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                FFF                ", "                                   ", "                FFF                "},
+                        {"                 F                 ", "                                   ", "                 F                 ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "F F                             F F", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                                   ", "                 F                 ", "                                   ", "                 F                 "}}))
+            .addShape(
+                STRUCTURE_PIECE_Final,
+                transpose(
+                    new String[][]{
+                        {"                       G                       ", "                                               ", "                       G                       ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                       G                       ", "                                               ", "                       G                       "},
+                        {"                      GGG                      ", "                                               ", "                      GGG                      ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "G G                                         G G", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                      GGG                      ", "                                               ", "                      GGG                      "},
+                        {"                      G G                      ", "                                               ", "                      G G                      ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "                                               ", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                      G G                      ", "                                               ", "                      G G                      "},
+                        {"                     GGGGG                     ", "                GGGGGGGGGGGGGGG                ", "              GGGG   GG GG   GGGG              ", "            GGG                 GGG            ", "          GGG                     GGG          ", "         GG                         GG         ", "        GG                           GG        ", "       GG                             GG       ", "      GG                               GG      ", "     GG                                 GG     ", "    GG                                   GG    ", "    G                                     G    ", "   GG                                     GG   ", "   G                                       G   ", "  GG                                       GG  ", "  G                                         G  ", " GG                                         GG ", " GG                                         GG ", " G                                           G ", " G                                           G ", " G                                           G ", "GGG                                         GGG", "GGG                                         GGG", "GG                                           GG", "GGG                                         GGG", "GGG                                         GGG", " G                                           G ", " G                                           G ", " G                                           G ", " GG                                         GG ", " GG                                         GG ", "  G                                         G  ", "  GG                                       GG  ", "   G                                       G   ", "   GG                                     GG   ", "    G                                     G    ", "    GG                                   GG    ", "     GG                                 GG     ", "      GG                               GG      ", "       GG                             GG       ", "        GG                           GG        ", "         GG                         GG         ", "          GGG                     GGG          ", "            GGG                 GGG            ", "              GGGG   GG GG   GGGG              ", "                GGGGGGGGGGGGGGG                ", "                     GGGGG                     "},
+                        {"                   GGG G GGG                   ", "                       G                       ", "                   GGG G GGG                   ", "                       G                       ", "                       G                       ", "                       G                       ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "G G                                         G G", "G G                                         G G", "                                               ", "GGGGGG                                   GGGGGG", "                                               ", "G G                                         G G", "G G                                         G G", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                       G                       ", "                       G                       ", "                       G                       ", "                   GGG G GGG                   ", "                       G                       ", "                   GGG G GGG                   "},
+                        {"                  GG  G G  GG                  ", "                      G G                      ", "                  GG  G G  GG                  ", "                      G G                      ", "                      G G                      ", "                      G G                      ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "G G                                         G G", "                                               ", "                                               ", "GGGGGG                                   GGGGGG", "                                               ", "GGGGGG                                   GGGGGG", "                                               ", "                                               ", "G G                                         G G", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                      G G                      ", "                      G G                      ", "                      G G                      ", "                  GG  G G  GG                  ", "                      G G                      ", "                  GG  G G  GG                  "},
+                        {"                   GGG G GGG                   ", "                       G                       ", "                   GGG G GGG                   ", "                       G                       ", "                       G                       ", "                       G                       ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "G G                                         G G", "G G                                         G G", "                                               ", "GGGGGG                                   GGGGGG", "                                               ", "G G                                         G G", "G G                                         G G", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                       G                       ", "                       G                       ", "                       G                       ", "                   GGG G GGG                   ", "                       G                       ", "                   GGG G GGG                   "},
+                        {"                     GGGGG                     ", "                GGGGGGGGGGGGGGG                ", "              GGGG   GG GG   GGGG              ", "            GGG                 GGG            ", "          GGG                     GGG          ", "         GG                         GG         ", "        GG                           GG        ", "       GG                             GG       ", "      GG                               GG      ", "     GG                                 GG     ", "    GG                                   GG    ", "    G                                     G    ", "   GG                                     GG   ", "   G                                       G   ", "  GG                                       GG  ", "  G                                         G  ", " GG                                         GG ", " GG                                         GG ", " G                                           G ", " G                                           G ", " G                                           G ", "GGG                                         GGG", "GGG                                         GGG", "GG                                           GG", "GGG                                         GGG", "GGG                                         GGG", " G                                           G ", " G                                           G ", " G                                           G ", " GG                                         GG ", " GG                                         GG ", "  G                                         G  ", "  GG                                       GG  ", "   G                                       G   ", "   GG                                     GG   ", "    G                                     G    ", "    GG                                   GG    ", "     GG                                 GG     ", "      GG                               GG      ", "       GG                             GG       ", "        GG                           GG        ", "         GG                         GG         ", "          GGG                     GGG          ", "            GGG                 GGG            ", "              GGGG   GG GG   GGGG              ", "                GGGGGGGGGGGGGGG                ", "                     GGGGG                     "},
+                        {"                      G G                      ", "                                               ", "                      G G                      ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "                                               ", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                      G G                      ", "                                               ", "                      G G                      "},
+                        {"                      GGG                      ", "                                               ", "                      GGG                      ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "G G                                         G G", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                      GGG                      ", "                                               ", "                      GGG                      "},
+                        {"                       G                       ", "                                               ", "                       G                       ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "G G                                         G G", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                                               ", "                       G                       ", "                                               ", "                       G                       "}}));
+        for (int i = 0; i < 14; i++) {
+            A.addShape(getModuleByIndex(i).name, transpose(getModuleByIndex(i).moduleStructure));
+        }
+            A.addElement(
+                'C',
+                buildHatchAdder(GTMachineBox.class).atLeast(InputBus, OutputBus, InputHatch, OutputHatch, Energy, ExoticEnergy, Maintenance)
+                    .casingIndex(114 << 7)
+                    .dot(1)
+                    .buildAndChain(
+                        onElementPass(i -> ++i.mCasing, ofBlock(BlockRegister.SpaceExtend, 0))))
+            .addElement('D', Util.RingTileAdder((v, t) -> {
+                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing)&& v.RingCountSet != 1))return false;
+                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing2)&& v.RingCountSet != 2))return false;
+                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing3)&& v.RingCountSet != 3))return false;
+                v.teBoxRing = t;
+                return true;
+            }, TeBoxRing.class, BlockRegister.BoxRing, 0,v-> v.RingCountSet==1? BlockRegister.BoxRing:(v.RingCountSet==2?BlockRegister.BoxRing2:BlockRegister.BoxRing3)))
+            .addElement('E', ofBlock(BlockRegister.SpaceCompress, 0))
+            .addElement('F', ofBlock(BlockRegister.SpaceConstraint, 0))
+            .addElement('G', ofBlock(BlockRegister.SpaceWall, 0));
+        for (int i = 0; i < 14; i++) {
+            int finalI = i;
+            A.addElement(coreElement[i],ofChain(
+                ofBlockAdder((t,b,m)-> {
+                    if(b.isAssociatedBlock(BlockRegister.BoxModule) && m== finalI){
+                        t.moduleTier[finalI]=0;
+                        return true;
+                    }
+                    return false;
+                },BlockRegister.BoxModule,i),
+                ofBlockAdder((t,b,m)-> {
+                    if(b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad) && m== finalI){
+                        t.moduleTier[finalI]=1;
+                        return true;
+                    }
+                    t.moduleTier[finalI]=0;
+                    return false;
+                },BlockRegister.BoxModuleUpgrad,i)));
+        }
+        STRUCTURE_DEFINITION = A.build();
+    }
+    public GTMachineBox(String name) {
+        super(name);
+    }
+    public GTMachineBox(int ID, String Name, String NameRegional) {
+        super(ID, Name, NameRegional);
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
+        return new GTMachineBox(super.mName);
+    }
+
+    @Override
+    public IStructureDefinition<GTMachineBox> getStructureDefinition() {
+        return STRUCTURE_DEFINITION;
+    }
+
+    @Override
+    protected GT_Multiblock_Tooltip_Builder createTooltip() {
+        GT_Multiblock_Tooltip_Builder tt = new GT_Multiblock_Tooltip_Builder();
+        tt.addMachineType(i18n("tile.boxplusplus.boxtype"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.02"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.03"))
+            .addSeparator()
+            .addInfo(EnumChatFormatting.DARK_GREEN+i18n("tile.boxplusplus.boxinfo.04"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.05"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.06"))
+            .addInfo(EnumChatFormatting.GOLD+i18n("tile.boxplusplus.boxinfo.07"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.08"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.09"))
+            .addSeparator()
+            .addInfo(i18n("tile.boxplusplus.boxinfo.10"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.11"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.12"))
+            .addSeparator()
+            .addInfo(i18n("tile.boxplusplus.boxinfo.13"))
+            .addInfo(i18n("tile.boxplusplus.boxinfo.14"))
+            .addInfo(EnumChatFormatting.AQUA+i18n("tile.boxplusplus.boxinfo.15"))
+            .addPollutionAmount(0)
+            .addSeparator()
+            .beginStructureBlock(47, 11, 47, false)
+            .addStructureInfo(i18n("tile.boxplusplus.boxStructure.01"))
+            .addController(i18n("tile.boxplusplus.boxStructure.02"))
+            .addCasingInfoMin(i18n("tile.boxplusplus_SpaceExtend.name"),1,false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceConstraint.name"),1,false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceCompress.name"),1,false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceWall.name"),1,false)
+            .addStructureInfo(i18n("tile.boxplusplus.boxStructure.03"))
+            .addEnergyHatch(i18n("tile.boxplusplus.boxStructure.04"))
+            .addStructureInfo(EnumChatFormatting.YELLOW+i18n("tile.boxplusplus.boxStructure.05"))
+            .addSeparator()
+            .toolTipFinisher("BoxPlusPlus");
+        return tt;
+    }
+    @Override
+    public void construct(ItemStack stackSize, boolean hintsOnly) {
+        switch (RingCountSet) {
+            case 1 -> {
+                switch (stackSize.stackSize) {
+                    case 1 -> {
+                        buildPiece(STRUCTURE_PIECE_MainFrames, stackSize, hintsOnly, 3, 3, 0);
+                        buildPiece(STRUCTURE_PIECE_FirstRing, stackSize, hintsOnly, 11, 3, 8);
+                    }
+                    case 2 -> {
+                        buildPiece(STRUCTURE_PIECE_MainFrames, stackSize, hintsOnly, 3, 3, 0);
+                        buildPiece(STRUCTURE_PIECE_FirstRing, stackSize, hintsOnly, 11, 3, 8);
+                        buildPiece(STRUCTURE_PIECE_SecondRing, stackSize, hintsOnly, 17, 5, 14);
+                    }
+                    default-> {
+                        buildPiece(STRUCTURE_PIECE_MainFrames, stackSize, hintsOnly, 3, 3, 0);
+                        buildPiece(STRUCTURE_PIECE_FirstRing, stackSize, hintsOnly, 11, 3, 8);
+                        buildPiece(STRUCTURE_PIECE_SecondRing, stackSize, hintsOnly, 17, 5, 14);
+                        buildPiece(STRUCTURE_PIECE_Final, stackSize, hintsOnly, 23, 5, 20);
+                    }
+                }
+            }
+            case 2 -> {
+                buildPiece(STRUCTURE_PIECE_MainFrames, stackSize, hintsOnly, 3, 3, 0);
+                buildPiece(STRUCTURE_PIECE_FirstRing, stackSize, hintsOnly, 11, 3, 8);
+                buildPiece(STRUCTURE_PIECE_SecondRing, stackSize, hintsOnly, 17, 5, 14);
+            }
+            case 3 -> {
+                buildPiece(STRUCTURE_PIECE_MainFrames, stackSize, hintsOnly, 3, 3, 0);
+                buildPiece(STRUCTURE_PIECE_FirstRing, stackSize, hintsOnly, 11, 3, 8);
+                buildPiece(STRUCTURE_PIECE_SecondRing, stackSize, hintsOnly, 17, 5, 14);
+                buildPiece(STRUCTURE_PIECE_Final, stackSize, hintsOnly, 23, 5, 20);
+            }
+        }
+        for(int i=0;i<14;i++){
+            if(moduleSwitch[i]||stackSize.stackSize-4>=i){
+                buildPiece(getModuleByIndex(i).name, stackSize, hintsOnly,
+                    getModuleByIndex(i).horizontalOffset,getModuleByIndex(i).verticalOffset,getModuleByIndex(i).depthOffset);
+            }
+        }
+    }
+    @Override
+    public boolean isCorrectMachinePart(ItemStack aStack) {
+        return true;
+    }
+
+    @Override
+    public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
+        RingCount=1;
+        moduleActive=new boolean[14];
+        switch (RingCountSet) {
+            case 1 -> {
+                if (checkPiece(STRUCTURE_PIECE_MainFrames, 3, 3, 0) &&
+                    checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8)) {
+                    RingCount=1;
+                    break;
+                }
+                if(teBoxRing!=null){
+                    teBoxRing.renderStatus=false;
+                    teBoxRing=null;
+                }
+                return false;
+            }
+            case 2 -> {
+                if (checkPiece(STRUCTURE_PIECE_MainFrames, 3, 3, 0) &&
+                    checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8) &&
+                    checkPiece(STRUCTURE_PIECE_SecondRing, 17, 5, 14)) {
+                    RingCount=2;
+                    maxParallel=128;
+                    maxRouting=50;
+                    break;
+                }
+                if(teBoxRing!=null){
+                    teBoxRing.renderStatus=false;
+                    teBoxRing=null;
+                }
+                return false;
+            }
+            case 3 -> {
+                if (checkPiece(STRUCTURE_PIECE_MainFrames, 3, 3, 0)&&
+                    checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8)&&
+                    checkPiece(STRUCTURE_PIECE_SecondRing, 17, 5, 14)&&
+                    checkPiece(STRUCTURE_PIECE_Final, 23, 5, 20)) {
+                    RingCount=3;
+                    maxParallel=512;
+                    maxRouting=100;
+                    break;
+                }
+                if(teBoxRing!=null){
+                    teBoxRing.renderStatus=false;
+                    teBoxRing=null;
+                }
+                return false;
+            }
+            default -> {return false;}
+        }
+        for(int i=0;i<14;i++){
+            if(moduleSwitch[i]){
+                if(checkPiece(getModuleByIndex(i).name,
+                    getModuleByIndex(i).horizontalOffset,getModuleByIndex(i).verticalOffset,getModuleByIndex(i).depthOffset)){
+                    moduleActive[i]=true;
+                    continue;
+                }
+                teBoxRing.renderStatus=false;
+                return false;
+            }
+        }
+        if(!getExoticEnergyHatches().isEmpty()&&!moduleActive[12])return false;
+        if(teBoxRing!=null&&RingCount==3) teBoxRing.renderStatus = true;
+        return true;
+    }
+    /**
+     * Check if the recipe is the final one.
+     * @return true if correct
+     */
+    @Override
+    public boolean checkRecipe(ItemStack stack) {
+        if(!recipe.islocked) return false;
+        List<ItemStack> inputItem=getStoredInputs();
+        List<FluidStack> inputFluid=getStoredFluids();
+        if((inputItem.isEmpty() && !recipe.FinalItemInput.isEmpty())
+            ||(inputFluid.isEmpty() && !recipe.FinalFluidInput.isEmpty())) return false;
+        for(int k:recipe.requireModules.keySet()) {
+            if (!moduleActive[k]) return false;
+            if (recipe.requireModules.get(k) == 1 && moduleTier[k] != 1) return false;
+        }
+        ItemContainer Icontainer=new ItemContainer();
+        FluidContainer Fcontainer=new FluidContainer();
+        List<ItemStack> totalInputItem = Icontainer.addItemStackList(inputItem).getItemStack();
+        List<FluidStack> totalInputFluid = Fcontainer.addFluidStackList(inputFluid).getFluidStack();
+        List<ItemStack> requireItem = new ArrayList<>();
+        List<FluidStack> requireFluid = new ArrayList<>();
+        for(ItemStack var1:recipe.FinalItemInput){
+            requireItem.add(var1.copy());
+        }
+        for(FluidStack var1:recipe.FinalFluidInput){
+            requireFluid.add(var1.copy());
+        }
+        BoxRecipe.ItemOneBox(totalInputItem,requireItem);
+        BoxRecipe.FluidOneBox(totalInputFluid,requireFluid);
+        return (!recipe.FinalItemInput.isEmpty())?
+            (!recipe.FinalFluidInput.isEmpty()?
+                (requireItem.isEmpty() && requireFluid.isEmpty() && runBox(inputItem, inputFluid)):
+                (requireItem.isEmpty() && runBox(inputItem, inputFluid))):
+            (requireFluid.isEmpty() && runBox(inputItem, inputFluid));
+    }
+
+    /**
+     * Run the box system.
+     * @param inputItem All itemstack that input
+     * @param inputFluid All fluidstack that input
+     * @return true if the box starts
+     */
+    public boolean runBox(List<ItemStack> inputItem,List<FluidStack> inputFluid){
+        mOutputFluids=null;
+        mOutputItems=null;
+        //long lVoltage = getMaxInputVoltage();
+        if(!moduleActive[12]&&moduleTier[12]==0) {
+            lEUt = -recipe.FinalVoteage;
+        }
+        if (this.lEUt == Long.MAX_VALUE - 1 || this.mMaxProgresstime == Integer.MAX_VALUE - 1) return false;
+        if (moduleActive[12]&&moduleTier[12]==1&&!addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
+            return false;
+        }
+        mMaxProgresstime = lEUt==0?10:recipe.FinalTime;
+        mEfficiencyIncrease = 10000;
+        mEfficiency = 10000 - (this.getIdealStatus() - this.getRepairStatus()) * 1000;
+        List<ItemStack> requireItem = new ArrayList<>();
+        List<FluidStack> requireFluid = new ArrayList<>();
+        for(ItemStack var1:recipe.FinalItemInput){
+            requireItem.add(var1.copy());
+        }
+        for(FluidStack var1:recipe.FinalFluidInput){
+            requireFluid.add(var1.copy());
+        }
+        BoxRecipe.ItemOneBox(requireItem,inputItem);
+        BoxRecipe.FluidOneBox(requireFluid,inputFluid);
+        mOutputItems=recipe.FinalItemOutput.toArray(new ItemStack[0]);
+        mOutputFluids=recipe.FinalFluidOutput.toArray(new FluidStack[0]);
+        updateSlots();
+        return true;
+    }
+
+    @Override
+    public int getMaxEfficiency(ItemStack stack) {
+        return 10000;
+    }
+
+    @Override
+    public int getDamageToComponent(ItemStack aStack) {
+        return 0;
+    }
+
+    /**
+     * Why we have this property...?! And it doesn't work!!! Why!
+     */
+    @Override
+    public boolean explodesOnComponentBreak(ItemStack aStack) {
+        return true;
+    }
+
+    /**
+     * I'd rather use CuttingFactory's texture,but you will kill me definitely.
+     */
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity aBaseMetaTileEntity, ForgeDirection side, ForgeDirection aFacing,
+                                 int colorIndex, boolean aActive, boolean redstoneLevel) {
+        if (side == aFacing) {
+            if (aActive) return new ITexture[]{casingTexturePages[114][0], TextureFactory.builder()
+                .addIcon(BoxActive)
+                .extFacing()
+                .build()};
+            return new ITexture[]{casingTexturePages[114][0], TextureFactory.builder()
+                .addIcon(BoxInactive)
+                .extFacing()
+                .build()};
+        }
+        return new ITexture[]{casingTexturePages[114][0]};
+    }
+
+    public void onPreTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        super.onPreTick(aBaseMetaTileEntity, aTick);
+        if (aTick == 1) {
+            userUUID = String.valueOf(getBaseMetaTileEntity().getOwnerUuid());
+            String Name = getBaseMetaTileEntity().getOwnerName();
+            strongCheckOrAddUser(userUUID, Name);
+        }
+    }
+    /**
+     * Check each routing.
+     */
+    public void checkRouting() {
+        if(mInputBusses.isEmpty()) {
+            routingstatus=1;
+            return;
+        }
+        GT_Recipe.GT_Recipe_Map RecipeMap=null;
+        GT_Recipe RoutingRecipe=null;
+        for (GT_MetaTileEntity_Hatch_InputBus inputBus : mInputBusses) {
+            for (int i = inputBus.getSizeInventory() - 1; i >= 0; i--) {
+                if (inputBus.getStackInSlot(i) != null
+                    && (getMetaTileEntity(inputBus.getStackInSlot(i)) instanceof GT_MetaTileEntity_MultiBlockBase RoutingMachine)) {
+                    System.out.println(RoutingMachine.mName);
+                    ItemStack[] ItemInputs = getStoredInputs().toArray(new ItemStack[0]);
+                    FluidStack[] FluidInputs = getStoredFluids().toArray(new FluidStack[0]);
+                    if(RoutingMachine.mName.equals("industrialmultimachine.controller.tier.single")){
+                        ItemStack Circuit = findfirstCircuit(ItemInputs);
+                        if(Circuit==null){
+                            routingstatus=4;
+                            return;
+                        }
+                        RecipeMap=getMMRecipeMap(Circuit.getItemDamage());
+                    }
+                    else if(RoutingMachine instanceof GT_MetaTileEntity_MultiFurnace){
+                        for(ItemStack input:ItemInputs){
+                            ItemStack output=GT_OreDictUnificator.get(FurnaceRecipes.smelting().getSmeltingResult(input));
+                            if( output!=null){
+                                ItemStack var1=input.copy();
+                                var1.stackSize=1;
+                                ItemStack var2=output.copy();
+                                var2.stackSize=1;
+                                RoutingMap.add(
+                                    new BoxRoutings(var1,var2,RoutingMachine.getStackForm(1),30L,100));
+                                routingstatus=0;
+                                return;
+                            }
+                        }
+                        routingstatus = 3;
+                        return ;
+                    }
+                    else if(RoutingMachine.mName.equals("mxrandomlargemolecularassembler")){
+                        InventoryCrafting fakeCraft=new InventoryCrafting(new ContainerNull(),3,3);
+                        if(i==1){
+                            fakeCraft.setInventorySlotContents(0,ItemInputs[0]);
+                        }else {
+                            for (int j = 0; j < 9; j++) {
+                                fakeCraft.setInventorySlotContents(j,inputBus.getStackInSlot(j));
+                            }
+                        }
+                        ItemStack out = CraftingManager.getInstance().findMatchingRecipe(fakeCraft,getBaseMetaTileEntity().getWorld());
+                        if(out!=null){
+                            RoutingMap.add(new BoxRoutings(fakeCraft,out,RoutingMachine.getStackForm(1)));
+                            routingstatus=0;
+                            return;
+                        }
+                        routingstatus = 3;
+                        return ;
+                    }
+                    else if(RoutingMachine.mName.equals("industrialrockcrusher.controller.tier.single")){
+                        ItemStack Circuit = findfirstCircuit(ItemInputs);
+                        if(Circuit==null){
+                            routingstatus=4;
+                            return;
+                        }
+                        ItemStack output;
+                        switch (Circuit.getItemDamage()){
+                            case 1 -> output=new ItemStack(Blocks.cobblestone, (int) Math.pow(16,RingCount));
+                            case 2 -> output=new ItemStack(Blocks.stone,(int) Math.pow(16,RingCount));
+                            case 3 -> output=new ItemStack(Blocks.obsidian,(int) Math.pow(16,RingCount));
+                            default -> {
+                                routingstatus=3;
+                                return;
+                            }
+                        }
+                        ItemStack input=Circuit.copy();
+                        input.stackSize=0;
+                        RoutingMap.add(new BoxRoutings(input,output,RoutingMachine.getStackForm(1),30L,20));
+                        routingstatus=0;
+                        return;
+                    }else if(RoutingMachine.mName.equals("industrialbender.controller.tier.single")){
+                        ItemStack Circuit = findfirstCircuit(ItemInputs);
+                        if(Circuit==null){
+                            routingstatus=4;
+                            return;
+                        }
+                        switch (Circuit.getItemDamage()){
+                            case 1->RecipeMap=GT_Recipe.GT_Recipe_Map.sBenderRecipes;
+                            case 2->RecipeMap=GT_Recipe.GT_Recipe_Map.sPressRecipes;
+                            default -> {
+                                routingstatus=4;
+                                return;
+                            }
+                        }
+                    }
+                    else if(RoutingMachine.mName.equals("industrialwashplant.controller.tier.single")){
+                        ItemStack Circuit = findfirstCircuit(ItemInputs);
+                        if(Circuit==null){
+                            routingstatus=4;
+                            return;
+                        }
+                        switch (Circuit.getItemDamage()){
+                            case 1->RecipeMap=GT_Recipe.GT_Recipe_Map.sOreWasherRecipes;
+                            case 2->RecipeMap=GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes;
+                            default -> {
+                                routingstatus=4;
+                                return;
+                            }
+                        }
+                    }
+                    else if (RoutingMachine.mName.equals("multimachine.assemblyline")){
+                        ItemStack data = null;
+                        for(ItemStack item:ItemInputs){
+                            if (ItemList.Tool_DataStick.isStackEqual(item, false, true))
+                                data=item.copy();
+                        }
+                        if(data==null){
+                            routingstatus=5;
+                            return;
+                        }
+                        //We acn find assemblyline recipe using the original method, but no need to update it, nor check it)
+                        GT_AssemblyLineUtils.LookupResult tLookupResult = GT_AssemblyLineUtils
+                            .findAssemblyLineRecipeFromDataStick(data, false);
+                        if (tLookupResult.getType() == GT_AssemblyLineUtils.LookupResultType.INVALID_STICK){
+                            routingstatus=5;
+                            return;
+                        }
+                        GT_Recipe.GT_Recipe_AssemblyLine tRecipe = tLookupResult.getRecipe();
+                        RoutingMap.add(new BoxRoutings(tRecipe.mInputs,tRecipe.mOutput,tRecipe.mFluidInputs,
+                            RoutingMachine.getStackForm(1),(long)tRecipe.mEUt,tRecipe.mDuration));
+                        routingstatus=0;
+                        return;
+                    }else if(RoutingMachine.mName.equals("chemicalplant.controller.tier.single")) {
+                        RecipeMap = RoutingMachine.getRecipeMap();
+                        if (RecipeMap == null) {
+                            routingstatus = 3;
+                            return;
+                        }
+                        //The chemicalplant use an extremely complex tier-based recipe check method, it will be better not to change it.
+                        RoutingRecipe=((GregtechMTE_ChemicalPlant) RoutingMachine).findRecipe(null,Long.MAX_VALUE/10,7,ItemInputs,FluidInputs);
+                    }else if (RoutingMachine instanceof GT_MetaTileEntity_FusionComputer) {
+                        //Why there are two fusionRecipeMaps?! FK!
+                        RoutingRecipe = GT_Recipe.GT_Recipe_Map.sFusionRecipes
+                            .findRecipe(getBaseMetaTileEntity(), null, false, Long.MAX_VALUE / 10, FluidInputs);
+                        if (RoutingRecipe == null) RecipeMap = GT_Recipe.GT_Recipe_Map.sComplexFusionRecipes;
+                    }else if(RoutingMachine.mName.equals("circuitassemblyline")) {
+                        //Circuitassemblyline will check imprint first. Let us do the same thing here.
+                        RecipeMap = BWRecipes.instance.getMappingsFor((byte) 3);
+                        if(inputBus.getStackInSlot(i).getTagCompound()==null||!inputBus.getStackInSlot(i).getTagCompound().hasKey("Type")){
+                            routingstatus=6;
+                            return;
+                        }
+                        for (GT_Recipe recipe : RecipeMap.mRecipeList) {
+                            if (GT_Utility.areStacksEqual(recipe.mOutputs[0],
+                                ItemStack.loadItemStackFromNBT(inputBus.getStackInSlot(i).getTagCompound().getCompoundTag("Type")),
+                                true)) {
+                                if (recipe.isRecipeInputEqual(
+                                    false,
+                                    true,
+                                    FluidInputs,
+                                    ItemInputs)) {
+                                    RoutingRecipe = recipe;
+                                    break;
+                                }
+                            }
+                        }
+                    }else if(RoutingMachine.mName.equals("electricimplosioncompressor")) {
+                        //They are inside eic_te, bug I catch you!
+                        RecipeMap = GT_TileEntity_ElectricImplosionCompressor.eicMap;
+                    }else if(RoutingMachine.mName.equals("preciseassembler")){
+                        RecipeMap=goodgenerator.util.MyRecipeAdder.instance.PA;
+                    }else if(RoutingMachine.mName.equals("digester")){
+                        RecipeMap=com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
+                    }else if(RoutingMachine.mName.equals("dissolution_tank")){
+                        RecipeMap=com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
+                    }else if(RoutingMachine.mName.equals("cyclotron.tier.single")){
+                        RecipeMap=GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
+                    }
+                    else {
+                        RecipeMap = RoutingMachine.getRecipeMap();
+                        if(RecipeMap == null) {
+                            routingstatus = 3;
+                            return ;
+                        }
+                    }
+                    if(RoutingRecipe==null)RoutingRecipe = RecipeMap.findRecipe(
+                        getBaseMetaTileEntity(),
+                        true,
+                        true,
+                        Long.MAX_VALUE/10,
+                        FluidInputs,
+                        ItemInputs);
+                    if(RoutingRecipe != null) {
+                        RoutingMap.add(new BoxRoutings(RoutingRecipe,RoutingMachine));
+                        routingstatus=0;
+                    }else {
+                        routingstatus = 3;
+                    }
+                    return;
+                }
+            }
+        }
+        routingstatus=2;
+    }
+    /**
+     * build final recipe
+     */
+    public void buildRecipe() {
+        ItemContainer inputItemContainer=new ItemContainer();
+        ItemContainer outputItemContainer=new ItemContainer();
+        FluidContainer inputFluidContainer=new FluidContainer();
+        FluidContainer OutputFluidContainer=new FluidContainer();
+        recipe=new BoxRecipe();
+        RoutingMap.forEach(boxRoutings -> {
+            for(int i = 0; i< boxRoutings.Parallel; i++) {
+                inputItemContainer.addItemStackList(boxRoutings.InputItem);
+                outputItemContainer.addItemStackList(boxRoutings.OutputItem,boxRoutings.OutputChance);
+                inputFluidContainer.addFluidStackList(boxRoutings.InputFluid);
+                OutputFluidContainer.addFluidStackList(boxRoutings.OutputFluid);
+            }
+            recipe.FinalTime += boxRoutings.time*333/(1+Math.exp(-(boxRoutings.Parallel-100)/20.0));
+            recipe.FinalVoteage += boxRoutings.voltage;
+            int[] machine= transMachinesToModule(boxRoutings.RoutingMachine);
+            if(!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0],machine[1]);
+            if(boxRoutings.Parallel>2048&&!recipe.requireModules.containsKey(13))recipe.requireModules.put(13,1);
+            if(boxRoutings.Parallel>512&&!recipe.requireModules.containsKey(13))recipe.requireModules.put(13,0);
+        });
+        recipe.FinalItemInput=inputItemContainer.getItemStack();
+        recipe.FinalItemOutput=outputItemContainer.getItemStack();
+        recipe.FinalFluidInput=inputFluidContainer.getFluidStack();
+        recipe.FinalFluidOutput=OutputFluidContainer.getFluidStack();
+        BoxRecipe.ItemOneBox(recipe.FinalItemInput,recipe.FinalItemOutput);
+        BoxRecipe.FluidOneBox(recipe.FinalFluidInput,recipe.FinalFluidOutput);
+    }
+    /**
+     * We have many things need to store...
+     */
+    @Override
+    public void saveNBTData(NBTTagCompound NBT) {
+        super.saveNBTData(NBT);
+        NBTTagCompound Routing = new NBTTagCompound();
+        Routing.setInteger("TotalRouting",RoutingCount);
+        Routing.setInteger("ActiveRouting",RoutingMap.size());
+        for(int i=0;i<RoutingMap.size();i++){
+            Routing.setTag("Routing"+(i+1),RoutingMap.get(i).routingToNbt());
+        }
+        NBTTagCompound nbtModuleSwitch = new NBTTagCompound();
+        for(int i=0;i<14;i++){
+            nbtModuleSwitch.setBoolean(String.valueOf(i),moduleSwitch[i]);
+        }
+        NBTTagCompound nbtModuleActive= new NBTTagCompound();
+        for(int i=0;i<14;i++){
+            nbtModuleActive.setBoolean(String.valueOf(i),moduleActive[i]);
+        }
+        NBT.setInteger("RingCountSet", RingCountSet);
+        NBT.setInteger("RingCount", RingCount);
+        NBT.setLong("maxParallel",maxParallel);
+        NBT.setLong("maxRouting",maxRouting);
+        NBT.setTag("ModuleSwitch",nbtModuleSwitch);
+        NBT.setTag("ModuleActive",nbtModuleActive);
+        NBT.setInteger("Status",routingstatus);
+        NBT.setTag("Routing",Routing);
+        NBT.setTag("BoxRecipe",recipe.RecipeToNBT());
+    }
+
+    /**
+     * We have many things need to read...
+     */
+    @Override
+    public void loadNBTData(final NBTTagCompound NBT) {
+        super.loadNBTData(NBT);
+        NBTTagCompound Routing= NBT.getCompoundTag("Routing");
+        RoutingCount=Routing.getInteger("TotalRouting");
+        int ActiveRouting=Routing.getInteger("ActiveRouting");
+        routingstatus=NBT.getInteger("Status");
+        RoutingMap.clear();
+        for(int i=0;i<ActiveRouting;i++){
+            RoutingMap.add(new BoxRoutings(Routing.getCompoundTag("Routing"+(i+1))));
+        }
+        for(int i=0;i<14;i++){
+            moduleSwitch[i]=NBT.getCompoundTag("ModuleSwitch").getBoolean(String.valueOf(i));
+        }
+        for(int i=0;i<14;i++){
+            moduleActive[i]=NBT.getCompoundTag("ModuleActive").getBoolean(String.valueOf(i));
+        }
+        RingCount =NBT.getInteger("RingCount");
+        RingCountSet =NBT.getInteger("RingCountSet");
+        maxParallel=NBT.getInteger("maxParallel");
+        maxRouting=NBT.getInteger("maxRouting");
+        recipe=new BoxRecipe(NBT.getCompoundTag("BoxRecipe"));
+    }
+
+    /**
+     * Add main UI with 3 bottoms
+     */
+    @Override
+    public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
+        super.addUIWidgets(builder, buildContext);
+        buildContext.addSyncedWindow(10, this::createInitialingWindow);
+        buildContext.addSyncedWindow(11, this::createRoutingWindow);
+        buildContext.addSyncedWindow(12, this::createFinalRecipeWindow);
+        buildContext.addSyncedWindow(13, this::createModuleWindow);
+        buildContext.addSyncedWindow(14, this::createSingleModuleWindow);
+        buildContext.addSyncedWindow(15, this::createWikiWindow);
+        Synchronize(builder);
+        builder.widget(//Module
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if (!widget.isClient())
+                                widget.getContext().openSyncedWindow(13);
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_WHITELIST);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.01"))
+                    .setPos(94, 91))
+            .widget(//SwitchRender
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if(!widget.isClient()) {
+                                if (teBoxRing != null) {
+                                    teBoxRing.teRingSwitch = !teBoxRing.teRingSwitch;
+                                }
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_CYCLIC);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.02"))
+                    .setPos(146, 91))
+            .widget(//Routing
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if (!widget.isClient())
+                                widget.getContext().openSyncedWindow(10);
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_IMPORT);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.03"))
+                    .setPos(120, 91))
+         .widget(//WIKI
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        if (!widget.isClient())
+                            widget.getContext().openSyncedWindow(15);
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxwiki.1"))
+                .setPos(172, 91));
+    }
+
+    /**
+     * Add main module UI
+     * @return UI
+     */
+    protected ModularWindow createModuleWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(250, 250);
+        builder.setBackground(AdaptableUITexture.
+                    of(Tags.MODID, "textures/gui/ring"+ RingCountSet +".png", 695, 695, 4));
+        builder.setGuiTint(getGUIColorization());
+        Synchronize(builder);
+        builder.widget(//Ring1
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        this.RingCountSet = 1;
+                        for(int i=4;i<14;i++){
+                            moduleSwitch[i]=false;
+                            moduleActive[i]=false;
+                            onMachineBlockUpdate();
+                        }
+                        if(!widget.isClient()) {
+                            widget.getWindow().closeWindow();
+                            widget.getContext().openSyncedWindow(13);
+                        }
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.module.20"))
+                .setPos(8, 8));
+        builder.widget(//Ring2
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        this.RingCountSet = 2;
+                        for(int i=8;i<14;i++){
+                            moduleSwitch[i]=false;
+                            moduleActive[i]=false;
+                            onMachineBlockUpdate();
+                        }
+                        if(!widget.isClient()) {
+                            widget.getWindow().closeWindow();
+                            widget.getContext().openSyncedWindow(13);
+                        }
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.module.21"))
+                .setPos(8, 26));
+        builder.widget(//Ring3
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        this.RingCountSet = 3;
+                        onMachineBlockUpdate();
+                        if(!widget.isClient()) {
+                            widget.getWindow().closeWindow();
+                            widget.getContext().openSyncedWindow(13);
+                        }
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.module.22"))
+                .setPos(8, 44))
+            .widget(
+                ButtonWidget.closeWindowButton(true).setPos(238, 0));
+        builder.widget(//3.1
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        CurrentSN=8;
+                        if(!widget.isClient()) {
+                            widget.getContext().openSyncedWindow(14);
+                        }
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(AdaptableUITexture.
+                        of(Tags.MODID, "textures/gui/09a.png", 16, 16, 4));
+                    UI.add(AdaptableUITexture.
+                        of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.module.9"))
+                .setPos(8, 117)
+                .setEnabled(RingCountSet ==3))
+            .widget(//3.2
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=9;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/10a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.10"))
+                    .setPos(117, 11)
+                    .setEnabled(RingCountSet ==3))
+            .widget(//3.3
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=10;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/11a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.11"))
+                    .setPos(225, 117)
+                    .setEnabled(RingCountSet ==3))
+            /*.widget(//3.4
+                new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(AdaptableUITexture.
+                        of(Tags.MODID, "textures/gui/12a.png", 16, 16, 4));
+                    UI.add(AdaptableUITexture.
+                        of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.module.12"))
+                .setPos(117, 223)
+                .setEnabled(RingCounts==3))*/
+            .widget(//2.1
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=4;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/05a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/05b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.5"))
+                    .setPos(35, 117)
+                    .setEnabled(RingCountSet >1))
+            .widget(//2.2
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=5;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/06a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.6"))
+                    .setPos(117, 38)
+                    .setEnabled(RingCountSet >1))
+            .widget(//2.3
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=6;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/07a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.7"))
+                    .setPos(195, 117)
+                    .setEnabled(RingCountSet >1))
+            .widget(//2.4
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=7;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/08a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.8"))
+                    .setPos(117, 196)
+                    .setEnabled(RingCountSet >1))
+            .widget(//1.1
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=0;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.1"))
+                    .setPos(64, 117))
+            .widget(//1.2
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=1;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/02a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.2"))
+                    .setPos(117, 67))
+            .widget(//1.3
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=2;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/03a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.3"))
+                    .setPos(164, 117))
+            .widget(//1.4
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=3;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/04a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.4"))
+                    .setPos(117, 167))
+            .widget(//Up
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=12;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(AdaptableUITexture.of(Tags.MODID,"textures/gui/13a.png",16,16,1))
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.13"))
+                    .setPos(117, 107)
+                    .setEnabled(RingCountSet ==3))
+            .widget(//Down
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            CurrentSN=13;
+                            if(!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(AdaptableUITexture.of(Tags.MODID,"textures/gui/14a.png",16,16,1))
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.14"))
+                    .setPos(117, 127)
+                    .setEnabled(RingCountSet ==3));
+        return builder.build();
+    }
+    protected ModularWindow createSingleModuleWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(150, 200);
+        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        builder.widget(ButtonWidget.closeWindowButton(true).setPos(136,3))
+            .widget(
+            new DrawableWidget().setDrawable(
+                AdaptableUITexture.of(Tags.MODID,"textures/gui/dream.png",16,16,1))
+                .setPos(5, 5)
+                .setSize(16, 16))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module."+(CurrentSN+1))).setPos(25, 9))
+            .widget(new DrawableWidget().setDrawable(
+                    AdaptableUITexture.of(Tags.MODID,"textures/gui/"+(CurrentSN+1)+".png",100,80,1))
+                .setPos(20, 25)
+                .setSize(110, 73))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context."+(CurrentSN+1)+"a")).setTextAlignment(TopCenter).setMaxWidth(130).setPos(10, 100))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.26")).setPos(20, 130))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context."+(CurrentSN+1)+"b")).setMaxWidth(110).setPos(20,140));
+        builder.widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            moduleSwitch[CurrentSN]=true;
+                            onMachineBlockUpdate();
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                            }
+                        })
+                    .setSize(20, 20)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_CHECKMARK);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.16"))
+                    .setPos(65, 170)
+                    .setEnabled(!moduleSwitch[CurrentSN]))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            moduleSwitch[CurrentSN]=false;
+                            moduleActive[CurrentSN]=false;
+                            onMachineBlockUpdate();
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                            }
+                        })
+                    .setSize(20, 20)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_CROSS);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.16a"))
+                    .setPos(65,170)
+                    .setEnabled(moduleSwitch[CurrentSN]));
+        return builder.build();
+    }
+    /**
+     * Add BOM UI
+     * @param player who is using the box
+     */
+    protected ModularWindow createInitialingWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(240, 50 + RoutingCount * 18);
+        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        Synchronize(builder);
+        builder.widget(
+                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_UP)
+                    .setPos(5, 5)
+                    .setSize(16, 16))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.05") + i18n("tile.boxplusplus.boxUI.06")).setPos(25, 9))
+            .widget(new TextWidget(String.valueOf(RoutingCount)).setPos(140, 9).setEnabled(recipe.islocked))
+            .widget(
+                new TextFieldWidget().setGetterInt(() -> RoutingCount)
+                    .setSetterInt(val -> RoutingCount = val)
+                    .setNumbers(1, maxRouting)
+                    .setTextColor(Color.WHITE.normal)
+                    .setTextAlignment(Alignment.Center)
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.04"))
+                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD)
+                    .setSize(14, 14)
+                    .setPos(140, 7)
+                    .setEnabled(!recipe.islocked))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.28")+RingCount).setPos(160, 9))
+            .widget(
+                ButtonWidget.closeWindowButton(true)
+                    .setPos(220, 5));
+        for (int i = 1; i <= RoutingCount; i++) {
+            int finalI = i;
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + i).setPos(27, 9 + 18 * i))
+                .widget(
+                    new ButtonWidget().setOnClick(
+                            (clickData, widget) -> {
+                                checkRouting();
+                                if(!widget.isClient()) {
+                                    player.closeScreen();
+                                    GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
+                                }
+                            })
+                        .setSize(16, 16)
+                        .setBackground(() -> {
+                            List<UITexture> UI = new ArrayList<>();
+                            UI.add(GT_UITextures.BUTTON_STANDARD);
+                            UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                            return UI.toArray(new IDrawable[0]);
+                        })
+                        .addTooltip(i18n("tile.boxplusplus.boxUI.08") + i)
+                        .setPos(65, 7 + 18 * i)
+                        .setEnabled(RoutingMap.size()==(i-1)))
+                .widget(
+                    new ButtonWidget().setOnClick(
+                            (clickData, widget) -> {
+                                CurrentSN = finalI;
+                                if (!widget.isClient()) {
+                                    widget.getContext().openSyncedWindow(11);
+                                }
+                            })
+                        .setSize(16, 16)
+                        .setBackground(() -> {
+                            List<UITexture> UI = new ArrayList<>();
+                            UI.add(GT_UITextures.BUTTON_STANDARD);
+                            UI.add(GT_UITextures.OVERLAY_BUTTON_ALLOW_INPUT);
+                            return UI.toArray(new IDrawable[0]);
+                        })
+                        .addTooltip(i18n("tile.boxplusplus.boxUI.09"))
+                        .setPos(65, 7 + 18 * i)
+                        .setEnabled(RoutingMap.size()>=i))
+                .widget(
+                    new ButtonWidget().setOnClick(
+                            (clickData, widget) -> {
+                                CurrentSN = finalI;
+                                RoutingMap.remove(CurrentSN-1);
+                                if(!widget.isClient()) {
+                                    widget.getWindow().closeWindow();
+                                    widget.getContext().openSyncedWindow(10);
+                                }
+                            })
+                        .setSize(16, 16)
+                        .setBackground(() -> {
+                            List<UITexture> UI = new ArrayList<>();
+                            UI.add(GT_UITextures.BUTTON_STANDARD);
+                            UI.add(GT_UITextures.OVERLAY_BUTTON_BLOCK_INPUT);
+                            return UI.toArray(new IDrawable[0]);
+                        })
+                        .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
+                        .setPos(85, 7 + 18 * i)
+                        .setEnabled(RoutingMap.size()>=i&&!recipe.islocked));
+        }
+        builder.widget(
+            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CROSS)
+                .setPos(100,22)
+                .setSize(24,24)
+                .addTooltip(i18n("tile.boxplusplus.boxUI.ErrorCode."+routingstatus))
+                .setEnabled(routingstatus!=0))
+                .widget(
+                    new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CHECKMARK)
+                        .setPos(100,22)
+                        .setSize(36,36)
+                        .addTooltip(i18n("tile.boxplusplus.boxUI.19"))
+                        .setEnabled(routingstatus==0));
+        builder.widget(
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        if(!recipe.islocked) buildRecipe();
+                        if (!widget.isClient()) {
+                            widget.getContext().openSyncedWindow(12);
+                        }
+                    })
+                .setSize(32, 32)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.20"))
+                .setPos(140, 26)
+                .setEnabled(RoutingMap.size()==RoutingCount && !recipe.islocked))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if (!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(12);
+                            }
+                        })
+                    .setSize(32, 32)
+                    .setBackground(() -> {
+                        List<UITexture> ret = new ArrayList<>();
+                        ret.add(GT_UITextures.BUTTON_STANDARD);
+                        ret.add(GT_UITextures.OVERLAY_BUTTON_WHITELIST);
+                        return ret.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.21"))
+                    .setPos(140, 26)
+                    .setEnabled(recipe.islocked));
+        return builder.build();
+    }
+    /**
+     * Add Each Routing UI.
+     * @param player who is using the box
+     */
+    protected ModularWindow createRoutingWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(220, 80+RoutingMap.get(CurrentSN-1).calHeight()*18);
+        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        Synchronize(builder);
+        builder.widget(
+                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID)
+                    .setPos(5, 5)
+                    .setSize(16, 16))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.10")+ CurrentSN).setPos(25, 9))
+            .widget(
+                ButtonWidget.closeWindowButton(true)
+                    .setPos(200, 5));
+        int Ycord=9;
+        for(int i = 0; i< RoutingMap.get(CurrentSN-1).InputItem.size(); i++){
+            ItemStackHandler drawitem=new ItemStackHandler(1);
+            drawitem.setStackInSlot(0,RoutingMap.get(CurrentSN - 1).InputItem.get(i));
+            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.11")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).InputItem.get(i).getDisplayName()).setPos(50, Ycord+4));
+        }
+        for(int i = 0; i< RoutingMap.get(CurrentSN-1).InputFluid.size(); i++){
+            builder.widget(FluidSlotWidget.phantom(new FluidTank(RoutingMap.get(CurrentSN-1).InputFluid.get(i),
+                RoutingMap.get(CurrentSN-1).InputFluid.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.12")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).InputFluid.get(i).getLocalizedName()).setPos(50, Ycord+4));
+        }
+        for(int i = 0; i< RoutingMap.get(CurrentSN-1).OutputItem.size(); i++){
+            ItemStackHandler drawitem=new ItemStackHandler(1);
+            drawitem.setStackInSlot(0,RoutingMap.get(CurrentSN - 1).OutputItem.get(i));
+            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.13")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).OutputItem.get(i).getDisplayName()
+                    +"("+RoutingMap.get(CurrentSN-1).OutputChance.get(i)/10000.0+")").setPos(50, Ycord+4));
+        }
+        for(int i = 0; i< RoutingMap.get(CurrentSN-1).OutputFluid.size(); i++){
+            builder.widget(FluidSlotWidget.phantom(new FluidTank(RoutingMap.get(CurrentSN-1).OutputFluid.get(i),
+                RoutingMap.get(CurrentSN-1).OutputFluid.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.14")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).OutputFluid.get(i).getLocalizedName()).setPos(50, Ycord+4));
+        }
+        ItemStackHandler drawitem=new ItemStackHandler(1);
+        drawitem.setStackInSlot(0,RoutingMap.get(CurrentSN-1).RoutingMachine);
+        builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=20));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.15")+RoutingMap.get(CurrentSN-1).RoutingMachine.getDisplayName()).setPos(50,Ycord+4 ));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16")+ RoutingMap.get(CurrentSN-1).voltage + "eu/t").setPos(50, Ycord+=16));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.17")+ RoutingMap.get(CurrentSN-1).time/20.00 + "s (" +
+            RoutingMap.get(CurrentSN-1).time+"tick)").setPos(50, Ycord+=16));
+        builder.widget(
+                new TextWidget(new Text(i18n("tile.boxplusplus.boxUI.23"))).setTextAlignment(Alignment.Center)
+                    .setSize(30, 16)
+                    .setPos(22, Ycord-15))
+            .widget(
+                new TextFieldWidget().setGetterInt(() -> RoutingMap.get(CurrentSN-1).Parallel)
+                    .setSetterInt(val -> RoutingMap.get(CurrentSN-1).Parallel = val)
+                    .setNumbers(1, maxParallel)
+                    .setTextColor(Color.WHITE.normal)
+                    .setTextAlignment(Alignment.Center)
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.24"))
+                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD)
+                    .setSize(20, 16)
+                    .setPos(25, Ycord).setEnabled(!recipe.islocked))
+            .widget(
+                new TextWidget(new Text(String.valueOf(RoutingMap.get(CurrentSN-1).Parallel))).setScale(1.2f).setTextAlignment(Alignment.Center)
+                    .setSize(20,16)
+                    .setPos(25, Ycord-2).setEnabled(recipe.islocked));
+        return builder.build();
+    }
+    /**
+     * Add final recipe UI. This recipe should not be changed after being locked.
+     * @param player who is using the box
+     */
+    protected ModularWindow createFinalRecipeWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(220, 120+recipe.calHeight()*18);
+        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        builder.widget(
+                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID)
+                    .setPos(5, 5)
+                    .setSize(16, 16))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.22")).setPos(25, 9))
+            .widget(
+                ButtonWidget.closeWindowButton(true)
+                    .setPos(200, 5));
+        int Ycord=9;
+        for(int i = 0; i< recipe.FinalItemInput.size(); i++){
+            ItemStackHandler drawitem=new ItemStackHandler(1);
+            drawitem.setStackInSlot(0,recipe.FinalItemInput.get(i));
+            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().disableInteraction().setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.11")+(i+1)+": "+ recipe.FinalItemInput.get(i).getDisplayName()).setPos(50, Ycord+4));
+        }
+        for(int i = 0; i< recipe.FinalFluidInput.size(); i++){
+            builder.widget(FluidSlotWidget.phantom(new FluidTank(recipe.FinalFluidInput.get(i),
+                recipe.FinalFluidInput.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.12")+(i+1)+": "+ recipe.FinalFluidInput.get(i).getLocalizedName()).setPos(50, Ycord+4));
+        }
+        for(int i = 0; i< recipe.FinalItemOutput.size(); i++){
+            ItemStackHandler drawitem=new ItemStackHandler(1);
+            drawitem.setStackInSlot(0,recipe.FinalItemOutput.get(i));
+            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.13")+(i+1)+": "+ recipe.FinalItemOutput.get(i).getDisplayName()).setPos(50, Ycord+4));
+        }
+        for(int i = 0; i< recipe.FinalFluidOutput.size(); i++){
+            builder.widget(FluidSlotWidget.phantom(new FluidTank(recipe.FinalFluidOutput.get(i),
+                recipe.FinalFluidOutput.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.14")+(i+1)+": "+ recipe.FinalFluidOutput.get(i).getLocalizedName()).setPos(50, Ycord+4));
+        }
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16")+ recipe.FinalVoteage + " eu/t").setPos(50, Ycord+=20))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.17")+recipe.FinalTime/20.00 + "s (" +
+                recipe.FinalTime+"tick)").setPos(50, Ycord+=16));
+        StringBuilder modules = new StringBuilder();
+        modules.append(i18n("tile.boxplusplus.boxUI.27"));
+        for(int i:recipe.requireModules.keySet()){
+            modules.append(recipe.requireModules.get(i)==1?i18n("tile.boxplusplus.boxUI.module." + (i+1))+" (T2)":
+                i18n("tile.boxplusplus.boxUI.module." + (i+1))).append(" ");
+        }
+        builder.widget(new TextWidget(modules.toString()).setMaxWidth(180).setPos(25,Ycord+=16))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            recipe.islocked =true;
+                            if (!widget.isClient()) {
+                                player.closeScreen();
+                                GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
+                            }
+                        })
+                    .setSize(20, 20)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_CHECKMARK);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.25"))
+                    .setPos(80, Ycord+30)
+                    .setEnabled(!recipe.islocked))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            recipe=new BoxRecipe();
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(10);
+                            }
+                        })
+                    .setSize(20, 20)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_CROSS);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
+                    .setPos(120, Ycord+30)
+                    .setEnabled(!recipe.islocked));
+        return builder.build();
+    }
+    protected ModularWindow createWikiWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(300, 210);
+        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        Synchronize(builder);
+        builder.widget(
+                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_NEI)
+                    .setPos(5, 5)
+                    .setSize(16, 16))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.1")).setPos(25, 9))
+            .widget(ButtonWidget.closeWindowButton(true).setPos(285, 5))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.2")).setPos(25, 30))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            wiki=3;
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(15);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxwiki.3"))
+                    .setPos(30, 45))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            wiki=4;
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(15);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_BATCH_MODE_ON);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxwiki.4"))
+                    .setPos(80, 45))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            wiki=5;
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(15);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxwiki.5"))
+                    .setPos(130, 45))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            wiki=6;
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(15);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_PROGRESS);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxwiki.6"))
+                    .setPos(180, 45))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            wiki=7;
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(15);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_WHITELIST);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxwiki.7"))
+                    .setPos(230, 45))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki."+wiki)).setPos(135, 70));
+        getwikiByIndex(builder);
+        return builder.build();
+    }
+
+    private void getwikiByIndex(ModularWindow.Builder builder) {
+        switch (wiki) {
+            case 3 -> builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.8")).setMaxWidth(260).setPos(25, 85));
+            case 4 -> {
+                builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.9")).setMaxWidth(260).setPos(25, 85));
+                builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.10")
+                    + i18n("tile.boxplusplus.boxwiki.11")).setTextAlignment(TopLeft).setMaxWidth(260).setPos(25, 95));
+            }
+            case 5 -> {
+                builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.12")).setTextAlignment(TopLeft).setMaxWidth(260).setPos(25, 85));
+                builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.13")
+                    + i18n("tile.boxplusplus.boxwiki.14")).setTextAlignment(TopLeft).setMaxWidth(260).setPos(25, 115));
+                builder.widget(
+                    new ButtonWidget().setOnClick(
+                            (clickData, widget) -> {
+                                wiki = 50;
+                                if (!widget.isClient()) {
+                                    widget.getWindow().closeWindow();
+                                    widget.getContext().openSyncedWindow(15);
+                                }
+                            })
+                        .setSize(16, 16)
+                        .setBackground(() -> {
+                            List<UITexture> UI = new ArrayList<>();
+                            UI.add(GT_UITextures.BUTTON_STANDARD);
+                            UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
+                            return UI.toArray(new IDrawable[0]);
+                        })
+                        .addTooltip(i18n("tile.boxplusplus.boxwiki.0"))
+                        .setPos(135, 175));
+            }
+            case 6 -> builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.16"))
+                    .setTextAlignment(TopLeft).setMaxWidth(260).setPos(25, 85))
+                .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.17")).setMaxWidth(260).setPos(25, 105))
+                .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.18")).setMaxWidth(260).setPos(25, 115))
+                .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.19")).setMaxWidth(260).setPos(25, 125))
+                .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.20")).setMaxWidth(260).setPos(25, 135))
+                .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.21")).setMaxWidth(260).setPos(25, 145))
+                .widget(
+                    new ButtonWidget().setOnClick(
+                            (clickData, widget) -> {
+                                wiki = 51;
+                                if (!widget.isClient()) {
+                                    widget.getWindow().closeWindow();
+                                    widget.getContext().openSyncedWindow(15);
+                                }
+                            })
+                        .setSize(16, 16)
+                        .setBackground(() -> {
+                            List<UITexture> UI = new ArrayList<>();
+                            UI.add(GT_UITextures.BUTTON_STANDARD);
+                            UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
+                            return UI.toArray(new IDrawable[0]);
+                        })
+                        .addTooltip(i18n("tile.boxplusplus.boxwiki.0"))
+                        .setPos(135, 175));
+            case 7 -> {
+                builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.24")).setMaxWidth(260).setPos(25, 85));
+                for (int i = 1; i < 15; i++) {
+                    int finalI = i;
+                    builder.widget(
+                        new ButtonWidget().setOnClick(
+                                (clickData, widget) -> {
+                                    CurrentSN = finalI;
+                                    if (!widget.isClient()) {
+                                        widget.getWindow().closeWindow();
+                                        widget.getContext().openSyncedWindow(15);
+                                    }
+                                })
+                            .setSize(16, 16)
+                            .setBackground(() -> {
+                                List<UITexture> UI = new ArrayList<>();
+                                UI.add(GT_UITextures.BUTTON_STANDARD);
+                                UI.add(GT_UITextures.OVERLAY_BUTTON_EMIT_REDSTONE);
+                                return UI.toArray(new IDrawable[0]);
+                            })
+                            .addTooltip(i18n("tile.boxplusplus.boxUI.module." + i))
+                            .setPos(10 + 18 * i, 100));
+                }
+                builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.25")
+                        + i18n("tile.boxplusplus.boxUI.module." + CurrentSN)).setMaxWidth(260).setPos(25, 120))
+                    .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.26")
+                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "b")).setMaxWidth(260).setPos(25, 130))
+                    .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.27")
+                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "c")).setMaxWidth(260).setPos(25, 150))
+                    .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.28")
+                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "d")).setMaxWidth(260).setPos(25, 160))
+                    .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.29")
+                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "e")).setMaxWidth(260).setPos(25, 170));
+            }
+            case 50 ->
+                builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.15")).setTextAlignment(TopLeft).setMaxWidth(260).setPos(25, 85));
+            case 51 -> builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.22")).setMaxWidth(260).setPos(25, 85))
+                .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.23")).setMaxWidth(260).setPos(180, 85))
+                .widget(new DrawableWidget().setDrawable(
+                        AdaptableUITexture.of(Tags.MODID, "textures/gui/time.png", 275, 81, 1))
+                    .setPos(20, 105)
+                    .setSize(130, 42))
+                .widget(new DrawableWidget().setDrawable(
+                        AdaptableUITexture.of(Tags.MODID, "textures/gui/voteage.png", 124, 81, 1))
+                    .setPos(190, 105)
+                    .setSize(62, 40))
+                .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.52")).setMaxWidth(260).setPos(25, 165));
+        }
+    }
+
+    /**
+     *  Synchronize all data to server. Do not change pack size!
+     */
+    public void Synchronize(ModularWindow.Builder builder) {
+        builder.widget(
+                new FakeSyncWidget.ListSyncer<>(
+                    () -> RoutingMap,
+                    var1 -> {
+                        RoutingMap.clear();
+                        RoutingMap.addAll(var1);
+                    },
+                    (buffer, j) -> {
+                        try {
+                            buffer.writeNBTTagCompoundToBuffer(j.routingToNbt());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    buffer -> {
+                        try {
+                            return new BoxRoutings(buffer.readNBTTagCompoundFromBuffer());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                ))
+            .widget(
+                new FakeSyncWidget<>(
+                    () -> recipe,
+                    var1 -> recipe = var1,
+                    (buffer, j) -> {
+                        try {
+                            buffer.writeNBTTagCompoundToBuffer(recipe.RecipeToNBT());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    buffer -> {
+                        try {
+                            return new BoxRecipe(buffer.readNBTTagCompoundFromBuffer());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                )
+            )
+            .widget(
+                new FakeSyncWidget.IntegerSyncer(() -> routingstatus, var1 -> routingstatus = var1))
+            .widget(
+                new FakeSyncWidget.IntegerSyncer(() -> RingCountSet, var1 -> RingCountSet = var1))
+            .widget(
+                new FakeSyncWidget.IntegerSyncer(() -> RingCount, var1 -> RingCount = var1))
+            .widget(
+                new FakeSyncWidget.IntegerSyncer(() -> maxParallel, var1 -> maxParallel = var1))
+            .widget(
+                new FakeSyncWidget.IntegerSyncer(() -> maxRouting, var1 -> maxRouting = var1));
+        for(int i=0;i<14;i++){
+            int finalI = i;
+            builder.widget(new FakeSyncWidget.BooleanSyncer(()->moduleSwitch[finalI], var1->moduleSwitch[finalI]=var1));
+        }
+    }
+}
