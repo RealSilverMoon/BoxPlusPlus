@@ -84,7 +84,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private int maxParallel = 16;
     private int maxRouting = 10;
     //What's that?
-    private static final char[] coreElement = {'Z','Y','X','W','V','U','T','S','R','Q','P','O','O','N'};
+    private static final char[] coreElement = {'Z','Y','X','W','V','U','T','S','R','Q','P','O','N','M'};
     private BoxRecipe recipe=new BoxRecipe();
     protected TeBoxRing teBoxRing;
     public String userUUID;
@@ -392,15 +392,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     public boolean runBox(List<ItemStack> inputItem,List<FluidStack> inputFluid){
         mOutputFluids=null;
         mOutputItems=null;
-        //long lVoltage = getMaxInputVoltage();
-        if(!moduleActive[12]&&moduleTier[12]==0) {
+        if(!moduleActive[12] || moduleTier[12] == 0) {
             lEUt = -recipe.FinalVoteage;
         }
-        if (this.lEUt == Long.MAX_VALUE - 1 || this.mMaxProgresstime == Integer.MAX_VALUE - 1) return false;
         if (moduleActive[12]&&moduleTier[12]==1&&!addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
             return false;
         }
-        mMaxProgresstime = lEUt==0?10:recipe.FinalTime;
+        calOverclock();
         mEfficiencyIncrease = 10000;
         mEfficiency = 10000 - (this.getIdealStatus() - this.getRepairStatus()) * 1000;
         List<ItemStack> requireItem = new ArrayList<>();
@@ -418,7 +416,28 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         updateSlots();
         return true;
     }
-
+    public void calOverclock() {
+        if (lEUt == 0) {
+            mMaxProgresstime = 10;
+            return;
+        }
+        GT_OverclockCalculator cal = new GT_OverclockCalculator().setRecipeEUt(recipe.FinalVoteage).setDuration(recipe.FinalTime)
+            .setEUt(getAverageInputVoltage()).setAmperage(getMaxInputAmps());
+        switch (RingCount) {
+            case 1:
+                return;
+            case 2:
+                break;
+            case 3:
+                cal.enablePerfectOC();
+        }
+        cal.calculate();
+        this.lEUt = cal.getConsumption();
+        this.mMaxProgresstime = cal.getDuration();
+        if (this.lEUt > 0) {
+            this.lEUt *= -1;
+        }
+    }
     @Override
     public int getMaxEfficiency(ItemStack stack) {
         return 10000;
@@ -585,7 +604,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             routingstatus=5;
                             return;
                         }
-                        //We acn find assemblyline recipe using the original method, but no need to update it, nor check it)
+                        //We acn find assemblyline recipe using the original method, but no need to update it, nor check it
                         GT_AssemblyLineUtils.LookupResult tLookupResult = GT_AssemblyLineUtils
                             .findAssemblyLineRecipeFromDataStick(data, false);
                         if (tLookupResult.getType() == GT_AssemblyLineUtils.LookupResultType.INVALID_STICK){
@@ -642,6 +661,20 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         RecipeMap=com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
                     }else if(RoutingMachine.mName.equals("cyclotron.tier.single")){
                         RecipeMap=GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
+                    }else if(RoutingMachine.mName.equals("industrialarcfurnace.controller.tier.single")){
+                        ItemStack Circuit = findfirstCircuit(ItemInputs);
+                        if(Circuit==null){
+                            routingstatus=4;
+                            return;
+                        }
+                        switch (Circuit.getItemDamage()){
+                            case 1->RecipeMap=GT_Recipe.GT_Recipe_Map.sArcFurnaceRecipes;
+                            case 2->RecipeMap=GT_Recipe.GT_Recipe_Map.sPlasmaArcFurnaceRecipes;
+                            default -> {
+                                routingstatus=4;
+                                return;
+                            }
+                        }
                     }
                     else {
                         RecipeMap = RoutingMachine.getRecipeMap();
@@ -1249,7 +1282,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new TextFieldWidget().setGetterInt(() -> RoutingCount)
                     .setSetterInt(val -> RoutingCount = val)
-                    .setNumbers(1, maxRouting)
+                    .setNumbers(1, moduleActive[13]?(moduleTier[13]==0?2048:(Integer.MAX_VALUE-1)):maxRouting)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.04"))
@@ -1426,7 +1459,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new TextFieldWidget().setGetterInt(() -> RoutingMap.get(CurrentSN-1).Parallel)
                     .setSetterInt(val -> RoutingMap.get(CurrentSN-1).Parallel = val)
-                    .setNumbers(1, maxParallel)
+                    .setNumbers(1, moduleActive[13]?(moduleTier[13]==0?2048:(Integer.MAX_VALUE-1)):maxParallel)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.24"))

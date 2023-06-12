@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.silvermoon.boxplusplus.util.Util.loadBoxItemFromNBT;
+import static com.silvermoon.boxplusplus.util.Util.writeBoxItemToNBT;
+
 public class BoxRoutings {
     public ItemStack RoutingMachine;
     public List<ItemStack> InputItem = new ArrayList<>();
@@ -34,6 +37,12 @@ public class BoxRoutings {
         OutputItem.removeAll(Collections.singleton(null));
         InputFluid.addAll(Arrays.asList(recipe.mFluidInputs));
         OutputFluid.addAll(Arrays.asList(recipe.mFluidOutputs));
+        if(teMachine.mName.equals("multimachine.plasmaforge")){
+            OutputFluid.forEach(f->f.amount= (int) (f.amount*0.75));
+        }
+        if(teMachine.mName.equals("quantumforcetransformer.controller.tier.single")){
+            OutputFluid.forEach(f->f.amount= f.amount*(1/(InputItem.size()+OutputItem.size())));
+        }
         RoutingMachine = machine;
         voltage = (long) recipe.mEUt;
         if(teMachine.mName.equals("multimachine.plasmaforge")){
@@ -76,12 +85,12 @@ public class BoxRoutings {
         RoutingMachine = ItemStack.loadItemStackFromNBT(routingNBT.getCompoundTag("machine"));
         int i = 0;
         while (routingNBT.hasKey("InputItem" + (i + 1))) {
-            InputItem.add(ItemStack.loadItemStackFromNBT(routingNBT.getCompoundTag("InputItem" + (i + 1))));
+            InputItem.add(loadBoxItemFromNBT(routingNBT.getCompoundTag("InputItem" + (i + 1))));
             i++;
         }
         i = 0;
         while (routingNBT.hasKey("OutputItem" + (i + 1))) {
-            OutputItem.add(ItemStack.loadItemStackFromNBT(routingNBT.getCompoundTag("OutputItem" + (i + 1))));
+            OutputItem.add(loadBoxItemFromNBT(routingNBT.getCompoundTag("OutputItem" + (i + 1))));
             OutputChance.add(routingNBT.getInteger("OutputChance"+(i+1)));
             i++;
         }
@@ -104,9 +113,9 @@ public class BoxRoutings {
         NBTTagCompound routing = new NBTTagCompound();
         routing.setTag("machine", RoutingMachine.writeToNBT(new NBTTagCompound()));
         for (int i = 0; i < InputItem.size(); i++)
-            routing.setTag("InputItem" + (i + 1), InputItem.get(i).writeToNBT(new NBTTagCompound()));
+            routing.setTag("InputItem" + (i + 1), writeBoxItemToNBT(InputItem.get(i),new NBTTagCompound()));
         for (int i = 0; i < OutputItem.size(); i++) {
-            routing.setTag("OutputItem" + (i + 1), OutputItem.get(i).writeToNBT(new NBTTagCompound()));
+            routing.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(OutputItem.get(i),new NBTTagCompound()));
             routing.setInteger("OutputChance" + (i + 1), OutputChance.get(i));
         }
         for (int i = 0; i < InputFluid.size(); i++)

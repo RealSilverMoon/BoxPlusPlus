@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static com.silvermoon.boxplusplus.util.Util.loadBoxItemFromNBT;
+import static com.silvermoon.boxplusplus.util.Util.writeBoxItemToNBT;
+
 public class BoxRecipe {
     public List<ItemStack> FinalItemInput = new ArrayList<>();
     public List<ItemStack> FinalItemOutput = new ArrayList<>();
@@ -25,12 +28,12 @@ public class BoxRecipe {
     public BoxRecipe(NBTTagCompound nbt) {
         int i = 0;
         while (nbt.hasKey("InputItem" + (i + 1))) {
-            FinalItemInput.add(ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("InputItem" + (i + 1))));
+            FinalItemInput.add(loadBoxItemFromNBT(nbt.getCompoundTag("InputItem" + (i + 1))));
             i++;
         }
         i = 0;
         while (nbt.hasKey("OutputItem" + (i + 1))) {
-            FinalItemOutput.add(ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("OutputItem" + (i + 1))));
+            FinalItemOutput.add(loadBoxItemFromNBT(nbt.getCompoundTag("OutputItem" + (i + 1))));
             i++;
         }
         i = 0;
@@ -101,9 +104,9 @@ public class BoxRecipe {
     public NBTTagCompound RecipeToNBT() {
         NBTTagCompound recipe = new NBTTagCompound();
         for (int i = 0; i < FinalItemInput.size(); i++)
-            recipe.setTag("InputItem" + (i + 1), FinalItemInput.get(i).writeToNBT(new NBTTagCompound()));
+            recipe.setTag("InputItem" + (i + 1), writeBoxItemToNBT(FinalItemInput.get(i),new NBTTagCompound()));
         for (int i = 0; i < FinalItemOutput.size(); i++)
-            recipe.setTag("OutputItem" + (i + 1), FinalItemOutput.get(i).writeToNBT(new NBTTagCompound()));
+            recipe.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(FinalItemOutput.get(i),new NBTTagCompound()));
         for (int i = 0; i < FinalFluidInput.size(); i++)
             recipe.setTag("InputFluid" + (i + 1), FinalFluidInput.get(i).writeToNBT(new NBTTagCompound()));
         for (int i = 0; i < FinalFluidOutput.size(); i++)

@@ -12,10 +12,14 @@ public class ItemContainer {
     private final Table<Item,Integer,Integer> stack = HashBasedTable.create();
 
     public void addItemStack(ItemStack input,int chance) {
+        int safeSize;
+        if(input.stackSize>=Integer.MAX_VALUE/10000){
+            safeSize=(input.stackSize-1)/10000;
+        }else safeSize=input.stackSize;
         if (stack.containsRow(input.getItem())&&stack.containsColumn(input.getItemDamage())) {
-            stack.put(input.getItem(),input.getItemDamage(),chance*input.stackSize+stack.get(input.getItem(),input.getItemDamage()));
+            stack.put(input.getItem(),input.getItemDamage(),chance*safeSize+stack.get(input.getItem(),input.getItemDamage()));
         } else {
-            stack.put(input.getItem(), input.getItemDamage(),chance*input.stackSize);
+            stack.put(input.getItem(), input.getItemDamage(),chance*safeSize);
         }
     }
     public ItemContainer addItemStackList(List<ItemStack> list) {

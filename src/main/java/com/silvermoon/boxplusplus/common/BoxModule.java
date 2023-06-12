@@ -83,11 +83,11 @@ public class BoxModule {
         Arrayed_and_Maneuverable_Hyperbeam_Receiver_Redirector.moduleStructure= new String[][]{
             {"     ", "     ", "  G  ", "     ", "     "},
             {"     ", "     ", "  G  ", "     ", "     "},
-            {"     ", "  G  ", " GOG ", "  G  ", "     "},
+            {"     ", "  G  ", " GNG ", "  G  ", "     "},
             {"  G  ", " GGG ", "GGGGG", " GGG ", "  G  "}};
         CAERULA_ARBOR.moduleStructure= new String[][]{
             {"  G  ", " GGG ", "GGGGG", " GGG ", "  G  "},
-            {"     ", "  G  ", " GNG ", "  G  ", "     "},
+            {"     ", "  G  ", " GMG ", "  G  ", "     "},
             {"     ", "     ", "  G  ", "     ", "     "},
             {"     ", "     ", "  G  ", "     ", "     "}};
     }

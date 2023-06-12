@@ -5,7 +5,9 @@ import com.gtnewhorizon.structurelib.structure.IStructureElementNoPlacement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -37,7 +39,37 @@ public class Util {
         }
         return null;
     }
+    //Ah...ha? Forge only use byte to store itemstacksize, which is far enough for box. Let's fix it.
+    public static NBTTagCompound writeBoxItemToNBT(ItemStack item,NBTTagCompound nbt)
+    {
+        nbt.setShort("id", (short) Item.getIdFromItem(item.getItem()));
+        nbt.setInteger("Count", item.stackSize);
+        nbt.setShort("Damage", (short)item.getItemDamage());
 
+        if (item.stackTagCompound != null)
+        {
+            nbt.setTag("tag", item.stackTagCompound);
+        }
+
+        return nbt;
+    }
+    public static ItemStack loadBoxItemFromNBT(NBTTagCompound nbt)
+    {
+        Item boxitem=Item.getItemById(nbt.getShort("id"));
+        int stackSize = nbt.getInteger("Count");
+        int itemDamage = nbt.getShort("Damage");
+        if (itemDamage < 0)
+        {
+            itemDamage = 0;
+        }
+        ItemStack boxItem=new ItemStack(boxitem,stackSize,itemDamage);
+        if (nbt.hasKey("tag", 10))
+        {
+            boxItem.stackTagCompound = nbt.getCompoundTag("tag");
+        }
+        boxItem.func_150996_a(boxitem);
+        return boxItem.getItem() != null ? boxItem : null;
+    }
     //Auto place TEBlock
     public static <T, E> IStructureElementNoPlacement<T> RingTileAdder(BiPredicate<T, E> iTileAdder,
                                                                        Class<E> tileClass, Block hintBlock, int hintMeta, Function<T,Block> RingAdder) {
