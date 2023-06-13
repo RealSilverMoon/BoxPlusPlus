@@ -7,41 +7,44 @@ import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ItemContainer {
-    private final Table<Item,Integer,Integer> stack = HashBasedTable.create();
+    private final Table<Item, Integer, Integer> stack = HashBasedTable.create();
 
-    public void addItemStack(ItemStack input,int chance) {
+    public void addItemStack(ItemStack input, int chance) {
         int safeSize;
-        if(input.stackSize>=Integer.MAX_VALUE/10000){
-            safeSize=(input.stackSize-1)/10000;
-        }else safeSize=input.stackSize;
-        if (stack.containsRow(input.getItem())&&stack.containsColumn(input.getItemDamage())) {
-            stack.put(input.getItem(),input.getItemDamage(),chance*safeSize+stack.get(input.getItem(),input.getItemDamage()));
+        if (input.stackSize >= Integer.MAX_VALUE / 10000) {
+            safeSize = (input.stackSize - 1) / 10000;
+        } else safeSize = input.stackSize;
+        if (stack.containsRow(input.getItem()) && stack.containsColumn(input.getItemDamage())) {
+            stack.put(Objects.requireNonNull(input.getItem()), input.getItemDamage(), chance * safeSize + stack.get(input.getItem(), input.getItemDamage()));
         } else {
-            stack.put(input.getItem(), input.getItemDamage(),chance*safeSize);
+            stack.put(Objects.requireNonNull(input.getItem()), input.getItemDamage(), chance * safeSize);
         }
     }
+
     public ItemContainer addItemStackList(List<ItemStack> list) {
         for (ItemStack var1 : list) {
-            if(var1==null)continue;
-            addItemStack(var1,10000);
+            if (var1 == null) continue;
+            addItemStack(var1, 10000);
         }
         return this;
     }
+
     public void addItemStackList(List<ItemStack> list, List<Integer> chance) {
-        for (int i=0;i<list.size();i++) {
-            addItemStack(list.get(i),chance.get(i));
+        for (int i = 0; i < list.size(); i++) {
+            addItemStack(list.get(i), chance.get(i));
         }
     }
 
     public List<ItemStack> getItemStack() {
         List<ItemStack> output = new ArrayList<>();
-        for(Item item:stack.rowKeySet()){
-            for(int meta:stack.columnKeySet()){
-                if(stack.get(item,meta)!=null){
+        for (Item item : stack.rowKeySet()) {
+            for (int meta : stack.columnKeySet()) {
+                if (stack.get(item, meta) != null) {
                     output.add(new ItemStack(item,
-                        (int)Math.floor(stack.get(item,meta))/10000,meta));
+                        (int) Math.floor(stack.get(item, meta)) / 10000, meta));
                 }
             }
         }

@@ -3,6 +3,8 @@ package com.silvermoon.boxplusplus.common.tileentities;
 import appeng.container.ContainerNull;
 import com.github.bartimaeusnek.bartworks.common.tileentities.multis.GT_TileEntity_ElectricImplosionCompressor;
 import com.github.bartimaeusnek.bartworks.util.BWRecipes;
+import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyMulti;
+import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyTunnel;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizons.modularui.api.drawable.AdaptableUITexture;
@@ -29,6 +31,7 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_ExtendedPowerMultiBlockBase;
+import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_InputBus;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
 import gregtech.api.render.TextureFactory;
@@ -68,27 +71,29 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private static final String STRUCTURE_PIECE_FirstRing = "FirstRing";
     private static final String STRUCTURE_PIECE_SecondRing = "SecondRing";
     private static final String STRUCTURE_PIECE_Final = "Final";
-    private static final IIconContainer BoxActive=new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER_ACTIVE");
-    private static final IIconContainer BoxInactive=new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER");
+    private static final IIconContainer boxActive = new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER_ACTIVE");
+    private static final IIconContainer boxInactive = new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER");
     private int mCasing = 0;
-    private int RoutingCount = 1;
-    private final boolean[] moduleSwitch=new boolean[14];
-    private boolean[] moduleActive=new boolean[15];
-    private final int[] moduleTier=new int[15];
-    private final ArrayList<BoxRoutings> RoutingMap = new ArrayList<>();
-    public int CurrentSN =1;
-    public int RingCount = 1;
-    public int wiki=1;
-    public int RingCountSet = 1;
-    private int routingstatus=0;
+    private int routingCount = 1;
+    private final boolean[] moduleSwitch = new boolean[14];
+    private boolean[] moduleActive = new boolean[15];
+    private final int[] moduleTier = new int[15];
+    private final ArrayList<BoxRoutings> routingMap = new ArrayList<>();
+    public int tempCode = 1;
+    public int ringCount = 1;
+    public int wiki = 1;
+    public int ringCountSet = 1;
+    private int routingStatus = 0;
+    private int[] machineError = new int[2];
     private int maxParallel = 16;
     private int maxRouting = 10;
     //What's that?
-    private static final char[] coreElement = {'Z','Y','X','W','V','U','T','S','R','Q','P','O','N','M'};
-    private BoxRecipe recipe=new BoxRecipe();
+    private static final char[] coreElement = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M'};
+    private BoxRecipe recipe = new BoxRecipe();
     protected TeBoxRing teBoxRing;
     public String userUUID;
     public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
+
     static {
         StructureDefinition.Builder<GTMachineBox> A = IStructureDefinition.<GTMachineBox>builder()
             .addShape(
@@ -144,7 +149,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         for (int i = 0; i < 14; i++) {
             A.addShape(getModuleByIndex(i).name, transpose(getModuleByIndex(i).moduleStructure));
         }
-            A.addElement(
+        A.addElement(
                 'C',
                 buildHatchAdder(GTMachineBox.class).atLeast(InputBus, OutputBus, InputHatch, OutputHatch, Energy, ExoticEnergy, Maintenance)
                     .casingIndex(114 << 7)
@@ -152,39 +157,41 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .buildAndChain(
                         onElementPass(i -> ++i.mCasing, ofBlock(BlockRegister.SpaceExtend, 0))))
             .addElement('D', Util.RingTileAdder((v, t) -> {
-                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing)&& v.RingCountSet != 1))return false;
-                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing2)&& v.RingCountSet != 2))return false;
-                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing3)&& v.RingCountSet != 3))return false;
+                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing) && v.ringCountSet != 1)) return false;
+                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing2) && v.ringCountSet != 2)) return false;
+                if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing3) && v.ringCountSet != 3)) return false;
                 v.teBoxRing = t;
                 return true;
-            }, TeBoxRing.class, BlockRegister.BoxRing, 0,v-> v.RingCountSet==1? BlockRegister.BoxRing:(v.RingCountSet==2?BlockRegister.BoxRing2:BlockRegister.BoxRing3)))
+            }, TeBoxRing.class, BlockRegister.BoxRing, 0, v -> v.ringCountSet == 1 ? BlockRegister.BoxRing : (v.ringCountSet == 2 ? BlockRegister.BoxRing2 : BlockRegister.BoxRing3)))
             .addElement('E', ofBlock(BlockRegister.SpaceCompress, 0))
             .addElement('F', ofBlock(BlockRegister.SpaceConstraint, 0))
             .addElement('G', ofBlock(BlockRegister.SpaceWall, 0));
         for (int i = 0; i < 14; i++) {
             int finalI = i;
-            A.addElement(coreElement[i],ofChain(
-                ofBlockAdder((t,b,m)-> {
-                    if(b.isAssociatedBlock(BlockRegister.BoxModule) && m== finalI){
-                        t.moduleTier[finalI]=0;
+            A.addElement(coreElement[i], ofChain(
+                ofBlockAdder((t, b, m) -> {
+                    if (b.isAssociatedBlock(BlockRegister.BoxModule) && m == finalI) {
+                        t.moduleTier[finalI] = 0;
                         return true;
                     }
                     return false;
-                },BlockRegister.BoxModule,i),
-                ofBlockAdder((t,b,m)-> {
-                    if(b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad) && m== finalI){
-                        t.moduleTier[finalI]=1;
+                }, BlockRegister.BoxModule, i),
+                ofBlockAdder((t, b, m) -> {
+                    if (b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad) && m == finalI) {
+                        t.moduleTier[finalI] = 1;
                         return true;
                     }
-                    t.moduleTier[finalI]=0;
+                    t.moduleTier[finalI] = 0;
                     return false;
-                },BlockRegister.BoxModuleUpgrad,i)));
+                }, BlockRegister.BoxModuleUpgrad, i)));
         }
         STRUCTURE_DEFINITION = A.build();
     }
+
     public GTMachineBox(String name) {
         super(name);
     }
+
     public GTMachineBox(int ID, String Name, String NameRegional) {
         super(ID, Name, NameRegional);
     }
@@ -206,10 +213,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .addInfo(i18n("tile.boxplusplus.boxinfo.02"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.03"))
             .addSeparator()
-            .addInfo(EnumChatFormatting.DARK_GREEN+i18n("tile.boxplusplus.boxinfo.04"))
+            .addInfo(EnumChatFormatting.DARK_GREEN + i18n("tile.boxplusplus.boxinfo.04"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.05"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.06"))
-            .addInfo(EnumChatFormatting.GOLD+i18n("tile.boxplusplus.boxinfo.07"))
+            .addInfo(EnumChatFormatting.GOLD + i18n("tile.boxplusplus.boxinfo.07"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.08"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.09"))
             .addSeparator()
@@ -219,26 +226,27 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .addSeparator()
             .addInfo(i18n("tile.boxplusplus.boxinfo.13"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.14"))
-            .addInfo(EnumChatFormatting.AQUA+i18n("tile.boxplusplus.boxinfo.15"))
+            .addInfo(EnumChatFormatting.AQUA + i18n("tile.boxplusplus.boxinfo.15"))
             .addPollutionAmount(0)
             .addSeparator()
             .beginStructureBlock(47, 11, 47, false)
             .addStructureInfo(i18n("tile.boxplusplus.boxStructure.01"))
             .addController(i18n("tile.boxplusplus.boxStructure.02"))
-            .addCasingInfoMin(i18n("tile.boxplusplus_SpaceExtend.name"),1,false)
-            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceConstraint.name"),1,false)
-            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceCompress.name"),1,false)
-            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceWall.name"),1,false)
+            .addCasingInfoMin(i18n("tile.boxplusplus_SpaceExtend.name"), 1, false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceConstraint.name"), 1, false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceCompress.name"), 1, false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceWall.name"), 1, false)
             .addStructureInfo(i18n("tile.boxplusplus.boxStructure.03"))
             .addEnergyHatch(i18n("tile.boxplusplus.boxStructure.04"))
-            .addStructureInfo(EnumChatFormatting.YELLOW+i18n("tile.boxplusplus.boxStructure.05"))
+            .addStructureInfo(EnumChatFormatting.YELLOW + i18n("tile.boxplusplus.boxStructure.05"))
             .addSeparator()
             .toolTipFinisher("BoxPlusPlus");
         return tt;
     }
+
     @Override
     public void construct(ItemStack stackSize, boolean hintsOnly) {
-        switch (RingCountSet) {
+        switch (ringCountSet) {
             case 1 -> {
                 switch (stackSize.stackSize) {
                     case 1 -> {
@@ -250,7 +258,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         buildPiece(STRUCTURE_PIECE_FirstRing, stackSize, hintsOnly, 11, 3, 8);
                         buildPiece(STRUCTURE_PIECE_SecondRing, stackSize, hintsOnly, 17, 5, 14);
                     }
-                    default-> {
+                    default -> {
                         buildPiece(STRUCTURE_PIECE_MainFrames, stackSize, hintsOnly, 3, 3, 0);
                         buildPiece(STRUCTURE_PIECE_FirstRing, stackSize, hintsOnly, 11, 3, 8);
                         buildPiece(STRUCTURE_PIECE_SecondRing, stackSize, hintsOnly, 17, 5, 14);
@@ -270,13 +278,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 buildPiece(STRUCTURE_PIECE_Final, stackSize, hintsOnly, 23, 5, 20);
             }
         }
-        for(int i=0;i<14;i++){
-            if(moduleSwitch[i]||stackSize.stackSize-4>=i){
+        for (int i = 0; i < 14; i++) {
+            if (moduleSwitch[i] || stackSize.stackSize - 4 >= i) {
                 buildPiece(getModuleByIndex(i).name, stackSize, hintsOnly,
-                    getModuleByIndex(i).horizontalOffset,getModuleByIndex(i).verticalOffset,getModuleByIndex(i).depthOffset);
+                    getModuleByIndex(i).horizontalOffset, getModuleByIndex(i).verticalOffset, getModuleByIndex(i).depthOffset);
             }
         }
     }
+
     @Override
     public boolean isCorrectMachinePart(ItemStack aStack) {
         return true;
@@ -284,146 +293,171 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
 
     @Override
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
-        RingCount=1;
-        moduleActive=new boolean[14];
-        switch (RingCountSet) {
+        ringCount = 1;
+        moduleActive = new boolean[14];
+        machineError = new int[2];
+        switch (ringCountSet) {
             case 1 -> {
                 if (checkPiece(STRUCTURE_PIECE_MainFrames, 3, 3, 0) &&
                     checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8)) {
-                    RingCount=1;
+                    ringCount = 1;
                     break;
                 }
-                if(teBoxRing!=null){
-                    teBoxRing.renderStatus=false;
-                    teBoxRing=null;
+                if (teBoxRing != null) {
+                    teBoxRing.renderStatus = false;
+                    teBoxRing = null;
                 }
+                machineError[0] = 1;
                 return false;
             }
             case 2 -> {
                 if (checkPiece(STRUCTURE_PIECE_MainFrames, 3, 3, 0) &&
                     checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8) &&
                     checkPiece(STRUCTURE_PIECE_SecondRing, 17, 5, 14)) {
-                    RingCount=2;
-                    maxParallel=128;
-                    maxRouting=50;
+                    ringCount = 2;
+                    maxParallel = 128;
+                    maxRouting = 50;
                     break;
                 }
-                if(teBoxRing!=null){
-                    teBoxRing.renderStatus=false;
-                    teBoxRing=null;
+                if (teBoxRing != null) {
+                    teBoxRing.renderStatus = false;
+                    teBoxRing = null;
                 }
+                machineError[0] = 2;
                 return false;
             }
             case 3 -> {
-                if (checkPiece(STRUCTURE_PIECE_MainFrames, 3, 3, 0)&&
-                    checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8)&&
-                    checkPiece(STRUCTURE_PIECE_SecondRing, 17, 5, 14)&&
+                if (checkPiece(STRUCTURE_PIECE_MainFrames, 3, 3, 0) &&
+                    checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8) &&
+                    checkPiece(STRUCTURE_PIECE_SecondRing, 17, 5, 14) &&
                     checkPiece(STRUCTURE_PIECE_Final, 23, 5, 20)) {
-                    RingCount=3;
-                    maxParallel=512;
-                    maxRouting=100;
+                    ringCount = 3;
+                    maxParallel = 512;
+                    maxRouting = 100;
                     break;
                 }
-                if(teBoxRing!=null){
-                    teBoxRing.renderStatus=false;
-                    teBoxRing=null;
+                if (teBoxRing != null) {
+                    teBoxRing.renderStatus = false;
+                    teBoxRing = null;
                 }
+                machineError[0] = 3;
                 return false;
             }
-            default -> {return false;}
+            default -> {
+                return false;
+            }
         }
-        for(int i=0;i<14;i++){
-            if(moduleSwitch[i]){
-                if(checkPiece(getModuleByIndex(i).name,
-                    getModuleByIndex(i).horizontalOffset,getModuleByIndex(i).verticalOffset,getModuleByIndex(i).depthOffset)){
-                    moduleActive[i]=true;
+        for (int i = 0; i < 14; i++) {
+            if (moduleSwitch[i]) {
+                if (checkPiece(getModuleByIndex(i).name,
+                    getModuleByIndex(i).horizontalOffset, getModuleByIndex(i).verticalOffset, getModuleByIndex(i).depthOffset)) {
+                    moduleActive[i] = true;
                     continue;
                 }
-                teBoxRing.renderStatus=false;
+                teBoxRing.renderStatus = false;
+                machineError[0] = 4;
+                machineError[1] = i + 1;
                 return false;
             }
         }
-        if(!getExoticEnergyHatches().isEmpty()&&!moduleActive[12])return false;
-        if(teBoxRing!=null&&RingCount==3) teBoxRing.renderStatus = true;
+        //If you want it, then you have to take it.
+        for (GT_MetaTileEntity_Hatch hatch : getExoticEnergyHatches()) {
+            if (hatch instanceof GT_MetaTileEntity_Hatch_EnergyMulti && ringCount == 1) {
+                machineError[0] = 5;
+                return false;
+            }
+            if (hatch instanceof GT_MetaTileEntity_Hatch_EnergyTunnel && !moduleActive[12]) {
+                machineError[0] = 6;
+                return false;
+            }
+        }
+        if (teBoxRing != null && ringCount == 3) teBoxRing.renderStatus = true;
         return true;
     }
+
     /**
      * Check if the recipe is the final one.
+     *
      * @return true if correct
      */
     @Override
     public boolean checkRecipe(ItemStack stack) {
-        if(!recipe.islocked) return false;
-        List<ItemStack> inputItem=getStoredInputs();
-        List<FluidStack> inputFluid=getStoredFluids();
-        if((inputItem.isEmpty() && !recipe.FinalItemInput.isEmpty())
-            ||(inputFluid.isEmpty() && !recipe.FinalFluidInput.isEmpty())) return false;
-        for(int k:recipe.requireModules.keySet()) {
+        lEUt = 0;
+        mMaxProgresstime = 0;
+        mOutputItems = null;
+        mOutputFluids = null;
+        if (!recipe.islocked) return false;
+        List<ItemStack> inputItem = getStoredInputs();
+        List<FluidStack> inputFluid = getStoredFluids();
+        if ((inputItem.isEmpty() && !recipe.FinalItemInput.isEmpty())
+            || (inputFluid.isEmpty() && !recipe.FinalFluidInput.isEmpty())) return false;
+        for (int k : recipe.requireModules.keySet()) {
             if (!moduleActive[k]) return false;
             if (recipe.requireModules.get(k) == 1 && moduleTier[k] != 1) return false;
         }
-        ItemContainer Icontainer=new ItemContainer();
-        FluidContainer Fcontainer=new FluidContainer();
+        ItemContainer Icontainer = new ItemContainer();
+        FluidContainer Fcontainer = new FluidContainer();
         List<ItemStack> totalInputItem = Icontainer.addItemStackList(inputItem).getItemStack();
         List<FluidStack> totalInputFluid = Fcontainer.addFluidStackList(inputFluid).getFluidStack();
         List<ItemStack> requireItem = new ArrayList<>();
         List<FluidStack> requireFluid = new ArrayList<>();
-        for(ItemStack var1:recipe.FinalItemInput){
+        for (ItemStack var1 : recipe.FinalItemInput) {
             requireItem.add(var1.copy());
         }
-        for(FluidStack var1:recipe.FinalFluidInput){
+        for (FluidStack var1 : recipe.FinalFluidInput) {
             requireFluid.add(var1.copy());
         }
-        BoxRecipe.ItemOneBox(totalInputItem,requireItem);
-        BoxRecipe.FluidOneBox(totalInputFluid,requireFluid);
-        return (!recipe.FinalItemInput.isEmpty())?
-            (!recipe.FinalFluidInput.isEmpty()?
-                (requireItem.isEmpty() && requireFluid.isEmpty() && runBox(inputItem, inputFluid)):
-                (requireItem.isEmpty() && runBox(inputItem, inputFluid))):
+        BoxRecipe.ItemOneBox(totalInputItem, requireItem);
+        BoxRecipe.FluidOneBox(totalInputFluid, requireFluid);
+        return (!recipe.FinalItemInput.isEmpty()) ?
+            (!recipe.FinalFluidInput.isEmpty() ?
+                (requireItem.isEmpty() && requireFluid.isEmpty() && runBox(inputItem, inputFluid)) :
+                (requireItem.isEmpty() && runBox(inputItem, inputFluid))) :
             (requireFluid.isEmpty() && runBox(inputItem, inputFluid));
     }
 
     /**
      * Run the box system.
-     * @param inputItem All itemstack that input
+     *
+     * @param inputItem  All itemstack that input
      * @param inputFluid All fluidstack that input
      * @return true if the box starts
      */
-    public boolean runBox(List<ItemStack> inputItem,List<FluidStack> inputFluid){
-        mOutputFluids=null;
-        mOutputItems=null;
-        if(!moduleActive[12] || moduleTier[12] == 0) {
+    public boolean runBox(List<ItemStack> inputItem, List<FluidStack> inputFluid) {
+        if (!moduleActive[12] || moduleTier[12] == 0) {
             lEUt = -recipe.FinalVoteage;
         }
-        if (moduleActive[12]&&moduleTier[12]==1&&!addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
+        if (moduleActive[12] && moduleTier[12] == 1 && !addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
             return false;
         }
         calOverclock();
+        if (this.lEUt >= Long.MAX_VALUE - 1 || this.mMaxProgresstime >= Integer.MAX_VALUE - 1) return false;
         mEfficiencyIncrease = 10000;
         mEfficiency = 10000 - (this.getIdealStatus() - this.getRepairStatus()) * 1000;
         List<ItemStack> requireItem = new ArrayList<>();
         List<FluidStack> requireFluid = new ArrayList<>();
-        for(ItemStack var1:recipe.FinalItemInput){
+        for (ItemStack var1 : recipe.FinalItemInput) {
             requireItem.add(var1.copy());
         }
-        for(FluidStack var1:recipe.FinalFluidInput){
+        for (FluidStack var1 : recipe.FinalFluidInput) {
             requireFluid.add(var1.copy());
         }
-        BoxRecipe.ItemOneBox(requireItem,inputItem);
-        BoxRecipe.FluidOneBox(requireFluid,inputFluid);
-        mOutputItems=recipe.FinalItemOutput.toArray(new ItemStack[0]);
-        mOutputFluids=recipe.FinalFluidOutput.toArray(new FluidStack[0]);
+        BoxRecipe.ItemOneBox(requireItem, inputItem);
+        BoxRecipe.FluidOneBox(requireFluid, inputFluid);
+        mOutputItems = recipe.FinalItemOutput.toArray(new ItemStack[0]);
+        mOutputFluids = recipe.FinalFluidOutput.toArray(new FluidStack[0]);
         updateSlots();
         return true;
     }
+
     public void calOverclock() {
         if (lEUt == 0) {
-            mMaxProgresstime = 10;
+            mMaxProgresstime = Math.max(recipe.FinalTime / 10000, 10);
             return;
         }
         GT_OverclockCalculator cal = new GT_OverclockCalculator().setRecipeEUt(recipe.FinalVoteage).setDuration(recipe.FinalTime)
-            .setEUt(getAverageInputVoltage()).setAmperage(getMaxInputAmps());
-        switch (RingCount) {
+            .setEUt(getMaxInputEu());
+        switch (ringCount) {
             case 1:
                 return;
             case 2:
@@ -438,6 +472,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             this.lEUt *= -1;
         }
     }
+
     @Override
     public int getMaxEfficiency(ItemStack stack) {
         return 10000;
@@ -464,11 +499,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                  int colorIndex, boolean aActive, boolean redstoneLevel) {
         if (side == aFacing) {
             if (aActive) return new ITexture[]{casingTexturePages[114][0], TextureFactory.builder()
-                .addIcon(BoxActive)
+                .addIcon(boxActive)
                 .extFacing()
                 .build()};
             return new ITexture[]{casingTexturePages[114][0], TextureFactory.builder()
-                .addIcon(BoxInactive)
+                .addIcon(boxInactive)
                 .extFacing()
                 .build()};
         }
@@ -483,16 +518,17 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             strongCheckOrAddUser(userUUID, Name);
         }
     }
+
     /**
      * Check each routing.
      */
     public void checkRouting() {
-        if(mInputBusses.isEmpty()) {
-            routingstatus=1;
+        if (mInputBusses.isEmpty()) {
+            routingStatus = 1;
             return;
         }
-        GT_Recipe.GT_Recipe_Map RecipeMap=null;
-        GT_Recipe RoutingRecipe=null;
+        GT_Recipe.GT_Recipe_Map RecipeMap = null;
+        GT_Recipe RoutingRecipe = null;
         for (GT_MetaTileEntity_Hatch_InputBus inputBus : mInputBusses) {
             for (int i = inputBus.getSizeInventory() - 1; i >= 0; i--) {
                 if (inputBus.getStackInSlot(i) != null
@@ -500,140 +536,135 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     System.out.println(RoutingMachine.mName);
                     ItemStack[] ItemInputs = getStoredInputs().toArray(new ItemStack[0]);
                     FluidStack[] FluidInputs = getStoredFluids().toArray(new FluidStack[0]);
-                    if(RoutingMachine.mName.equals("industrialmultimachine.controller.tier.single")){
+                    if (RoutingMachine.mName.equals("industrialmultimachine.controller.tier.single")) {
                         ItemStack Circuit = findfirstCircuit(ItemInputs);
-                        if(Circuit==null){
-                            routingstatus=4;
+                        if (Circuit == null) {
+                            routingStatus = 4;
                             return;
                         }
-                        RecipeMap=getMMRecipeMap(Circuit.getItemDamage());
-                    }
-                    else if(RoutingMachine instanceof GT_MetaTileEntity_MultiFurnace){
-                        for(ItemStack input:ItemInputs){
-                            ItemStack output=GT_OreDictUnificator.get(FurnaceRecipes.smelting().getSmeltingResult(input));
-                            if( output!=null){
-                                ItemStack var1=input.copy();
-                                var1.stackSize=1;
-                                ItemStack var2=output.copy();
-                                var2.stackSize=1;
-                                RoutingMap.add(
-                                    new BoxRoutings(var1,var2,RoutingMachine.getStackForm(1),30L,100));
-                                routingstatus=0;
+                        RecipeMap = getMMRecipeMap(Circuit.getItemDamage());
+                    } else if (RoutingMachine instanceof GT_MetaTileEntity_MultiFurnace) {
+                        for (ItemStack input : ItemInputs) {
+                            ItemStack output = GT_OreDictUnificator.get(FurnaceRecipes.smelting().getSmeltingResult(input));
+                            if (output != null) {
+                                ItemStack var1 = input.copy();
+                                var1.stackSize = 1;
+                                ItemStack var2 = output.copy();
+                                var2.stackSize = 1;
+                                routingMap.add(
+                                    new BoxRoutings(var1, var2, RoutingMachine.getStackForm(1), 30L, 100));
+                                routingStatus = 0;
                                 return;
                             }
                         }
-                        routingstatus = 3;
-                        return ;
-                    }
-                    else if(RoutingMachine.mName.equals("mxrandomlargemolecularassembler")){
-                        InventoryCrafting fakeCraft=new InventoryCrafting(new ContainerNull(),3,3);
-                        if(i==1){
-                            fakeCraft.setInventorySlotContents(0,ItemInputs[0]);
-                        }else {
+                        routingStatus = 3;
+                        return;
+                    } else if (RoutingMachine.mName.equals("mxrandomlargemolecularassembler")) {
+                        InventoryCrafting fakeCraft = new InventoryCrafting(new ContainerNull(), 3, 3);
+                        if (i == 1) {
+                            fakeCraft.setInventorySlotContents(0, ItemInputs[0]);
+                        } else {
                             for (int j = 0; j < 9; j++) {
-                                fakeCraft.setInventorySlotContents(j,inputBus.getStackInSlot(j));
+                                fakeCraft.setInventorySlotContents(j, inputBus.getStackInSlot(j));
                             }
                         }
-                        ItemStack out = CraftingManager.getInstance().findMatchingRecipe(fakeCraft,getBaseMetaTileEntity().getWorld());
-                        if(out!=null){
-                            RoutingMap.add(new BoxRoutings(fakeCraft,out,RoutingMachine.getStackForm(1)));
-                            routingstatus=0;
+                        ItemStack out = CraftingManager.getInstance().findMatchingRecipe(fakeCraft, getBaseMetaTileEntity().getWorld());
+                        if (out != null) {
+                            routingMap.add(new BoxRoutings(fakeCraft, out, RoutingMachine.getStackForm(1)));
+                            routingStatus = 0;
                             return;
                         }
-                        routingstatus = 3;
-                        return ;
-                    }
-                    else if(RoutingMachine.mName.equals("industrialrockcrusher.controller.tier.single")){
+                        routingStatus = 3;
+                        return;
+                    } else if (RoutingMachine.mName.equals("industrialrockcrusher.controller.tier.single")) {
                         ItemStack Circuit = findfirstCircuit(ItemInputs);
-                        if(Circuit==null){
-                            routingstatus=4;
+                        if (Circuit == null) {
+                            routingStatus = 4;
                             return;
                         }
                         ItemStack output;
-                        switch (Circuit.getItemDamage()){
-                            case 1 -> output=new ItemStack(Blocks.cobblestone, (int) Math.pow(16,RingCount));
-                            case 2 -> output=new ItemStack(Blocks.stone,(int) Math.pow(16,RingCount));
-                            case 3 -> output=new ItemStack(Blocks.obsidian,(int) Math.pow(16,RingCount));
+                        switch (Circuit.getItemDamage()) {
+                            case 1 -> output = new ItemStack(Blocks.cobblestone, (int) Math.pow(16, ringCount));
+                            case 2 -> output = new ItemStack(Blocks.stone, (int) Math.pow(16, ringCount));
+                            case 3 -> output = new ItemStack(Blocks.obsidian, (int) Math.pow(16, ringCount));
                             default -> {
-                                routingstatus=3;
+                                routingStatus = 3;
                                 return;
                             }
                         }
-                        ItemStack input=Circuit.copy();
-                        input.stackSize=0;
-                        RoutingMap.add(new BoxRoutings(input,output,RoutingMachine.getStackForm(1),30L,20));
-                        routingstatus=0;
+                        ItemStack input = Circuit.copy();
+                        input.stackSize = 0;
+                        routingMap.add(new BoxRoutings(input, output, RoutingMachine.getStackForm(1), 30L, 20));
+                        routingStatus = 0;
                         return;
-                    }else if(RoutingMachine.mName.equals("industrialbender.controller.tier.single")){
+                    } else if (RoutingMachine.mName.equals("industrialbender.controller.tier.single")) {
                         ItemStack Circuit = findfirstCircuit(ItemInputs);
-                        if(Circuit==null){
-                            routingstatus=4;
+                        if (Circuit == null) {
+                            routingStatus = 4;
                             return;
                         }
-                        switch (Circuit.getItemDamage()){
-                            case 1->RecipeMap=GT_Recipe.GT_Recipe_Map.sBenderRecipes;
-                            case 2->RecipeMap=GT_Recipe.GT_Recipe_Map.sPressRecipes;
+                        switch (Circuit.getItemDamage()) {
+                            case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sBenderRecipes;
+                            case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPressRecipes;
                             default -> {
-                                routingstatus=4;
+                                routingStatus = 4;
                                 return;
                             }
                         }
-                    }
-                    else if(RoutingMachine.mName.equals("industrialwashplant.controller.tier.single")){
+                    } else if (RoutingMachine.mName.equals("industrialwashplant.controller.tier.single")) {
                         ItemStack Circuit = findfirstCircuit(ItemInputs);
-                        if(Circuit==null){
-                            routingstatus=4;
+                        if (Circuit == null) {
+                            routingStatus = 4;
                             return;
                         }
-                        switch (Circuit.getItemDamage()){
-                            case 1->RecipeMap=GT_Recipe.GT_Recipe_Map.sOreWasherRecipes;
-                            case 2->RecipeMap=GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes;
+                        switch (Circuit.getItemDamage()) {
+                            case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sOreWasherRecipes;
+                            case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes;
                             default -> {
-                                routingstatus=4;
+                                routingStatus = 4;
                                 return;
                             }
                         }
-                    }
-                    else if (RoutingMachine.mName.equals("multimachine.assemblyline")){
+                    } else if (RoutingMachine.mName.equals("multimachine.assemblyline")) {
                         ItemStack data = null;
-                        for(ItemStack item:ItemInputs){
+                        for (ItemStack item : ItemInputs) {
                             if (ItemList.Tool_DataStick.isStackEqual(item, false, true))
-                                data=item.copy();
+                                data = item.copy();
                         }
-                        if(data==null){
-                            routingstatus=5;
+                        if (data == null) {
+                            routingStatus = 5;
                             return;
                         }
                         //We acn find assemblyline recipe using the original method, but no need to update it, nor check it
                         GT_AssemblyLineUtils.LookupResult tLookupResult = GT_AssemblyLineUtils
                             .findAssemblyLineRecipeFromDataStick(data, false);
-                        if (tLookupResult.getType() == GT_AssemblyLineUtils.LookupResultType.INVALID_STICK){
-                            routingstatus=5;
+                        if (tLookupResult.getType() == GT_AssemblyLineUtils.LookupResultType.INVALID_STICK) {
+                            routingStatus = 5;
                             return;
                         }
                         GT_Recipe.GT_Recipe_AssemblyLine tRecipe = tLookupResult.getRecipe();
-                        RoutingMap.add(new BoxRoutings(tRecipe.mInputs,tRecipe.mOutput,tRecipe.mFluidInputs,
-                            RoutingMachine.getStackForm(1),(long)tRecipe.mEUt,tRecipe.mDuration));
-                        routingstatus=0;
+                        routingMap.add(new BoxRoutings(tRecipe.mInputs, tRecipe.mOutput, tRecipe.mFluidInputs,
+                            RoutingMachine.getStackForm(1), (long) tRecipe.mEUt, tRecipe.mDuration));
+                        routingStatus = 0;
                         return;
-                    }else if(RoutingMachine.mName.equals("chemicalplant.controller.tier.single")) {
+                    } else if (RoutingMachine.mName.equals("chemicalplant.controller.tier.single")) {
                         RecipeMap = RoutingMachine.getRecipeMap();
                         if (RecipeMap == null) {
-                            routingstatus = 3;
+                            routingStatus = 3;
                             return;
                         }
                         //The chemicalplant use an extremely complex tier-based recipe check method, it will be better not to change it.
-                        RoutingRecipe=((GregtechMTE_ChemicalPlant) RoutingMachine).findRecipe(null,Long.MAX_VALUE/10,7,ItemInputs,FluidInputs);
-                    }else if (RoutingMachine instanceof GT_MetaTileEntity_FusionComputer) {
+                        RoutingRecipe = ((GregtechMTE_ChemicalPlant) RoutingMachine).findRecipe(null, Long.MAX_VALUE / 10, 7, ItemInputs, FluidInputs);
+                    } else if (RoutingMachine instanceof GT_MetaTileEntity_FusionComputer) {
                         //Why there are two fusionRecipeMaps?! FK!
                         RoutingRecipe = GT_Recipe.GT_Recipe_Map.sFusionRecipes
                             .findRecipe(getBaseMetaTileEntity(), null, false, Long.MAX_VALUE / 10, FluidInputs);
                         if (RoutingRecipe == null) RecipeMap = GT_Recipe.GT_Recipe_Map.sComplexFusionRecipes;
-                    }else if(RoutingMachine.mName.equals("circuitassemblyline")) {
+                    } else if (RoutingMachine.mName.equals("circuitassemblyline")) {
                         //Circuitassemblyline will check imprint first. Let us do the same thing here.
                         RecipeMap = BWRecipes.instance.getMappingsFor((byte) 3);
-                        if(inputBus.getStackInSlot(i).getTagCompound()==null||!inputBus.getStackInSlot(i).getTagCompound().hasKey("Type")){
-                            routingstatus=6;
+                        if (inputBus.getStackInSlot(i).getTagCompound() == null || !inputBus.getStackInSlot(i).getTagCompound().hasKey("Type")) {
+                            routingStatus = 6;
                             return;
                         }
                         for (GT_Recipe recipe : RecipeMap.mRecipeList) {
@@ -650,88 +681,89 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                 }
                             }
                         }
-                    }else if(RoutingMachine.mName.equals("electricimplosioncompressor")) {
+                    } else if (RoutingMachine.mName.equals("electricimplosioncompressor")) {
                         //They are inside eic_te, bug I catch you!
                         RecipeMap = GT_TileEntity_ElectricImplosionCompressor.eicMap;
-                    }else if(RoutingMachine.mName.equals("preciseassembler")){
-                        RecipeMap=goodgenerator.util.MyRecipeAdder.instance.PA;
-                    }else if(RoutingMachine.mName.equals("digester")){
-                        RecipeMap=com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
-                    }else if(RoutingMachine.mName.equals("dissolution_tank")){
-                        RecipeMap=com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
-                    }else if(RoutingMachine.mName.equals("cyclotron.tier.single")){
-                        RecipeMap=GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
-                    }else if(RoutingMachine.mName.equals("industrialarcfurnace.controller.tier.single")){
+                    } else if (RoutingMachine.mName.equals("preciseassembler")) {
+                        RecipeMap = goodgenerator.util.MyRecipeAdder.instance.PA;
+                    } else if (RoutingMachine.mName.equals("digester")) {
+                        RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
+                    } else if (RoutingMachine.mName.equals("dissolution_tank")) {
+                        RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
+                    } else if (RoutingMachine.mName.equals("cyclotron.tier.single")) {
+                        RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
+                    } else if (RoutingMachine.mName.equals("industrialarcfurnace.controller.tier.single")) {
                         ItemStack Circuit = findfirstCircuit(ItemInputs);
-                        if(Circuit==null){
-                            routingstatus=4;
+                        if (Circuit == null) {
+                            routingStatus = 4;
                             return;
                         }
-                        switch (Circuit.getItemDamage()){
-                            case 1->RecipeMap=GT_Recipe.GT_Recipe_Map.sArcFurnaceRecipes;
-                            case 2->RecipeMap=GT_Recipe.GT_Recipe_Map.sPlasmaArcFurnaceRecipes;
+                        switch (Circuit.getItemDamage()) {
+                            case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sArcFurnaceRecipes;
+                            case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPlasmaArcFurnaceRecipes;
                             default -> {
-                                routingstatus=4;
+                                routingStatus = 4;
                                 return;
                             }
                         }
-                    }
-                    else {
+                    } else {
                         RecipeMap = RoutingMachine.getRecipeMap();
-                        if(RecipeMap == null) {
-                            routingstatus = 3;
-                            return ;
+                        if (RecipeMap == null) {
+                            routingStatus = 3;
+                            return;
                         }
                     }
-                    if(RoutingRecipe==null)RoutingRecipe = RecipeMap.findRecipe(
+                    if (RoutingRecipe == null) RoutingRecipe = RecipeMap.findRecipe(
                         getBaseMetaTileEntity(),
                         true,
                         true,
-                        Long.MAX_VALUE/10,
+                        Long.MAX_VALUE / 10,
                         FluidInputs,
                         ItemInputs);
-                    if(RoutingRecipe != null) {
-                        RoutingMap.add(new BoxRoutings(RoutingRecipe,RoutingMachine));
-                        routingstatus=0;
-                    }else {
-                        routingstatus = 3;
+                    if (RoutingRecipe != null) {
+                        routingMap.add(new BoxRoutings(RoutingRecipe, RoutingMachine));
+                        routingStatus = 0;
+                    } else {
+                        routingStatus = 3;
                     }
                     return;
                 }
             }
         }
-        routingstatus=2;
+        routingStatus = 2;
     }
+
     /**
      * build final recipe
      */
     public void buildRecipe() {
-        ItemContainer inputItemContainer=new ItemContainer();
-        ItemContainer outputItemContainer=new ItemContainer();
-        FluidContainer inputFluidContainer=new FluidContainer();
-        FluidContainer OutputFluidContainer=new FluidContainer();
-        recipe=new BoxRecipe();
-        RoutingMap.forEach(boxRoutings -> {
-            for(int i = 0; i< boxRoutings.Parallel; i++) {
+        ItemContainer inputItemContainer = new ItemContainer();
+        ItemContainer outputItemContainer = new ItemContainer();
+        FluidContainer inputFluidContainer = new FluidContainer();
+        FluidContainer OutputFluidContainer = new FluidContainer();
+        recipe = new BoxRecipe();
+        routingMap.forEach(boxRoutings -> {
+            for (int i = 0; i < boxRoutings.Parallel; i++) {
                 inputItemContainer.addItemStackList(boxRoutings.InputItem);
-                outputItemContainer.addItemStackList(boxRoutings.OutputItem,boxRoutings.OutputChance);
+                outputItemContainer.addItemStackList(boxRoutings.OutputItem, boxRoutings.OutputChance);
                 inputFluidContainer.addFluidStackList(boxRoutings.InputFluid);
                 OutputFluidContainer.addFluidStackList(boxRoutings.OutputFluid);
             }
-            recipe.FinalTime += boxRoutings.time*333/(1+Math.exp(-(boxRoutings.Parallel-100)/20.0));
+            recipe.FinalTime += boxRoutings.time * 333 / (1 + Math.exp(-(boxRoutings.Parallel - 100) / 20.0));
             recipe.FinalVoteage += boxRoutings.voltage;
-            int[] machine= transMachinesToModule(boxRoutings.RoutingMachine);
-            if(!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0],machine[1]);
-            if(boxRoutings.Parallel>2048&&!recipe.requireModules.containsKey(13))recipe.requireModules.put(13,1);
-            if(boxRoutings.Parallel>512&&!recipe.requireModules.containsKey(13))recipe.requireModules.put(13,0);
+            int[] machine = transMachinesToModule(boxRoutings.RoutingMachine);
+            if (!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0], machine[1]);
+            if (boxRoutings.Parallel > 2048 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 1);
+            if (boxRoutings.Parallel > 512 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 0);
         });
-        recipe.FinalItemInput=inputItemContainer.getItemStack();
-        recipe.FinalItemOutput=outputItemContainer.getItemStack();
-        recipe.FinalFluidInput=inputFluidContainer.getFluidStack();
-        recipe.FinalFluidOutput=OutputFluidContainer.getFluidStack();
-        BoxRecipe.ItemOneBox(recipe.FinalItemInput,recipe.FinalItemOutput);
-        BoxRecipe.FluidOneBox(recipe.FinalFluidInput,recipe.FinalFluidOutput);
+        recipe.FinalItemInput = inputItemContainer.getItemStack();
+        recipe.FinalItemOutput = outputItemContainer.getItemStack();
+        recipe.FinalFluidInput = inputFluidContainer.getFluidStack();
+        recipe.FinalFluidOutput = OutputFluidContainer.getFluidStack();
+        BoxRecipe.ItemOneBox(recipe.FinalItemInput, recipe.FinalItemOutput);
+        BoxRecipe.FluidOneBox(recipe.FinalFluidInput, recipe.FinalFluidOutput);
     }
+
     /**
      * We have many things need to store...
      */
@@ -739,28 +771,28 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     public void saveNBTData(NBTTagCompound NBT) {
         super.saveNBTData(NBT);
         NBTTagCompound Routing = new NBTTagCompound();
-        Routing.setInteger("TotalRouting",RoutingCount);
-        Routing.setInteger("ActiveRouting",RoutingMap.size());
-        for(int i=0;i<RoutingMap.size();i++){
-            Routing.setTag("Routing"+(i+1),RoutingMap.get(i).routingToNbt());
+        Routing.setInteger("TotalRouting", routingCount);
+        Routing.setInteger("ActiveRouting", routingMap.size());
+        for (int i = 0; i < routingMap.size(); i++) {
+            Routing.setTag("Routing" + (i + 1), routingMap.get(i).routingToNbt());
         }
         NBTTagCompound nbtModuleSwitch = new NBTTagCompound();
-        for(int i=0;i<14;i++){
-            nbtModuleSwitch.setBoolean(String.valueOf(i),moduleSwitch[i]);
+        for (int i = 0; i < 14; i++) {
+            nbtModuleSwitch.setBoolean(String.valueOf(i), moduleSwitch[i]);
         }
-        NBTTagCompound nbtModuleActive= new NBTTagCompound();
-        for(int i=0;i<14;i++){
-            nbtModuleActive.setBoolean(String.valueOf(i),moduleActive[i]);
+        NBTTagCompound nbtModuleActive = new NBTTagCompound();
+        for (int i = 0; i < 14; i++) {
+            nbtModuleActive.setBoolean(String.valueOf(i), moduleActive[i]);
         }
-        NBT.setInteger("RingCountSet", RingCountSet);
-        NBT.setInteger("RingCount", RingCount);
-        NBT.setLong("maxParallel",maxParallel);
-        NBT.setLong("maxRouting",maxRouting);
-        NBT.setTag("ModuleSwitch",nbtModuleSwitch);
-        NBT.setTag("ModuleActive",nbtModuleActive);
-        NBT.setInteger("Status",routingstatus);
-        NBT.setTag("Routing",Routing);
-        NBT.setTag("BoxRecipe",recipe.RecipeToNBT());
+        NBT.setInteger("RingCountSet", ringCountSet);
+        NBT.setInteger("RingCount", ringCount);
+        NBT.setLong("maxParallel", maxParallel);
+        NBT.setLong("maxRouting", maxRouting);
+        NBT.setTag("ModuleSwitch", nbtModuleSwitch);
+        NBT.setTag("ModuleActive", nbtModuleActive);
+        NBT.setInteger("Status", routingStatus);
+        NBT.setTag("Routing", Routing);
+        NBT.setTag("BoxRecipe", recipe.RecipeToNBT());
     }
 
     /**
@@ -769,25 +801,25 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     @Override
     public void loadNBTData(final NBTTagCompound NBT) {
         super.loadNBTData(NBT);
-        NBTTagCompound Routing= NBT.getCompoundTag("Routing");
-        RoutingCount=Routing.getInteger("TotalRouting");
-        int ActiveRouting=Routing.getInteger("ActiveRouting");
-        routingstatus=NBT.getInteger("Status");
-        RoutingMap.clear();
-        for(int i=0;i<ActiveRouting;i++){
-            RoutingMap.add(new BoxRoutings(Routing.getCompoundTag("Routing"+(i+1))));
+        NBTTagCompound Routing = NBT.getCompoundTag("Routing");
+        routingCount = Routing.getInteger("TotalRouting");
+        int ActiveRouting = Routing.getInteger("ActiveRouting");
+        routingStatus = NBT.getInteger("Status");
+        routingMap.clear();
+        for (int i = 0; i < ActiveRouting; i++) {
+            routingMap.add(new BoxRoutings(Routing.getCompoundTag("Routing" + (i + 1))));
         }
-        for(int i=0;i<14;i++){
-            moduleSwitch[i]=NBT.getCompoundTag("ModuleSwitch").getBoolean(String.valueOf(i));
+        for (int i = 0; i < 14; i++) {
+            moduleSwitch[i] = NBT.getCompoundTag("ModuleSwitch").getBoolean(String.valueOf(i));
         }
-        for(int i=0;i<14;i++){
-            moduleActive[i]=NBT.getCompoundTag("ModuleActive").getBoolean(String.valueOf(i));
+        for (int i = 0; i < 14; i++) {
+            moduleActive[i] = NBT.getCompoundTag("ModuleActive").getBoolean(String.valueOf(i));
         }
-        RingCount =NBT.getInteger("RingCount");
-        RingCountSet =NBT.getInteger("RingCountSet");
-        maxParallel=NBT.getInteger("maxParallel");
-        maxRouting=NBT.getInteger("maxRouting");
-        recipe=new BoxRecipe(NBT.getCompoundTag("BoxRecipe"));
+        ringCount = NBT.getInteger("RingCount");
+        ringCountSet = NBT.getInteger("RingCountSet");
+        maxParallel = NBT.getInteger("maxParallel");
+        maxRouting = NBT.getInteger("maxRouting");
+        recipe = new BoxRecipe(NBT.getCompoundTag("BoxRecipe"));
     }
 
     /**
@@ -821,7 +853,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(//SwitchRender
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            if(!widget.isClient()) {
+                            if (!widget.isClient()) {
                                 if (teBoxRing != null) {
                                     teBoxRing.teRingSwitch = !teBoxRing.teRingSwitch;
                                 }
@@ -851,43 +883,44 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.03"))
                     .setPos(120, 91))
-         .widget(//WIKI
-            new ButtonWidget().setOnClick(
-                    (clickData, widget) -> {
-                        if (!widget.isClient())
-                            widget.getContext().openSyncedWindow(15);
+            .widget(//WIKI
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if (!widget.isClient())
+                                widget.getContext().openSyncedWindow(15);
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
+                        return UI.toArray(new IDrawable[0]);
                     })
-                .setSize(16, 16)
-                .setBackground(() -> {
-                    List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
-                    return UI.toArray(new IDrawable[0]);
-                })
-                .addTooltip(i18n("tile.boxplusplus.boxwiki.1"))
-                .setPos(172, 91));
+                    .addTooltip(i18n("tile.boxplusplus.boxwiki.1"))
+                    .setPos(172, 91));
     }
 
     /**
      * Add main module UI
+     *
      * @return UI
      */
     protected ModularWindow createModuleWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(250, 250);
         builder.setBackground(AdaptableUITexture.
-                    of(Tags.MODID, "textures/gui/ring"+ RingCountSet +".png", 695, 695, 4));
+            of(Tags.MODID, "textures/gui/ring" + ringCountSet + ".png", 695, 695, 4));
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         builder.widget(//Ring1
             new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
-                        this.RingCountSet = 1;
-                        for(int i=4;i<14;i++){
-                            moduleSwitch[i]=false;
-                            moduleActive[i]=false;
+                        this.ringCountSet = 1;
+                        for (int i = 4; i < 14; i++) {
+                            moduleSwitch[i] = false;
+                            moduleActive[i] = false;
                             onMachineBlockUpdate();
                         }
-                        if(!widget.isClient()) {
+                        if (!widget.isClient()) {
                             widget.getWindow().closeWindow();
                             widget.getContext().openSyncedWindow(13);
                         }
@@ -904,13 +937,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         builder.widget(//Ring2
             new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
-                        this.RingCountSet = 2;
-                        for(int i=8;i<14;i++){
-                            moduleSwitch[i]=false;
-                            moduleActive[i]=false;
+                        this.ringCountSet = 2;
+                        for (int i = 8; i < 14; i++) {
+                            moduleSwitch[i] = false;
+                            moduleActive[i] = false;
                             onMachineBlockUpdate();
                         }
-                        if(!widget.isClient()) {
+                        if (!widget.isClient()) {
                             widget.getWindow().closeWindow();
                             widget.getContext().openSyncedWindow(13);
                         }
@@ -925,51 +958,51 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .addTooltip(i18n("tile.boxplusplus.boxUI.module.21"))
                 .setPos(8, 26));
         builder.widget(//Ring3
-            new ButtonWidget().setOnClick(
-                    (clickData, widget) -> {
-                        this.RingCountSet = 3;
-                        onMachineBlockUpdate();
-                        if(!widget.isClient()) {
-                            widget.getWindow().closeWindow();
-                            widget.getContext().openSyncedWindow(13);
-                        }
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            this.ringCountSet = 3;
+                            onMachineBlockUpdate();
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(13);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
+                        return UI.toArray(new IDrawable[0]);
                     })
-                .setSize(16, 16)
-                .setBackground(() -> {
-                    List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
-                    return UI.toArray(new IDrawable[0]);
-                })
-                .addTooltip(i18n("tile.boxplusplus.boxUI.module.22"))
-                .setPos(8, 44))
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.22"))
+                    .setPos(8, 44))
             .widget(
                 ButtonWidget.closeWindowButton(true).setPos(238, 0));
         builder.widget(//3.1
-            new ButtonWidget().setOnClick(
-                    (clickData, widget) -> {
-                        CurrentSN=8;
-                        if(!widget.isClient()) {
-                            widget.getContext().openSyncedWindow(14);
-                        }
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            tempCode = 8;
+                            if (!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(14);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/09a.png", 16, 16, 4));
+                        UI.add(AdaptableUITexture.
+                            of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
+                        return UI.toArray(new IDrawable[0]);
                     })
-                .setSize(16, 16)
-                .setBackground(() -> {
-                    List<UITexture> UI = new ArrayList<>();
-                    UI.add(AdaptableUITexture.
-                        of(Tags.MODID, "textures/gui/09a.png", 16, 16, 4));
-                    UI.add(AdaptableUITexture.
-                        of(Tags.MODID, "textures/gui/01b.png", 16, 16, 4));
-                    return UI.toArray(new IDrawable[0]);
-                })
-                .addTooltip(i18n("tile.boxplusplus.boxUI.module.9"))
-                .setPos(8, 117)
-                .setEnabled(RingCountSet ==3))
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.module.9"))
+                    .setPos(8, 117)
+                    .setEnabled(ringCountSet == 3))
             .widget(//3.2
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=9;
-                            if(!widget.isClient()) {
+                            tempCode = 9;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -984,12 +1017,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.10"))
                     .setPos(117, 11)
-                    .setEnabled(RingCountSet ==3))
+                    .setEnabled(ringCountSet == 3))
             .widget(//3.3
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=10;
-                            if(!widget.isClient()) {
+                            tempCode = 10;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1004,7 +1037,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.11"))
                     .setPos(225, 117)
-                    .setEnabled(RingCountSet ==3))
+                    .setEnabled(ringCountSet == 3))
             /*.widget(//3.4
                 new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
@@ -1024,8 +1057,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(//2.1
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=4;
-                            if(!widget.isClient()) {
+                            tempCode = 4;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1040,12 +1073,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.5"))
                     .setPos(35, 117)
-                    .setEnabled(RingCountSet >1))
+                    .setEnabled(ringCountSet > 1))
             .widget(//2.2
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=5;
-                            if(!widget.isClient()) {
+                            tempCode = 5;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1060,12 +1093,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.6"))
                     .setPos(117, 38)
-                    .setEnabled(RingCountSet >1))
+                    .setEnabled(ringCountSet > 1))
             .widget(//2.3
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=6;
-                            if(!widget.isClient()) {
+                            tempCode = 6;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1080,12 +1113,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.7"))
                     .setPos(195, 117)
-                    .setEnabled(RingCountSet >1))
+                    .setEnabled(ringCountSet > 1))
             .widget(//2.4
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=7;
-                            if(!widget.isClient()) {
+                            tempCode = 7;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1100,12 +1133,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.8"))
                     .setPos(117, 196)
-                    .setEnabled(RingCountSet >1))
+                    .setEnabled(ringCountSet > 1))
             .widget(//1.1
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=0;
-                            if(!widget.isClient()) {
+                            tempCode = 0;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1123,8 +1156,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(//1.2
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=1;
-                            if(!widget.isClient()) {
+                            tempCode = 1;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1142,8 +1175,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(//1.3
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=2;
-                            if(!widget.isClient()) {
+                            tempCode = 2;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1161,8 +1194,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(//1.4
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=3;
-                            if(!widget.isClient()) {
+                            tempCode = 3;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
@@ -1180,53 +1213,54 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(//Up
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=12;
-                            if(!widget.isClient()) {
+                            tempCode = 12;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
                     .setSize(16, 16)
-                    .setBackground(AdaptableUITexture.of(Tags.MODID,"textures/gui/13a.png",16,16,1))
+                    .setBackground(AdaptableUITexture.of(Tags.MODID, "textures/gui/13a.png", 16, 16, 1))
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.13"))
                     .setPos(117, 107)
-                    .setEnabled(RingCountSet ==3))
+                    .setEnabled(ringCountSet == 3))
             .widget(//Down
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            CurrentSN=13;
-                            if(!widget.isClient()) {
+                            tempCode = 13;
+                            if (!widget.isClient()) {
                                 widget.getContext().openSyncedWindow(14);
                             }
                         })
                     .setSize(16, 16)
-                    .setBackground(AdaptableUITexture.of(Tags.MODID,"textures/gui/14a.png",16,16,1))
+                    .setBackground(AdaptableUITexture.of(Tags.MODID, "textures/gui/14a.png", 16, 16, 1))
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.14"))
                     .setPos(117, 127)
-                    .setEnabled(RingCountSet ==3));
+                    .setEnabled(ringCountSet == 3));
         return builder.build();
     }
+
     protected ModularWindow createSingleModuleWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(150, 200);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
-        builder.widget(ButtonWidget.closeWindowButton(true).setPos(136,3))
+        builder.widget(ButtonWidget.closeWindowButton(true).setPos(136, 3))
             .widget(
-            new DrawableWidget().setDrawable(
-                AdaptableUITexture.of(Tags.MODID,"textures/gui/dream.png",16,16,1))
-                .setPos(5, 5)
-                .setSize(16, 16))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module."+(CurrentSN+1))).setPos(25, 9))
+                new DrawableWidget().setDrawable(
+                        AdaptableUITexture.of(Tags.MODID, "textures/gui/dream.png", 16, 16, 1))
+                    .setPos(5, 5)
+                    .setSize(16, 16))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module." + (tempCode + 1))).setPos(25, 9))
             .widget(new DrawableWidget().setDrawable(
-                    AdaptableUITexture.of(Tags.MODID,"textures/gui/"+(CurrentSN+1)+".png",100,80,1))
+                    AdaptableUITexture.of(Tags.MODID, "textures/gui/" + (tempCode + 1) + ".png", 100, 80, 1))
                 .setPos(20, 25)
                 .setSize(110, 73))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context."+(CurrentSN+1)+"a")).setTextAlignment(TopCenter).setMaxWidth(130).setPos(10, 100))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context." + (tempCode + 1) + "a")).setTextAlignment(TopCenter).setMaxWidth(130).setPos(10, 100))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.26")).setPos(20, 130))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context."+(CurrentSN+1)+"b")).setMaxWidth(110).setPos(20,140));
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context." + (tempCode + 1) + "b")).setMaxWidth(110).setPos(20, 140));
         builder.widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            moduleSwitch[CurrentSN]=true;
+                            moduleSwitch[tempCode] = true;
                             onMachineBlockUpdate();
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
@@ -1241,12 +1275,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.16"))
                     .setPos(65, 170)
-                    .setEnabled(!moduleSwitch[CurrentSN]))
+                    .setEnabled(!moduleSwitch[tempCode]))
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            moduleSwitch[CurrentSN]=false;
-                            moduleActive[CurrentSN]=false;
+                            moduleSwitch[tempCode] = false;
+                            moduleActive[tempCode] = false;
                             onMachineBlockUpdate();
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
@@ -1260,16 +1294,18 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.module.16a"))
-                    .setPos(65,170)
-                    .setEnabled(moduleSwitch[CurrentSN]));
+                    .setPos(65, 170)
+                    .setEnabled(moduleSwitch[tempCode]));
         return builder.build();
     }
+
     /**
      * Add BOM UI
+     *
      * @param player who is using the box
      */
     protected ModularWindow createInitialingWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(240, 50 + RoutingCount * 18);
+        ModularWindow.Builder builder = ModularWindow.builder(240, 50 + routingCount * 18);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
@@ -1278,11 +1314,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setPos(5, 5)
                     .setSize(16, 16))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.05") + i18n("tile.boxplusplus.boxUI.06")).setPos(25, 9))
-            .widget(new TextWidget(String.valueOf(RoutingCount)).setPos(140, 9).setEnabled(recipe.islocked))
+            .widget(new TextWidget(String.valueOf(routingCount)).setPos(140, 9).setEnabled(recipe.islocked))
             .widget(
-                new TextFieldWidget().setGetterInt(() -> RoutingCount)
-                    .setSetterInt(val -> RoutingCount = val)
-                    .setNumbers(1, moduleActive[13]?(moduleTier[13]==0?2048:(Integer.MAX_VALUE-1)):maxRouting)
+                new TextFieldWidget().setGetterInt(() -> routingCount)
+                    .setSetterInt(val -> routingCount = val)
+                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 2048 : (Integer.MAX_VALUE - 1)) : maxRouting)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.04"))
@@ -1290,18 +1326,18 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(14, 14)
                     .setPos(140, 7)
                     .setEnabled(!recipe.islocked))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.28")+RingCount).setPos(160, 9))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.28") + ringCount).setPos(160, 9))
             .widget(
                 ButtonWidget.closeWindowButton(true)
                     .setPos(220, 5));
-        for (int i = 1; i <= RoutingCount; i++) {
+        for (int i = 1; i <= routingCount; i++) {
             int finalI = i;
             builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + i).setPos(27, 9 + 18 * i))
                 .widget(
                     new ButtonWidget().setOnClick(
                             (clickData, widget) -> {
                                 checkRouting();
-                                if(!widget.isClient()) {
+                                if (!widget.isClient()) {
                                     player.closeScreen();
                                     GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
                                 }
@@ -1315,11 +1351,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         })
                         .addTooltip(i18n("tile.boxplusplus.boxUI.08") + i)
                         .setPos(65, 7 + 18 * i)
-                        .setEnabled(RoutingMap.size()==(i-1)))
+                        .setEnabled(routingMap.size() == (i - 1)))
                 .widget(
                     new ButtonWidget().setOnClick(
                             (clickData, widget) -> {
-                                CurrentSN = finalI;
+                                tempCode = finalI;
                                 if (!widget.isClient()) {
                                     widget.getContext().openSyncedWindow(11);
                                 }
@@ -1333,13 +1369,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         })
                         .addTooltip(i18n("tile.boxplusplus.boxUI.09"))
                         .setPos(65, 7 + 18 * i)
-                        .setEnabled(RoutingMap.size()>=i))
+                        .setEnabled(routingMap.size() >= i))
                 .widget(
                     new ButtonWidget().setOnClick(
                             (clickData, widget) -> {
-                                CurrentSN = finalI;
-                                RoutingMap.remove(CurrentSN-1);
-                                if(!widget.isClient()) {
+                                tempCode = finalI;
+                                routingMap.remove(tempCode - 1);
+                                if (!widget.isClient()) {
                                     widget.getWindow().closeWindow();
                                     widget.getContext().openSyncedWindow(10);
                                 }
@@ -1353,38 +1389,38 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         })
                         .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
                         .setPos(85, 7 + 18 * i)
-                        .setEnabled(RoutingMap.size()>=i&&!recipe.islocked));
+                        .setEnabled(routingMap.size() >= i && !recipe.islocked));
         }
         builder.widget(
-            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CROSS)
-                .setPos(100,22)
-                .setSize(24,24)
-                .addTooltip(i18n("tile.boxplusplus.boxUI.ErrorCode."+routingstatus))
-                .setEnabled(routingstatus!=0))
-                .widget(
-                    new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CHECKMARK)
-                        .setPos(100,22)
-                        .setSize(36,36)
-                        .addTooltip(i18n("tile.boxplusplus.boxUI.19"))
-                        .setEnabled(routingstatus==0));
+                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CROSS)
+                    .setPos(100, 22)
+                    .setSize(24, 24)
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.ErrorCode." + routingStatus))
+                    .setEnabled(routingStatus != 0))
+            .widget(
+                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CHECKMARK)
+                    .setPos(100, 22)
+                    .setSize(36, 36)
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.19"))
+                    .setEnabled(routingStatus == 0));
         builder.widget(
-            new ButtonWidget().setOnClick(
-                    (clickData, widget) -> {
-                        if(!recipe.islocked) buildRecipe();
-                        if (!widget.isClient()) {
-                            widget.getContext().openSyncedWindow(12);
-                        }
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if (!recipe.islocked) buildRecipe();
+                            if (!widget.isClient()) {
+                                widget.getContext().openSyncedWindow(12);
+                            }
+                        })
+                    .setSize(32, 32)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
+                        return UI.toArray(new IDrawable[0]);
                     })
-                .setSize(32, 32)
-                .setBackground(() -> {
-                    List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
-                    return UI.toArray(new IDrawable[0]);
-                })
-                .addTooltip(i18n("tile.boxplusplus.boxUI.20"))
-                .setPos(140, 26)
-                .setEnabled(RoutingMap.size()==RoutingCount && !recipe.islocked))
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.20"))
+                    .setPos(140, 26)
+                    .setEnabled(routingMap.size() == routingCount && !recipe.islocked))
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
@@ -1404,12 +1440,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setEnabled(recipe.islocked));
         return builder.build();
     }
+
     /**
      * Add Each Routing UI.
+     *
      * @param player who is using the box
      */
     protected ModularWindow createRoutingWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(220, 80+RoutingMap.get(CurrentSN-1).calHeight()*18);
+        ModularWindow.Builder builder = ModularWindow.builder(220, 80 + routingMap.get(tempCode - 1).calHeight() * 18);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
@@ -1417,49 +1455,49 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID)
                     .setPos(5, 5)
                     .setSize(16, 16))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.10")+ CurrentSN).setPos(25, 9))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.10") + tempCode).setPos(25, 9))
             .widget(
                 ButtonWidget.closeWindowButton(true)
                     .setPos(200, 5));
-        int Ycord=9;
-        for(int i = 0; i< RoutingMap.get(CurrentSN-1).InputItem.size(); i++){
-            ItemStackHandler drawitem=new ItemStackHandler(1);
-            drawitem.setStackInSlot(0,RoutingMap.get(CurrentSN - 1).InputItem.get(i));
-            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.11")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).InputItem.get(i).getDisplayName()).setPos(50, Ycord+4));
+        int Ycord = 9;
+        for (int i = 0; i < routingMap.get(tempCode - 1).InputItem.size(); i++) {
+            ItemStackHandler drawitem = new ItemStackHandler(1);
+            drawitem.setStackInSlot(0, routingMap.get(tempCode - 1).InputItem.get(i));
+            builder.widget(SlotWidget.phantom(drawitem, 0).disableInteraction().setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.11") + (i + 1) + ": " + routingMap.get(tempCode - 1).InputItem.get(i).getDisplayName()).setPos(50, Ycord + 4));
         }
-        for(int i = 0; i< RoutingMap.get(CurrentSN-1).InputFluid.size(); i++){
-            builder.widget(FluidSlotWidget.phantom(new FluidTank(RoutingMap.get(CurrentSN-1).InputFluid.get(i),
-                RoutingMap.get(CurrentSN-1).InputFluid.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.12")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).InputFluid.get(i).getLocalizedName()).setPos(50, Ycord+4));
+        for (int i = 0; i < routingMap.get(tempCode - 1).InputFluid.size(); i++) {
+            builder.widget(FluidSlotWidget.phantom(new FluidTank(routingMap.get(tempCode - 1).InputFluid.get(i),
+                routingMap.get(tempCode - 1).InputFluid.get(i).amount), true).setInteraction(false, false).setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.12") + (i + 1) + ": " + routingMap.get(tempCode - 1).InputFluid.get(i).getLocalizedName()).setPos(50, Ycord + 4));
         }
-        for(int i = 0; i< RoutingMap.get(CurrentSN-1).OutputItem.size(); i++){
-            ItemStackHandler drawitem=new ItemStackHandler(1);
-            drawitem.setStackInSlot(0,RoutingMap.get(CurrentSN - 1).OutputItem.get(i));
-            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.13")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).OutputItem.get(i).getDisplayName()
-                    +"("+RoutingMap.get(CurrentSN-1).OutputChance.get(i)/10000.0+")").setPos(50, Ycord+4));
+        for (int i = 0; i < routingMap.get(tempCode - 1).OutputItem.size(); i++) {
+            ItemStackHandler drawitem = new ItemStackHandler(1);
+            drawitem.setStackInSlot(0, routingMap.get(tempCode - 1).OutputItem.get(i));
+            builder.widget(SlotWidget.phantom(drawitem, 0).disableInteraction().setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.13") + (i + 1) + ": " + routingMap.get(tempCode - 1).OutputItem.get(i).getDisplayName()
+                + "(" + routingMap.get(tempCode - 1).OutputChance.get(i) / 10000.0 + ")").setPos(50, Ycord + 4));
         }
-        for(int i = 0; i< RoutingMap.get(CurrentSN-1).OutputFluid.size(); i++){
-            builder.widget(FluidSlotWidget.phantom(new FluidTank(RoutingMap.get(CurrentSN-1).OutputFluid.get(i),
-                RoutingMap.get(CurrentSN-1).OutputFluid.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.14")+(i+1)+": "+ RoutingMap.get(CurrentSN-1).OutputFluid.get(i).getLocalizedName()).setPos(50, Ycord+4));
+        for (int i = 0; i < routingMap.get(tempCode - 1).OutputFluid.size(); i++) {
+            builder.widget(FluidSlotWidget.phantom(new FluidTank(routingMap.get(tempCode - 1).OutputFluid.get(i),
+                routingMap.get(tempCode - 1).OutputFluid.get(i).amount), true).setInteraction(false, false).setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.14") + (i + 1) + ": " + routingMap.get(tempCode - 1).OutputFluid.get(i).getLocalizedName()).setPos(50, Ycord + 4));
         }
-        ItemStackHandler drawitem=new ItemStackHandler(1);
-        drawitem.setStackInSlot(0,RoutingMap.get(CurrentSN-1).RoutingMachine);
-        builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=20));
-        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.15")+RoutingMap.get(CurrentSN-1).RoutingMachine.getDisplayName()).setPos(50,Ycord+4 ));
-        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16")+ RoutingMap.get(CurrentSN-1).voltage + "eu/t").setPos(50, Ycord+=16));
-        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.17")+ RoutingMap.get(CurrentSN-1).time/20.00 + "s (" +
-            RoutingMap.get(CurrentSN-1).time+"tick)").setPos(50, Ycord+=16));
+        ItemStackHandler drawitem = new ItemStackHandler(1);
+        drawitem.setStackInSlot(0, routingMap.get(tempCode - 1).RoutingMachine);
+        builder.widget(SlotWidget.phantom(drawitem, 0).disableInteraction().setPos(25, Ycord += 20));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.15") + routingMap.get(tempCode - 1).RoutingMachine.getDisplayName()).setPos(50, Ycord + 4));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16") + routingMap.get(tempCode - 1).voltage + "eu/t").setPos(50, Ycord += 16));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.17") + routingMap.get(tempCode - 1).time / 20.00 + "s (" +
+            routingMap.get(tempCode - 1).time + "tick)").setPos(50, Ycord += 16));
         builder.widget(
                 new TextWidget(new Text(i18n("tile.boxplusplus.boxUI.23"))).setTextAlignment(Alignment.Center)
                     .setSize(30, 16)
-                    .setPos(22, Ycord-15))
+                    .setPos(22, Ycord - 15))
             .widget(
-                new TextFieldWidget().setGetterInt(() -> RoutingMap.get(CurrentSN-1).Parallel)
-                    .setSetterInt(val -> RoutingMap.get(CurrentSN-1).Parallel = val)
-                    .setNumbers(1, moduleActive[13]?(moduleTier[13]==0?2048:(Integer.MAX_VALUE-1)):maxParallel)
+                new TextFieldWidget().setGetterInt(() -> routingMap.get(tempCode - 1).Parallel)
+                    .setSetterInt(val -> routingMap.get(tempCode - 1).Parallel = val)
+                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 2048 : (Integer.MAX_VALUE - 1)) : maxParallel)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.24"))
@@ -1467,17 +1505,19 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(20, 16)
                     .setPos(25, Ycord).setEnabled(!recipe.islocked))
             .widget(
-                new TextWidget(new Text(String.valueOf(RoutingMap.get(CurrentSN-1).Parallel))).setScale(1.2f).setTextAlignment(Alignment.Center)
-                    .setSize(20,16)
-                    .setPos(25, Ycord-2).setEnabled(recipe.islocked));
+                new TextWidget(new Text(String.valueOf(routingMap.get(tempCode - 1).Parallel))).setScale(1.2f).setTextAlignment(Alignment.Center)
+                    .setSize(20, 16)
+                    .setPos(25, Ycord - 2).setEnabled(recipe.islocked));
         return builder.build();
     }
+
     /**
      * Add final recipe UI. This recipe should not be changed after being locked.
+     *
      * @param player who is using the box
      */
     protected ModularWindow createFinalRecipeWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(220, 120+recipe.calHeight()*18);
+        ModularWindow.Builder builder = ModularWindow.builder(220, 120 + recipe.calHeight() * 18);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         builder.widget(
@@ -1488,43 +1528,43 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 ButtonWidget.closeWindowButton(true)
                     .setPos(200, 5));
-        int Ycord=9;
-        for(int i = 0; i< recipe.FinalItemInput.size(); i++){
-            ItemStackHandler drawitem=new ItemStackHandler(1);
-            drawitem.setStackInSlot(0,recipe.FinalItemInput.get(i));
-            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().disableInteraction().setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.11")+(i+1)+": "+ recipe.FinalItemInput.get(i).getDisplayName()).setPos(50, Ycord+4));
+        int Ycord = 9;
+        for (int i = 0; i < recipe.FinalItemInput.size(); i++) {
+            ItemStackHandler drawitem = new ItemStackHandler(1);
+            drawitem.setStackInSlot(0, recipe.FinalItemInput.get(i));
+            builder.widget(SlotWidget.phantom(drawitem, 0).disableInteraction().disableInteraction().setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.11") + (i + 1) + ": " + recipe.FinalItemInput.get(i).getDisplayName()).setPos(50, Ycord + 4));
         }
-        for(int i = 0; i< recipe.FinalFluidInput.size(); i++){
+        for (int i = 0; i < recipe.FinalFluidInput.size(); i++) {
             builder.widget(FluidSlotWidget.phantom(new FluidTank(recipe.FinalFluidInput.get(i),
-                recipe.FinalFluidInput.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.12")+(i+1)+": "+ recipe.FinalFluidInput.get(i).getLocalizedName()).setPos(50, Ycord+4));
+                recipe.FinalFluidInput.get(i).amount), true).setInteraction(false, false).setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.12") + (i + 1) + ": " + recipe.FinalFluidInput.get(i).getLocalizedName()).setPos(50, Ycord + 4));
         }
-        for(int i = 0; i< recipe.FinalItemOutput.size(); i++){
-            ItemStackHandler drawitem=new ItemStackHandler(1);
-            drawitem.setStackInSlot(0,recipe.FinalItemOutput.get(i));
-            builder.widget(SlotWidget.phantom(drawitem,0).disableInteraction().setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.13")+(i+1)+": "+ recipe.FinalItemOutput.get(i).getDisplayName()).setPos(50, Ycord+4));
+        for (int i = 0; i < recipe.FinalItemOutput.size(); i++) {
+            ItemStackHandler drawitem = new ItemStackHandler(1);
+            drawitem.setStackInSlot(0, recipe.FinalItemOutput.get(i));
+            builder.widget(SlotWidget.phantom(drawitem, 0).disableInteraction().setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.13") + (i + 1) + ": " + recipe.FinalItemOutput.get(i).getDisplayName()).setPos(50, Ycord + 4));
         }
-        for(int i = 0; i< recipe.FinalFluidOutput.size(); i++){
+        for (int i = 0; i < recipe.FinalFluidOutput.size(); i++) {
             builder.widget(FluidSlotWidget.phantom(new FluidTank(recipe.FinalFluidOutput.get(i),
-                recipe.FinalFluidOutput.get(i).amount),true).setInteraction(false,false).setPos(25,Ycord+=16));
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.14")+(i+1)+": "+ recipe.FinalFluidOutput.get(i).getLocalizedName()).setPos(50, Ycord+4));
+                recipe.FinalFluidOutput.get(i).amount), true).setInteraction(false, false).setPos(25, Ycord += 16));
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.14") + (i + 1) + ": " + recipe.FinalFluidOutput.get(i).getLocalizedName()).setPos(50, Ycord + 4));
         }
-        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16")+ recipe.FinalVoteage + " eu/t").setPos(50, Ycord+=20))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.17")+recipe.FinalTime/20.00 + "s (" +
-                recipe.FinalTime+"tick)").setPos(50, Ycord+=16));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16") + recipe.FinalVoteage + " eu/t").setPos(50, Ycord += 20))
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.17") + recipe.FinalTime / 20.00 + "s (" +
+                recipe.FinalTime + "tick)").setPos(50, Ycord += 16));
         StringBuilder modules = new StringBuilder();
         modules.append(i18n("tile.boxplusplus.boxUI.27"));
-        for(int i:recipe.requireModules.keySet()){
-            modules.append(recipe.requireModules.get(i)==1?i18n("tile.boxplusplus.boxUI.module." + (i+1))+" (T2)":
-                i18n("tile.boxplusplus.boxUI.module." + (i+1))).append(" ");
+        for (int i : recipe.requireModules.keySet()) {
+            modules.append(recipe.requireModules.get(i) == 1 ? i18n("tile.boxplusplus.boxUI.module." + (i + 1)) + " (T2)" :
+                i18n("tile.boxplusplus.boxUI.module." + (i + 1))).append(" ");
         }
-        builder.widget(new TextWidget(modules.toString()).setMaxWidth(180).setPos(25,Ycord+=16))
+        builder.widget(new TextWidget(modules.toString()).setMaxWidth(180).setPos(25, Ycord += 16))
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            recipe.islocked =true;
+                            recipe.islocked = true;
                             if (!widget.isClient()) {
                                 player.closeScreen();
                                 GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
@@ -1538,12 +1578,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.25"))
-                    .setPos(80, Ycord+30)
+                    .setPos(80, Ycord + 30)
                     .setEnabled(!recipe.islocked))
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            recipe=new BoxRecipe();
+                            recipe = new BoxRecipe();
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
                                 widget.getContext().openSyncedWindow(10);
@@ -1557,10 +1597,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
-                    .setPos(120, Ycord+30)
+                    .setPos(120, Ycord + 30)
                     .setEnabled(!recipe.islocked));
         return builder.build();
     }
+
+    //Add Wiki. I like it.
     protected ModularWindow createWikiWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(300, 210);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
@@ -1576,7 +1618,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            wiki=3;
+                            wiki = 3;
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
                                 widget.getContext().openSyncedWindow(15);
@@ -1594,7 +1636,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            wiki=4;
+                            wiki = 4;
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
                                 widget.getContext().openSyncedWindow(15);
@@ -1612,7 +1654,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            wiki=5;
+                            wiki = 5;
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
                                 widget.getContext().openSyncedWindow(15);
@@ -1630,7 +1672,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            wiki=6;
+                            wiki = 6;
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
                                 widget.getContext().openSyncedWindow(15);
@@ -1648,7 +1690,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
-                            wiki=7;
+                            wiki = 7;
                             if (!widget.isClient()) {
                                 widget.getWindow().closeWindow();
                                 widget.getContext().openSyncedWindow(15);
@@ -1663,9 +1705,22 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxwiki.7"))
                     .setPos(230, 45))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki."+wiki)).setPos(135, 70));
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki." + wiki)).setPos(135, 70));
         getwikiByIndex(builder);
         return builder.build();
+    }
+
+    //Add a error code
+    @Override
+    protected void drawTexts(DynamicPositionedColumn screenElements, SlotWidget inventorySlot) {
+        super.drawTexts(screenElements, inventorySlot);
+        screenElements
+            .widget(
+                new TextWidget(i18n("tile.boxplusplus.boxError." + machineError[0])).setDefaultColor(COLOR_TEXT_WHITE.get())
+                    .setEnabled(machineError[0] != 0))
+            .widget(
+                new TextWidget(i18n("tile.boxplusplus.boxUI.module." + machineError[1])).setDefaultColor(COLOR_TEXT_WHITE.get())
+                    .setEnabled(machineError[1] != 0));
     }
 
     private void getwikiByIndex(ModularWindow.Builder builder) {
@@ -1731,7 +1786,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     builder.widget(
                         new ButtonWidget().setOnClick(
                                 (clickData, widget) -> {
-                                    CurrentSN = finalI;
+                                    tempCode = finalI;
                                     if (!widget.isClient()) {
                                         widget.getWindow().closeWindow();
                                         widget.getContext().openSyncedWindow(15);
@@ -1748,15 +1803,15 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             .setPos(10 + 18 * i, 100));
                 }
                 builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.25")
-                        + i18n("tile.boxplusplus.boxUI.module." + CurrentSN)).setMaxWidth(260).setPos(25, 120))
+                        + i18n("tile.boxplusplus.boxUI.module." + tempCode)).setMaxWidth(260).setPos(25, 120))
                     .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.26")
-                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "b")).setMaxWidth(260).setPos(25, 130))
+                        + i18n("tile.boxplusplus.boxUI.module.context." + tempCode + "b")).setMaxWidth(260).setPos(25, 130))
                     .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.27")
-                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "c")).setMaxWidth(260).setPos(25, 150))
+                        + i18n("tile.boxplusplus.boxUI.module.context." + tempCode + "c")).setMaxWidth(260).setPos(25, 150))
                     .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.28")
-                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "d")).setMaxWidth(260).setPos(25, 160))
+                        + i18n("tile.boxplusplus.boxUI.module.context." + tempCode + "d")).setMaxWidth(260).setPos(25, 160))
                     .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.29")
-                        + i18n("tile.boxplusplus.boxUI.module.context." + CurrentSN + "e")).setMaxWidth(260).setPos(25, 170));
+                        + i18n("tile.boxplusplus.boxUI.module.context." + tempCode + "e")).setMaxWidth(260).setPos(25, 170));
             }
             case 50 ->
                 builder.widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.15")).setTextAlignment(TopLeft).setMaxWidth(260).setPos(25, 85));
@@ -1775,15 +1830,15 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     /**
-     *  Synchronize all data to server. Do not change pack size!
+     * Synchronize all data to server. Do not change pack size!
      */
     public void Synchronize(ModularWindow.Builder builder) {
         builder.widget(
                 new FakeSyncWidget.ListSyncer<>(
-                    () -> RoutingMap,
+                    () -> routingMap,
                     var1 -> {
-                        RoutingMap.clear();
-                        RoutingMap.addAll(var1);
+                        routingMap.clear();
+                        routingMap.addAll(var1);
                     },
                     (buffer, j) -> {
                         try {
@@ -1821,18 +1876,24 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 )
             )
             .widget(
-                new FakeSyncWidget.IntegerSyncer(() -> routingstatus, var1 -> routingstatus = var1))
+                new FakeSyncWidget.IntegerSyncer(() -> routingStatus, var1 -> routingStatus = var1))
             .widget(
-                new FakeSyncWidget.IntegerSyncer(() -> RingCountSet, var1 -> RingCountSet = var1))
+                new FakeSyncWidget.IntegerSyncer(() -> machineError[0], var1 -> machineError[0] = var1))
             .widget(
-                new FakeSyncWidget.IntegerSyncer(() -> RingCount, var1 -> RingCount = var1))
+                new FakeSyncWidget.IntegerSyncer(() -> machineError[1], var1 -> machineError[1] = var1))
+            .widget(
+                new FakeSyncWidget.IntegerSyncer(() -> ringCountSet, var1 -> ringCountSet = var1))
+            .widget(
+                new FakeSyncWidget.IntegerSyncer(() -> ringCount, var1 -> ringCount = var1))
             .widget(
                 new FakeSyncWidget.IntegerSyncer(() -> maxParallel, var1 -> maxParallel = var1))
             .widget(
                 new FakeSyncWidget.IntegerSyncer(() -> maxRouting, var1 -> maxRouting = var1));
-        for(int i=0;i<14;i++){
+        for (int i = 0; i < 14; i++) {
             int finalI = i;
-            builder.widget(new FakeSyncWidget.BooleanSyncer(()->moduleSwitch[finalI], var1->moduleSwitch[finalI]=var1));
+            builder.widget(new FakeSyncWidget.BooleanSyncer(() -> moduleSwitch[finalI], var1 -> moduleSwitch[finalI] = var1))
+                .widget(new FakeSyncWidget.BooleanSyncer(() -> moduleActive[finalI], var1 -> moduleActive[finalI] = var1))
+                .widget(new FakeSyncWidget.IntegerSyncer(() -> moduleTier[finalI], var1 -> moduleTier[finalI] = var1));
         }
     }
 }

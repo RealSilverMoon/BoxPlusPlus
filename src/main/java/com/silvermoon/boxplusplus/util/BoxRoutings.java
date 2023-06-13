@@ -28,28 +28,28 @@ public class BoxRoutings {
 
     public BoxRoutings(GT_Recipe recipe, GT_MetaTileEntity_MultiBlockBase teMachine ) {
         ItemStack machine = teMachine.getStackForm(1);
-        InputItem.addAll(Arrays.asList(recipe.mInputs));
+        InputItem.addAll(Arrays.asList(recipe.mInputs.clone()));
         InputItem.removeAll(Collections.singleton(null));
-        OutputItem.addAll(Arrays.asList(recipe.mOutputs));
+        OutputItem.addAll(Arrays.asList(recipe.mOutputs.clone()));
         if(teMachine.mName.equals("multimachine.plasmaforge")){
             for(int i=0;i<OutputItem.size();i++) OutputChance.add(7500);
         }else for(int i=0;i<OutputItem.size();i++) OutputChance.add(recipe.getOutputChance(i));
         OutputItem.removeAll(Collections.singleton(null));
-        InputFluid.addAll(Arrays.asList(recipe.mFluidInputs));
-        OutputFluid.addAll(Arrays.asList(recipe.mFluidOutputs));
-        if(teMachine.mName.equals("multimachine.plasmaforge")){
-            OutputFluid.forEach(f->f.amount= (int) (f.amount*0.75));
-        }
-        if(teMachine.mName.equals("quantumforcetransformer.controller.tier.single")){
-            OutputFluid.forEach(f->f.amount= f.amount*(1/(InputItem.size()+OutputItem.size())));
-        }
+        InputFluid.addAll(Arrays.asList(recipe.mFluidInputs.clone()));
+        OutputFluid.addAll(Arrays.asList(recipe.mFluidOutputs.clone()));
         RoutingMachine = machine;
         voltage = (long) recipe.mEUt;
-        if(teMachine.mName.equals("multimachine.plasmaforge")){
-            time = recipe.mDuration*4;
-        }else if(teMachine.mName.equals("componentassemblyline")){
-            time = recipe.mDuration/16;
-        }else time = recipe.mDuration;
+        time = recipe.mDuration;
+        //do some special service
+        switch (teMachine.mName) {
+            case "multimachine.plasmaforge" -> {
+                time *= 4;
+                OutputFluid.forEach(f -> f.amount = (int) (f.amount * 0.75));
+            }
+            case "componentassemblyline" -> time /= 16;
+            case "quantumforcetransformer.controller.tier.single" ->
+                OutputFluid.forEach(f->f.amount= f.amount*(1/(OutputFluid.size()+OutputItem.size())));
+        }
     }
     public BoxRoutings(ItemStack inputs, ItemStack outputs, ItemStack machine, Long v, int t) {
         InputItem.add(inputs);

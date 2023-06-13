@@ -10,34 +10,40 @@ public class TeBoxRing extends TileEntityAdvanced {
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
     public double Rotation = 0;
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
-    public boolean renderStatus=false;
+    public boolean renderStatus = false;
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
-    public boolean teRingSwitch =true;
+    public boolean teRingSwitch = true;
+
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return INFINITE_EXTENT_AABB;
     }
+
     @Override
     public double getMaxRenderDistanceSquared() {
         return 65536;
     }
+
     public double getCurrentRotation() {
         return Rotation;
     }
+
     @Override
-    public void writeToNBT(NBTTagCompound nbt){
+    public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        nbt.setBoolean("renderStatus",renderStatus);
-        nbt.setDouble("Rotation",Rotation);
+        nbt.setBoolean("renderStatus", renderStatus);
+        nbt.setDouble("Rotation", Rotation);
         nbt.setBoolean("switch", teRingSwitch);
     }
+
     @Override
-    public void readFromNBT(NBTTagCompound nbt){
+    public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        renderStatus=nbt.getBoolean("renderStatus");
-        Rotation=nbt.getDouble("Rotation");
-        teRingSwitch =nbt.getBoolean("switch");
+        renderStatus = nbt.getBoolean("renderStatus");
+        Rotation = nbt.getDouble("Rotation");
+        teRingSwitch = nbt.getBoolean("switch");
     }
+
     @Override
     public double getPacketRange() {
         return 128;
@@ -52,9 +58,10 @@ public class TeBoxRing extends TileEntityAdvanced {
     public boolean isNetworkedTile() {
         return true;
     }
+
     @Override
     public void updateEntity() {
         super.updateEntity();
-        Rotation=(Rotation+1.2) %360d;
+        Rotation = (Rotation + 1.2) % 360d;
     }
 }

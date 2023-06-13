@@ -22,56 +22,66 @@ import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
 public class BlockBoxModuleCore extends Block {
     private final IIcon[] ModuleIcon = new IIcon[15];
     private final boolean isUpdate;
-    public BlockBoxModuleCore(String name, Material material,Boolean isUpdate){
+
+    public BlockBoxModuleCore(String name, Material material, Boolean isUpdate) {
         super(material);
-        this.isUpdate=isUpdate;
+        this.isUpdate = isUpdate;
         setBlockName(name);
         GregTech_API.registerMachineBlock(this, -1);
     }
-    public void registerBlock(){
+
+    public void registerBlock() {
         super.setHardness(5);
         super.setCreativeTab(BoxTab);
-        if(isUpdate) {
-            GameRegistry.registerBlock(this, IB_BoxModule.class,"boxplusplus_boxmodule");
-        }else GameRegistry.registerBlock(this, IB_BoxModule.class,"boxplusplus_boxmoduleplus");
+        if (isUpdate) {
+            GameRegistry.registerBlock(this, IB_BoxModule.class, "boxplusplus_boxmodule");
+        } else GameRegistry.registerBlock(this, IB_BoxModule.class, "boxplusplus_boxmoduleplus");
     }
+
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
         for (int i = 0; i < 14; i++) {
             ModuleIcon[i] = iconRegister.registerIcon(Tags.MODID +
                 (!isUpdate ? ":modules/BoxModule" : ":modules/BoxModulePlus") + i);
         }
-        ModuleIcon[14]=iconRegister.registerIcon(Tags.MODID +
-            (!isUpdate ? ":modules/BoxModule":":modules/BoxModulePlus"));
+        ModuleIcon[14] = iconRegister.registerIcon(Tags.MODID +
+            (!isUpdate ? ":modules/BoxModule" : ":modules/BoxModulePlus"));
     }
+
     @Override
     public IIcon getIcon(int side, int meta) {
         return ModuleIcon[meta];
     }
+
     @Override
     public int damageDropped(int meta) {
         return meta;
     }
-    public BlockBoxModuleCore setHarvest(String tool, int hardness){
+
+    public BlockBoxModuleCore setHarvest(String tool, int hardness) {
         super.setHarvestLevel(tool, hardness);
         return this;
     }
+
     @Override
     public void getSubBlocks(Item item, CreativeTabs tabs, List list) {
         for (int i = 0; i < 14; i++) {
             list.add(new ItemStack(item, 1, i));
         }
     }
+
     @Override
     public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z) {
         return false;
     }
+
     @Override
     public void onBlockAdded(World aWorld, int aX, int aY, int aZ) {
         if (GregTech_API.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
             GregTech_API.causeMachineUpdate(aWorld, aX, aY, aZ);
         }
     }
+
     @Override
     public void breakBlock(World aWorld, int aX, int aY, int aZ, Block aBlock, int aMetaData) {
         if (GregTech_API.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {

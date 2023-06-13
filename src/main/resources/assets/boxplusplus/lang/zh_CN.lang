@@ -8,8 +8,8 @@ tile.boxplusplus_SpaceExtend.name=空间延展机械方块
 tile.boxplusplus_SpaceConstraint.name=空间约束机械方块
 tile.boxplusplus_SpaceCompress.name=空间压缩机械方块
 tile.boxplusplus_SpaceWall.name=空间隔离机械方块
-tile.boxplusplus_BoxRing1.name=外环约束环核心
-tile.boxplusplus_BoxRing2.name=外环约束环核心Pro
+tile.boxplusplus_BoxRing1.name=外环约束核心
+tile.boxplusplus_BoxRing2.name=外环约束核心Pro
 tile.boxplusplus_BoxRing3.name=微缩星河
 tile.boxplusplus_craftitems.desc=”盒“系统的一部分
 tile.boxplusplus.box=盒
@@ -94,6 +94,13 @@ tile.boxplusplus.boxUI.25=确认配方！
 tile.boxplusplus.boxUI.26=取消配方
 tile.boxplusplus.boxUI.27=模块要求： 
 tile.boxplusplus.boxUI.28=激活环数： 
+
+tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
+tile.boxplusplus.boxError.2=原因：未通过2环结构检测。
+tile.boxplusplus.boxError.3=原因：未通过3环结构检测。
+tile.boxplusplus.boxError.4=原因：未通过模块结构检测，错误模块:
+tile.boxplusplus.boxError.5=原因：未通过高电流能源仓检测。  提示:升级星环数至2及以上
+tile.boxplusplus.boxError.6=原因：未通过激光仓检测。 提示:安装并启用激光聚焦器模块
 
 tile.boxplusplus.boxUI.ErrorCode.1=你没有放置任何输入总线！
 tile.boxplusplus.boxUI.ErrorCode.2=未读取到有效多方块机器！
@@ -188,7 +195,7 @@ tile.boxplusplus.boxUI.module.context.13a=自私者。背叛者。求道者。�
 tile.boxplusplus.boxUI.module.context.13b=允许使用激光仓
 tile.boxplusplus.boxUI.module.context.13c=克丽斯腾， “未来”
 tile.boxplusplus.boxUI.module.context.13d=解锁无线网络
-tile.boxplusplus.boxUI.module.context.13e=[克丽斯腾] 直接接入机器拥有者的无线网络,时间锁定为§45t§r,消耗电力恒定为配方值.
+tile.boxplusplus.boxUI.module.context.13e=[克丽斯腾] 直接接入机器拥有者的无线网络,时间减少为配方的§41/10000§r(但不会低于§210t§r),消耗电力恒定为配方值.
 tile.boxplusplus.boxUI.module.context.14a=是否终有一天，我们会起身反抗曾经交予我们无数谜题的——
 tile.boxplusplus.boxUI.module.context.14b=增加8倍并行上限 (即2048X)
 tile.boxplusplus.boxUI.module.context.14c=伊祖米克，生态泉源
@@ -213,7 +220,7 @@ tile.boxplusplus.boxwiki.14=4.将你想要封装的§l第一个配方§r，其�
 tile.boxplusplus.boxwiki.15=7.点击§l工序细节§r，打开第一条工序，修改这条工序的并行系数; 8.重复5-8，直到所有工序均写入，原料及工序的右方将出现§l计算最终配方§r按钮; 9.确认计算后的最终配方，查看模块要求，确认无误即可点击下方√，配方将锁定。Box将按本配方运行。
 tile.boxplusplus.boxwiki.16=本页包含盒系统的详细参数。§l若记环数为R，单工序并行上限为N，总工序上限为M§r，则有：
 tile.boxplusplus.boxwiki.17=R=1，N=16，M=10，不允许超频
-tile.boxplusplus.boxwiki.18=R=2，N=128，M=50，有损超频
+tile.boxplusplus.boxwiki.18=R=2，N=128，M=50，有损超频，(R2开始)支持高电流能源仓
 tile.boxplusplus.boxwiki.19=R=3，N=512，M=99，无损超频
 tile.boxplusplus.boxwiki.20=R=3，安装深蓝之树，N=2048，M=99，无损超频
 tile.boxplusplus.boxwiki.21=R=3，安装伊祖米克，N=2147483648，M=2147483648，无损超频
