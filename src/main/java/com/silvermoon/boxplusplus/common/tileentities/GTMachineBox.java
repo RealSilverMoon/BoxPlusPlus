@@ -721,7 +721,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         FluidInputs,
                         ItemInputs);
                     if (RoutingRecipe != null) {
-                        routingMap.add(new BoxRoutings(RoutingRecipe, RoutingMachine));
+                        routingMap.add(new BoxRoutings(RoutingRecipe.copy(), RoutingMachine));
                         routingStatus = 0;
                     } else {
                         routingStatus = 3;
@@ -1502,8 +1502,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.24"))
                     .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD)
-                    .setSize(20, 16)
-                    .setPos(25, Ycord).setEnabled(!recipe.islocked))
+                    .setSize(35, 14)
+                    .setPos(10, Ycord).setEnabled(!recipe.islocked))
             .widget(
                 new TextWidget(new Text(String.valueOf(routingMap.get(tempCode - 1).Parallel))).setScale(1.2f).setTextAlignment(Alignment.Center)
                     .setSize(20, 16)

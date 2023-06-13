@@ -28,15 +28,15 @@ public class BoxRoutings {
 
     public BoxRoutings(GT_Recipe recipe, GT_MetaTileEntity_MultiBlockBase teMachine ) {
         ItemStack machine = teMachine.getStackForm(1);
-        InputItem.addAll(Arrays.asList(recipe.mInputs.clone()));
+        InputItem.addAll(Arrays.asList(recipe.mInputs));
         InputItem.removeAll(Collections.singleton(null));
-        OutputItem.addAll(Arrays.asList(recipe.mOutputs.clone()));
+        OutputItem.addAll(Arrays.asList(recipe.mOutputs));
         if(teMachine.mName.equals("multimachine.plasmaforge")){
             for(int i=0;i<OutputItem.size();i++) OutputChance.add(7500);
         }else for(int i=0;i<OutputItem.size();i++) OutputChance.add(recipe.getOutputChance(i));
         OutputItem.removeAll(Collections.singleton(null));
-        InputFluid.addAll(Arrays.asList(recipe.mFluidInputs.clone()));
-        OutputFluid.addAll(Arrays.asList(recipe.mFluidOutputs.clone()));
+        InputFluid.addAll(Arrays.asList(recipe.mFluidInputs));
+        OutputFluid.addAll(Arrays.asList(recipe.mFluidOutputs));
         RoutingMachine = machine;
         voltage = (long) recipe.mEUt;
         time = recipe.mDuration;

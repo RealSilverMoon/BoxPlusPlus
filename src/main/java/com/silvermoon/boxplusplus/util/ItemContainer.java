@@ -10,17 +10,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class ItemContainer {
-    private final Table<Item, Integer, Integer> stack = HashBasedTable.create();
+    private final Table<Item, Integer, Long> stack = HashBasedTable.create();
 
     public void addItemStack(ItemStack input, int chance) {
-        int safeSize;
-        if (input.stackSize >= Integer.MAX_VALUE / 10000) {
-            safeSize = (input.stackSize - 1) / 10000;
-        } else safeSize = input.stackSize;
         if (stack.containsRow(input.getItem()) && stack.containsColumn(input.getItemDamage())) {
-            stack.put(Objects.requireNonNull(input.getItem()), input.getItemDamage(), chance * safeSize + stack.get(input.getItem(), input.getItemDamage()));
+            stack.put(Objects.requireNonNull(input.getItem()), input.getItemDamage(),
+                chance * (long) input.stackSize + stack.get(input.getItem(), input.getItemDamage()));
         } else {
-            stack.put(Objects.requireNonNull(input.getItem()), input.getItemDamage(), chance * safeSize);
+            stack.put(Objects.requireNonNull(input.getItem()), input.getItemDamage(), chance * (long) input.stackSize);
         }
     }
 
@@ -44,7 +41,7 @@ public class ItemContainer {
             for (int meta : stack.columnKeySet()) {
                 if (stack.get(item, meta) != null) {
                     output.add(new ItemStack(item,
-                        (int) Math.floor(stack.get(item, meta)) / 10000, meta));
+                        (int) Math.min(stack.get(item, meta) / 10000, Integer.MAX_VALUE - 1), meta));
                 }
             }
         }
