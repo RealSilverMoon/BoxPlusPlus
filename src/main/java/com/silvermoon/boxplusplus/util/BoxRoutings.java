@@ -1,6 +1,5 @@
 package com.silvermoon.boxplusplus.util;
 
-import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -26,12 +25,11 @@ public class BoxRoutings {
     public int time;
     public Long voltage;
 
-    public BoxRoutings(GT_Recipe recipe, GT_MetaTileEntity_MultiBlockBase teMachine ) {
-        ItemStack machine = teMachine.getStackForm(1);
+    public BoxRoutings(GT_Recipe recipe, ItemStack machine ) {
         InputItem.addAll(Arrays.asList(recipe.mInputs));
         InputItem.removeAll(Collections.singleton(null));
         OutputItem.addAll(Arrays.asList(recipe.mOutputs));
-        if(teMachine.mName.equals("multimachine.plasmaforge")){
+        if(machine.getUnlocalizedName().contains("multimachine.plasmaforge")){
             for(int i=0;i<OutputItem.size();i++) OutputChance.add(7500);
         }else for(int i=0;i<OutputItem.size();i++) OutputChance.add(recipe.getOutputChance(i));
         OutputItem.removeAll(Collections.singleton(null));
@@ -41,7 +39,7 @@ public class BoxRoutings {
         voltage = (long) recipe.mEUt;
         time = recipe.mDuration;
         //do some special service
-        switch (teMachine.mName) {
+        switch (machine.getUnlocalizedName().substring(17)) {
             case "multimachine.plasmaforge" -> {
                 time *= 4;
                 OutputFluid.forEach(f -> f.amount = (int) (f.amount * 0.75));

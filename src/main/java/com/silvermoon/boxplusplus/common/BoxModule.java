@@ -127,8 +127,8 @@ public class BoxModule {
                 "industrialbender.controller.tier.single", "industrialextruder.controller.tier.single",
                 "industrialwiremill.controller.tier.single", "industrialhammer.controller.tier.single" -> new int[]{6, 0};
             case "industrialwashplant.controller.tier.single", "industrialsifter.controller.tier.single",
-                "industrialcentrifuge.controller.tier.single", "industrialelectrolyzer.controller.tier.single", "digester" ->
-                new int[]{7, 0};
+                "industrialcentrifuge.controller.tier.single", "industrialelectrolyzer.controller.tier.single",
+                "digester","basicmachine.electromagneticseparator.tier.06" -> new int[]{7, 0};
             case "industrialcokeoven.controller.tier.single", "multimachine.blastfurnace", "multimachine.adv.blastfurnace",
                 "multimachine.adv.industrialfreezer" -> new int[]{8, 0};
             case "multimachine.assemblyline" -> new int[]{9, 0};
@@ -138,7 +138,7 @@ public class BoxModule {
             case "chemicalplant.controller.tier.single" -> new int[]{2, 1};
             case "cyclotron.tier.single" -> new int[]{3, 1};
             case "multimachine.pcbfactory", "circuitassemblyline" -> new int[]{4, 1};
-            case "fusioncomputer.tier.06" -> new int[]{5, 1};
+            case "largefusioncomputer5" -> new int[]{5, 1};
             case "dissolution_tank" -> new int[]{7, 1};
             case "electricimplosioncompressor", "componentassemblyline" -> new int[]{9, 1};
             case "multimachine.plasmaforge","multimachine.transcendentplasmamixer", "multimachine.nanoforge" -> new int[]{8, 1};
