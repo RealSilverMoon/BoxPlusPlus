@@ -141,7 +141,7 @@ public class BoxModule {
             case "fusioncomputer.tier.06" -> new int[]{5, 1};
             case "dissolution_tank" -> new int[]{7, 1};
             case "electricimplosioncompressor", "componentassemblyline" -> new int[]{9, 1};
-            case "multimachine.plasmaforge", "multimachine.nanoforge" -> new int[]{8, 1};
+            case "multimachine.plasmaforge","multimachine.transcendentplasmamixer", "multimachine.nanoforge" -> new int[]{8, 1};
             case "quantumforcetransformer.controller.tier.single" -> new int[]{10, 1};
             default -> new int[]{14, 0};
         };

@@ -124,12 +124,13 @@ tile.boxplusplus.boxUI.module.12=预留
 tile.boxplusplus.boxUI.module.13=聚焦发生器
 tile.boxplusplus.boxUI.module.14=深蓝之树
 tile.boxplusplus.boxUI.module.15=盒子还不会这个配方哦...反馈给作者试试吧！
-tile.boxplusplus.boxUI.module.16a=已启用，点击停用
-tile.boxplusplus.boxUI.module.16=已停用，点击启用
+tile.boxplusplus.boxUI.module.16a=停用
+tile.boxplusplus.boxUI.module.16=启用
 tile.boxplusplus.boxUI.module.20=启用第一环
 tile.boxplusplus.boxUI.module.21=启用第二环
 tile.boxplusplus.boxUI.module.22=启用第三环
 tile.boxplusplus.boxUI.module.23=上帝是会掷骰子,亲爱的,但是我的骰子灌了铅.
+tile.boxplusplus.boxUI.module.24=状态:已
 
 tile.boxplusplus.boxUI.module.context.1a=用镊子将原子中的中子和质子夹出来
 tile.boxplusplus.boxUI.module.context.1b=化学反应釜 | 搅拌机

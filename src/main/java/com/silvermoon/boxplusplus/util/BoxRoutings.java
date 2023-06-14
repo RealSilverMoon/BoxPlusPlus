@@ -48,7 +48,7 @@ public class BoxRoutings {
             }
             case "componentassemblyline" -> time /= 16;
             case "quantumforcetransformer.controller.tier.single" ->
-                OutputFluid.forEach(f->f.amount= f.amount*(1/(OutputFluid.size()+OutputItem.size())));
+                OutputFluid.forEach(f->f.amount= f.amount/(OutputFluid.size()+OutputItem.size()));
         }
     }
     public BoxRoutings(ItemStack inputs, ItemStack outputs, ItemStack machine, Long v, int t) {
