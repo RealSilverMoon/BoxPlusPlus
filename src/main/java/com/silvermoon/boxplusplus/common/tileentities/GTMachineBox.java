@@ -21,7 +21,9 @@ import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
+import gregtech.api.enums.Element;
 import gregtech.api.enums.ItemList;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GT_UIInfos;
 import gregtech.api.gui.modularui.GT_UITextures;
@@ -36,6 +38,7 @@ import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_Input
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.*;
+import gregtech.common.items.behaviors.Behaviour_DataOrb;
 import gtPlusPlus.xmod.gregtech.common.tileentities.machines.multi.production.chemplant.GregtechMTE_ChemicalPlant;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -423,7 +426,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     public boolean runBox(List<ItemStack> inputItem, List<FluidStack> inputFluid) {
         if (!moduleActive[12] || moduleTier[12] == 0) {
-            if(getMaxInputEu()<recipe.FinalVoteage)return false;
+            if (getMaxInputEu() < recipe.FinalVoteage) return false;
             lEUt = -recipe.FinalVoteage;
         }
         if (moduleActive[12] && moduleTier[12] == 1 && !addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
@@ -552,6 +555,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     }
                     if (getMetaTileEntity(inputBus.getStackInSlot(i)) instanceof
                         GT_MetaTileEntity_MultiBlockBase RoutingMachine) {
+                        System.out.println(RoutingMachine.mName);
                         ItemStack[] ItemInputs = getStoredInputs().toArray(new ItemStack[0]);
                         FluidStack[] FluidInputs = getStoredFluids().toArray(new FluidStack[0]);
                         switch (RoutingMachine.mName) {
@@ -679,7 +683,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     routingStatus = 3;
                                     return;
                                 }
-                                //The chemicalplant use an extremely complex tier-based recipe check method, it will be better not to change it.
+                                //The chemicalplant use tier-based recipe check method, it will be better not to change it.
                                 RoutingRecipe = ((GregtechMTE_ChemicalPlant) RoutingMachine).findRecipe(null, Long.MAX_VALUE / 10, 7, ItemInputs, FluidInputs);
                             }
                             case "largefusioncomputer5" -> {
@@ -725,8 +729,35 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     }
                                 }
                             }
+                            case "gtpp.multimachine.replicator" -> {
+                                RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sElementalDuplicatorRecipes;
+                                Materials replicatorItem = null;
+                                for (ItemStack item : ItemInputs) {
+                                    if (Behaviour_DataOrb.getDataName(item) == null) continue;
+                                    replicatorItem = Element.get(Behaviour_DataOrb.getDataName(item)).mLinkedMaterials.get(0);
+                                    break;
+                                }
+                                if (replicatorItem == Materials._NULL) {
+                                    routingStatus = 7;
+                                    return;
+                                }
+                                for (GT_Recipe recipe : RecipeMap.mRecipeList) {
+                                    if (!(recipe.mSpecialItems instanceof ItemStack[] var1)) {
+                                        continue;
+                                    }
+                                    if (replicatorItem.equals(Element.get(Behaviour_DataOrb.getDataName(var1[0]))
+                                        .mLinkedMaterials.get(0))) {
+                                        routingMap.add(new BoxRoutings(recipe, RoutingMachine.getStackForm(1)));
+                                        routingStatus = 0;
+                                        return;
+                                    }
+                                }
+                                routingStatus = 3;
+                                return;
+                            }
                             case "electricimplosioncompressor" -> RecipeMap = GT_TileEntity_ElectricImplosionCompressor.eicMap;
                             case "preciseassembler" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.PA;
+                            case "frf" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.FRF;
                             case "digester" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
                             case "dissolution_tank" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
                             case "cyclotron.tier.single" -> RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
@@ -1282,8 +1313,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context." + (tempCode + 1) + "a")).setTextAlignment(TopCenter).setMaxWidth(130).setPos(10, 100))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.26")).setPos(20, 130))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.context." + (tempCode + 1) + "b")).setMaxWidth(110).setPos(20, 140))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.24")+i18n("tile.boxplusplus.boxUI.module.16"+
-                (moduleSwitch[tempCode]?"":"a"))+(moduleTier[tempCode]==0?" (T1)":" (T2)")).setPos(20, 175));
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.module.24") + i18n("tile.boxplusplus.boxUI.module.16" +
+                (moduleSwitch[tempCode] ? "" : "a")) + (moduleTier[tempCode] == 0 ? " (T1)" : " (T2)")).setPos(20, 175));
         builder.widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
