@@ -21,7 +21,7 @@ import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
 
 public class BlockBoxModuleCore extends Block {
     private final IIcon[] ModuleIcon = new IIcon[15];
-    private final boolean isUpdate;
+    public final boolean isUpdate;
 
     public BlockBoxModuleCore(String name, Material material, Boolean isUpdate) {
         super(material);
@@ -62,7 +62,6 @@ public class BlockBoxModuleCore extends Block {
         super.setHarvestLevel(tool, hardness);
         return this;
     }
-
     @Override
     public void getSubBlocks(Item item, CreativeTabs tabs, List list) {
         for (int i = 0; i < 14; i++) {

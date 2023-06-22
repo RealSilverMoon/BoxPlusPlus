@@ -1,7 +1,7 @@
 package com.silvermoon.boxplusplus.util;
 
 import com.gtnewhorizon.structurelib.StructureLibAPI;
-import com.gtnewhorizon.structurelib.structure.IStructureElementNoPlacement;
+import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.block.Block;
@@ -71,12 +71,12 @@ public class Util {
     }
 
     //Auto place TEBlock
-    public static <T, E> IStructureElementNoPlacement<T> RingTileAdder(BiPredicate<T, E> iTileAdder,
-                                                                       Class<E> tileClass, Block hintBlock, int hintMeta, Function<T, Block> RingAdder) {
+    public static <T, E> IStructureElement<T> RingTileAdder(BiPredicate<T, E> iTileAdder,
+                                                            Class<E> tileClass, Block hintBlock, int hintMeta, Function<T, Block> RingAdder) {
         if (iTileAdder == null || hintBlock == null || tileClass == null) {
             throw new IllegalArgumentException();
         }
-        return new IStructureElementNoPlacement<>() {
+        return new IStructureElement<>() {
 
             @Override
             public boolean check(T t, World world, int x, int y, int z) {
@@ -92,7 +92,8 @@ public class Util {
 
             @Override
             public boolean placeBlock(T t, World world, int x, int y, int z, ItemStack trigger) {
-                world.setBlock(x, y, z, trigger.stackSize == 1 ? RingAdder.apply(t) : (trigger.stackSize == 2 ? BlockRegister.BoxRing2 : BlockRegister.BoxRing3), hintMeta, 2);
+                world.setBlock(x, y, z, trigger.stackSize == 1 ? RingAdder.apply(t)
+                    : (trigger.stackSize == 2 ? BlockRegister.BoxRing2 : BlockRegister.BoxRing3), hintMeta, 2);
                 return true;
             }
         };

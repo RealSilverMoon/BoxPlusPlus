@@ -17,12 +17,15 @@ import org.apache.logging.log4j.Logger;
     modid = Tags.MODID,
     version = Tags.VERSION,
     name = Tags.MODNAME,
-    dependencies = " required-after:IC2;"
-        + " required-after:structurelib;"
-        + " required-after:modularui;"
-        + " after:GalacticraftCore;"
-        + " after:GalacticraftMars;"
-        + " after:GalacticraftPlanets;",
+    dependencies = "required-after:IC2;"
+        + "required-after:structurelib;"
+        + "required-after:modularui;"
+        + "after:GalacticraftCore;"
+        + "required-after:bartworks;"
+        + "after:miscutils;"
+        + "after:dreamcraft;"
+        + "after:GalacticraftMars;"
+        + "after:GalacticraftPlanets",
     acceptedMinecraftVersions = "[1.7.10]")
 public class boxplusplus {
 
