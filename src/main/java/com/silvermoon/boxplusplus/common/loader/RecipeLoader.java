@@ -299,7 +299,11 @@ public class RecipeLoader implements Runnable {
                 new ItemStack(BlockRegister.BoxRing2, 4),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 860),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.metaitem.01", 64, 32764),
-                GT_ModHandler.getModItem(OpenComputers.ID, "item", 9, 103))
+                GT_ModHandler.getModItem(OpenComputers.ID, "item", 9, 103),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 9, 15470),
+                GT_ModHandler.getModItem(OpenComputers.ID, "item", 1, 69),
+                GT_ModHandler.getModItem(TecTech.ID, "gt.blockcasingTTs", 9, 3),
+                GT_OreDictUnificator.get("wireGt01SuperconductorUV", 9))
             .fluidInputs(
                 FluidRegistry.getFluidStack("refinedglue", 8000))
             .eut(TierEU.RECIPE_UV)
@@ -315,7 +319,10 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31077),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31065),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "MU-metaitem.01", 16, 32044),
-                GT_ModHandler.getModItem(ExtraUtilities.ID, "nodeupgrade", 64, 2))
+                GT_ModHandler.getModItem(ExtraUtilities.ID, "nodeUpgrade", 64, 2),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "dummyResearch", 1),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockcasings9", 4, 1),
+                GT_ModHandler.getModItem(Chisel.ID, "netherStarChisel", 1))
             .fluidInputs(
                 FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("ic2pahoehoelava", 128000),
@@ -323,7 +330,52 @@ public class RecipeLoader implements Runnable {
             .eut(TierEU.RECIPE_UV)
             .duration(1200)
             .addTo(AssemblyLine);
-
+        GT_Values.RA.stdBuilder().metadata(RESEARCH_ITEM,
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 992))
+            .metadata(RESEARCH_TIME, 12000)
+            .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 6))
+            .noFluidOutputs()
+            .itemInputs(
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 792),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 992),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 859),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 797),
+                GT_ModHandler.getModItem(AE2Stuff.ID, "Inscriber", 1),
+                ItemList.Component_Sawblade_Diamond.get(1),
+                ItemList.Shape_Extruder_Ingot.get(1),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "MU-metaitem", 1, 32125),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 798),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31075),
+                GT_OreDictUnificator.get("wireGt01SuperconductorUV", 6),
+                GT_ModHandler.getModItem(ThaumicBases.ID, "voidAnvil", 16),
+                new ItemStack(BlockRegister.BoxRing2, 4))
+            .fluidInputs(
+                FluidRegistry.getFluidStack("refinedglue", 8000))
+            .eut(TierEU.RECIPE_UV)
+            .duration(1200)
+            .addTo(AssemblyLine);
+        GT_Values.RA.stdBuilder().metadata(RESEARCH_ITEM,
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 850))
+            .metadata(RESEARCH_TIME, 12000)
+            .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 7))
+            .noFluidOutputs()
+            .itemInputs(
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 850),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 796),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 790),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 840),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blcokmachines", 1, 767),
+                GT_OreDictUnificator.get("stickLongNeutronium", 1),
+                ItemList.Electric_Motor_UV.get(1),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.2", 64, 6),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 10862),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 10500),
+                new ItemStack(BlockRegister.BoxRing2, 4))
+            .fluidInputs(
+                FluidRegistry.getFluidStack("refinedglue", 8000))
+            .eut(TierEU.RECIPE_UV)
+            .duration(1200)
+            .addTo(AssemblyLine);
     }
 
     //All - ResearchAssemblyLine

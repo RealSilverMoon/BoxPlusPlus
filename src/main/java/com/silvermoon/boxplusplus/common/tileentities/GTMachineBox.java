@@ -429,10 +429,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             if (getMaxInputEu() < recipe.FinalVoteage) return false;
             lEUt = -recipe.FinalVoteage;
         }
-        if (moduleActive[12] && moduleTier[12] == 1 && !addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
+        if (moduleActive[12] && moduleTier[12] == 1
+            && !addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
             return false;
         }
-        calOverclock();
+        calTime();
         if (this.lEUt >= Long.MAX_VALUE - 1 || this.mMaxProgresstime >= Integer.MAX_VALUE - 1) return false;
         mEfficiencyIncrease = 10000;
         mEfficiency = 10000 - (this.getIdealStatus() - this.getRepairStatus()) * 1000;
@@ -452,9 +453,9 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         return true;
     }
 
-    public void calOverclock() {
+    public void calTime() {
         if (lEUt == 0) {
-            mMaxProgresstime = Math.max(recipe.FinalTime / 10000, 10);
+            mMaxProgresstime = Math.max((int) Math.pow(recipe.FinalTime, 0.3), 10);
             return;
         }
         GT_OverclockCalculator cal = new GT_OverclockCalculator().setRecipeEUt(recipe.FinalVoteage).setDuration(recipe.FinalTime)
@@ -778,7 +779,18 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             FluidInputs,
                             ItemInputs);
                         if (RoutingRecipe != null) {
-                            routingMap.add(new BoxRoutings(RoutingRecipe.copy(), RoutingMachine.getStackForm(1)));
+                            GT_Recipe tempRecipe = RoutingRecipe.copy();
+                            for (int j = 0; j < tempRecipe.mInputs.length; j++) {
+                                if (tempRecipe.mInputs[j] == null) continue;
+                                if (GT_OreDictUnificator.getAssociation(tempRecipe.mInputs[j]) != null) {
+                                    for (ItemStack si : getStoredInputs()) {
+                                        if (GT_OreDictUnificator.isInputStackEqual(tempRecipe.mInputs[j], GT_OreDictUnificator.get(false, si))) {
+                                            tempRecipe.mInputs[j] = new ItemStack(si.getItem(), tempRecipe.mInputs[j].stackSize, si.getItemDamage());
+                                        }
+                                    }
+                                }
+                            }
+                            routingMap.add(new BoxRoutings(tempRecipe, RoutingMachine.getStackForm(1)));
                             routingStatus = 0;
                         } else {
                             routingStatus = 3;
