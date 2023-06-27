@@ -297,7 +297,7 @@ public class RecipeLoader implements Runnable {
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 4))
             .noFluidOutputs()
             .itemInputs(
-                new ItemStack(BlockRegister.BoxRing2, 4),
+                new ItemStack(BlockRegister.BoxRing2, 2),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 860),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.metaitem.01", 64, 32764),
                 GT_ModHandler.getModItem(OpenComputers.ID, "item", 9, 103),
@@ -316,7 +316,7 @@ public class RecipeLoader implements Runnable {
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 5))
             .noFluidOutputs()
             .itemInputs(
-                new ItemStack(BlockRegister.BoxRing2, 4),
+                new ItemStack(BlockRegister.BoxRing2, 2),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31077),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31065),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "MU-metaitem.01", 16, 32044),
@@ -349,7 +349,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31075),
                 GT_OreDictUnificator.get("wireGt01SuperconductorUV", 6),
                 GT_ModHandler.getModItem(ThaumicBases.ID, "voidAnvil", 16),
-                new ItemStack(BlockRegister.BoxRing2, 4))
+                new ItemStack(BlockRegister.BoxRing2, 2))
             .fluidInputs(
                 FluidRegistry.getFluidStack("refinedglue", 8000))
             .eut(TierEU.RECIPE_UV)
@@ -372,7 +372,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 10862),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 10500),
                 GT_OreDictUnificator.get("dustCooledMonaziteRareEarthConcentrate", 64),
-                new ItemStack(BlockRegister.BoxRing2, 4))
+                new ItemStack(BlockRegister.BoxRing2, 2))
             .fluidInputs(
                 FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("grade4purifiedwater", 128000))
@@ -381,10 +381,10 @@ public class RecipeLoader implements Runnable {
             .addTo(AssemblyLine);
         TT_recipeAdder.addResearchableAssemblylineRecipe(
             GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 12730),
-            10240,
+            25600,
+            64,
+            8000000,
             16,
-            2000000,
-            1,
             new ItemStack[]{
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 791),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12730),
@@ -393,7 +393,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(NewHorizonsCoreMod.ID, "tile.QuintupleCompressedCoalCoke", 2),
                 GT_OreDictUnificator.get("dustDarkAsh", 64),
                 ItemList.Reactor_Coolant_Sp_6.get(1),
-                new ItemStack(BlockRegister.BoxRing3, 16),
+                new ItemStack(BlockRegister.BoxRing3, 4),
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("molten.ethylcyanoacrylatesuperglue", 128000),
@@ -401,7 +401,108 @@ public class RecipeLoader implements Runnable {
                 FluidRegistry.getFluidStack("pyrotheum", 256000)},
             new ItemStack(BlockRegister.BoxModule, 1, 8),
             2000,
-            (int) TierEU.RECIPE_UHV);
+            (int) TierEU.RECIPE_UEV);
+        TT_recipeAdder.addResearchableAssemblylineRecipe(
+            GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 17001),
+            102400,
+            256,
+            8000000,
+            64,
+            new ItemStack[]{
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15465),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15145),
+                ItemList.Casing_Grate.get(64),
+                ItemList.Casing_Grate.get(64),
+                ItemList.Casing_Assembler.get(64),
+                ItemList.Casing_Assembler.get(64),
+                ItemList.Casing_Assembler.get(64),
+                ItemList.Casing_Assembler.get(64),
+                ItemList.Machine_Multi_Assemblyline.get(64),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 13532),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 13532),
+                new ItemStack(BlockRegister.BoxRing3, 4),
+                ItemList.Hatch_Input_Multi_2x2_UEV.get(4),
+                ItemList.Casing_SolidSteel.get(64),
+                ItemList.Casing_SolidSteel.get(64),
+                ItemList.Hatch_Output_Bus_ME.get(1)
+            },
+            new FluidStack[]{
+                FluidRegistry.getFluidStack("molten.mutatedlivingsolder", 256000),
+                FluidRegistry.getFluidStack("lubricant", 256000)},
+            new ItemStack(BlockRegister.BoxModule, 1, 9),
+            2000,
+            (int) TierEU.RECIPE_UEV);
+        TT_recipeAdder.addResearchableAssemblylineRecipe(
+            GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 31150),
+            51200,
+            128,
+            8000000,
+            32,
+            new ItemStack[]{
+                new ItemStack(BlockRegister.BoxRing3, 4),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31150),
+                GT_OreDictUnificator.get("blockGlassUMV",64),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15497),
+                ItemList.Casing_Coil_AwakenedDraconium.get(16),
+                ItemList.Casing_Coil_Infinity.get(8),
+                ItemList.Casing_Coil_Hypogen.get(4),
+                ItemList.Casing_Coil_Eternal.get(2),
+                GT_OreDictUnificator.get("wireGt01SuperconductorUIV",30)
+            },
+            new FluidStack[]{
+                FluidRegistry.getFluidStack("molten.mutatedlivingsolder", 256000),
+                FluidRegistry.getFluidStack("lubricant", 256000)},
+            new ItemStack(BlockRegister.BoxModule, 1, 10),
+            2000,
+            (int) TierEU.RECIPE_UEV);
+        TT_recipeAdder.addResearchableAssemblylineRecipe(
+            GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15472),
+            100000,
+            100,
+            10000000,
+            10,
+            new ItemStack[]{
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15472),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15472),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15472),
+                ItemList.Sensor_UEV.get(32),
+                GT_ModHandler.getModItem(NewHorizonsCoreMod.ID, "item.LaserEmitter", 1),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15165),
+                ItemList.Emitter_UEV.get(64),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15265),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15472),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15472),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 15472),
+                ItemList.Sensor_UEV.get(32),
+                new ItemStack(BlockRegister.BoxRing3, 16),
+            },
+            new FluidStack[]{
+                FluidRegistry.getFluidStack("supercoolant", 256000)},
+            new ItemStack(BlockRegister.BoxModule, 1, 12),
+            2000,
+            (int) TierEU.RECIPE_UEV);
+        TT_recipeAdder.addResearchableAssemblylineRecipe(
+            GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 1, 3),
+            (int)TierEU.RECIPE_UEV,
+            512,
+            (int)TierEU.RECIPE_UIV,
+            64,
+            new ItemStack[]{
+                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
+                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
+                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
+                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockreinforced",1,12),
+                GT_OreDictUnificator.get("compressedDirt4x",1),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "blockCompressedObsidian",1,4),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "blockCompressedObsidian",1,10),
+                new ItemStack(BlockRegister.BoxRing3, 32),
+            },
+            new FluidStack[]{
+                FluidRegistry.getFluidStack("grade8purifiedwater", 256000)},
+            new ItemStack(BlockRegister.BoxModule, 1, 13),
+            2000,
+            (int) TierEU.RECIPE_UIV);
     }
 
     //All - ResearchAssemblyLine
@@ -411,7 +512,7 @@ public class RecipeLoader implements Runnable {
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 0))
             .noFluidOutputs()
             .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 16),
+                new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31072),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31050),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31051),
@@ -428,7 +529,7 @@ public class RecipeLoader implements Runnable {
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 1))
             .noFluidOutputs()
             .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 16),
+                new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 32018),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "preciseUnitCasing", 64, 2),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "preciseUnitCasing", 15, 2),
@@ -446,7 +547,7 @@ public class RecipeLoader implements Runnable {
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 2))
             .noFluidOutputs()
             .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 16),
+                new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 998),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockspecialcasings.2", 64, 3),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blocktieredcasings.1", 16, 9),
@@ -463,7 +564,7 @@ public class RecipeLoader implements Runnable {
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 3))
             .noFluidOutputs()
             .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 16),
+                new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 828),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.2", 32, 9),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "MU-metaitem.01", 4, 32105),
@@ -496,7 +597,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GregTech.ID, "gt.metaitem.03", 64, 32728),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.metaitem.03", 64, 32107),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.metaitem.03", 64, 32105),
-                new ItemStack(BlockRegister.BoxRing2, 4)
+                new ItemStack(BlockRegister.BoxRing2, 16)
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("molten.ethylcyanoacrylatesuperglue", 128000),
@@ -520,7 +621,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GoodGenerator.ID, "compactFusionCoil", 24, 2),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "compactFusionCoil", 24, 4),
                 GT_OreDictUnificator.get("batteryMAX", 1),
-                new ItemStack(BlockRegister.BoxRing2, 4)
+                new ItemStack(BlockRegister.BoxRing2, 16)
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("molten.ethylcyanoacrylatesuperglue", 128000),
@@ -546,7 +647,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemExtremeStorageCell.Singularity", 1),
                 GT_OreDictUnificator.get(OrePrefixes.plateDouble, Materials.Titanium, 32),
                 GT_OreDictUnificator.get("rotorAstralTitanium", 16),
-                new ItemStack(BlockRegister.BoxRing2, 4),
+                new ItemStack(BlockRegister.BoxRing2, 16),
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("lubricant", 128000),
@@ -567,7 +668,7 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get("slabWood", 1),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12718),
                 GT_ModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 4, 26),
-                new ItemStack(BlockRegister.BoxRing2, 4),
+                new ItemStack(BlockRegister.BoxRing2, 16),
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("molten.ethylcyanoacrylatesuperglue", 128000),

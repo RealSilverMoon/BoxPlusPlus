@@ -821,7 +821,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             recipe.FinalVoteage += boxRoutings.voltage;
             int[] machine = transMachinesToModule(boxRoutings.RoutingMachine);
             if (!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0], machine[1]);
-            if (boxRoutings.Parallel > 2048 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 1);
+            if (boxRoutings.Parallel > 8192 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 1);
             if (boxRoutings.Parallel > 512 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 0);
         });
         recipe.FinalItemInput = inputItemContainer.getItemStack();
@@ -1388,7 +1388,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new TextFieldWidget().setGetterInt(() -> routingCount)
                     .setSetterInt(val -> routingCount = val)
-                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 2048 : (Integer.MAX_VALUE - 1)) : maxRouting)
+                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 8192 : (Integer.MAX_VALUE - 1)) : maxRouting)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.04"))
@@ -1567,13 +1567,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new TextFieldWidget().setGetterInt(() -> routingMap.get(tempCode - 1).Parallel)
                     .setSetterInt(val -> routingMap.get(tempCode - 1).Parallel = val)
-                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 2048 : (Integer.MAX_VALUE - 1)) : maxParallel)
+                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 8192 : (Integer.MAX_VALUE - 1)) : maxParallel)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.24"))
                     .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD)
-                    .setSize(35, 14)
-                    .setPos(10, Ycord).setEnabled(!recipe.islocked))
+                    .setSize(40, 14)
+                    .setPos(5, Ycord).setEnabled(!recipe.islocked))
             .widget(
                 new TextWidget(new Text(String.valueOf(routingMap.get(tempCode - 1).Parallel))).setScale(1.2f).setTextAlignment(Alignment.Center)
                     .setSize(20, 16)
