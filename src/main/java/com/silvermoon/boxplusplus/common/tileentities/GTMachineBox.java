@@ -74,7 +74,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private static final String STRUCTURE_PIECE_Final = "Final";
     private static final IIconContainer boxActive = new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER_ACTIVE");
     private static final IIconContainer boxInactive = new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER");
-    private int mCasing = 0;
+    private int extendCasing = 0;
     private int routingCount = 1;
     private final boolean[] moduleSwitch = new boolean[14];
     private boolean[] moduleActive = new boolean[15];
@@ -156,7 +156,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .casingIndex(114 << 7)
                     .dot(1)
                     .buildAndChain(
-                        onElementPass(i -> ++i.mCasing, ofBlock(BlockRegister.SpaceExtend, 0))))
+                        onElementPass(i -> ++i.extendCasing, ofBlock(BlockRegister.SpaceExtend, 0))))
             .addElement('D', Util.RingTileAdder((v, t) -> {
                 if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing) && v.ringCountSet != 1)) return false;
                 if ((t.getBlockType().isAssociatedBlock(BlockRegister.BoxRing2) && v.ringCountSet != 2)) return false;
@@ -233,10 +233,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .beginStructureBlock(47, 11, 47, false)
             .addStructureInfo(i18n("tile.boxplusplus.boxStructure.01"))
             .addController(i18n("tile.boxplusplus.boxStructure.02"))
-            .addCasingInfoMin(i18n("tile.boxplusplus_SpaceExtend.name"), 1, false)
-            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceConstraint.name"), 1, false)
-            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceCompress.name"), 1, false)
-            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceWall.name"), 1, false)
+            .addCasingInfoMin(i18n("tile.boxplusplus_SpaceExtend.name"), 130, false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceCompress.name"), 408, false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceConstraint.name"), 584, false)
+            .addCasingInfoExactly(i18n("tile.boxplusplus_SpaceWall.name"), 760, false)
             .addStructureInfo(i18n("tile.boxplusplus.boxStructure.03"))
             .addEnergyHatch(i18n("tile.boxplusplus.boxStructure.04"))
             .addStructureInfo(EnumChatFormatting.YELLOW + i18n("tile.boxplusplus.boxStructure.05"))

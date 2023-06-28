@@ -443,13 +443,13 @@ public class RecipeLoader implements Runnable {
             new ItemStack[]{
                 new ItemStack(BlockRegister.BoxRing3, 4),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31150),
-                GT_OreDictUnificator.get("blockGlassUMV",64),
+                GT_OreDictUnificator.get("blockGlassUMV", 64),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15497),
                 ItemList.Casing_Coil_AwakenedDraconium.get(16),
                 ItemList.Casing_Coil_Infinity.get(8),
                 ItemList.Casing_Coil_Hypogen.get(4),
                 ItemList.Casing_Coil_Eternal.get(2),
-                GT_OreDictUnificator.get("wireGt01SuperconductorUIV",30)
+                GT_OreDictUnificator.get("wireGt01SuperconductorUIV", 30)
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("molten.mutatedlivingsolder", 256000),
@@ -485,19 +485,19 @@ public class RecipeLoader implements Runnable {
             (int) TierEU.RECIPE_UEV);
         TT_recipeAdder.addResearchableAssemblylineRecipe(
             GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 1, 3),
-            (int)TierEU.RECIPE_UEV,
+            (int) TierEU.RECIPE_UEV,
             512,
-            (int)TierEU.RECIPE_UIV,
+            (int) TierEU.RECIPE_UIV,
             64,
             new ItemStack[]{
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 64, 3),
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockreinforced",1,12),
-                GT_OreDictUnificator.get("compressedDirt4x",1),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "blockCompressedObsidian",1,4),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "blockCompressedObsidian",1,10),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockreinforced", 1, 12),
+                GT_OreDictUnificator.get("compressedDirt4x", 1),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "blockCompressedObsidian", 1, 4),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "blockCompressedObsidian", 1, 10),
                 new ItemStack(BlockRegister.BoxRing3, 32),
             },
             new FluidStack[]{
@@ -698,7 +698,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 3, 15470),
                 GT_ModHandler.getModItem(TecTech.ID, "gt.blockcasingsBA0", 32, 10),
                 GT_ModHandler.getModItem(TecTech.ID, "gt.blockcasingsBA0", 32, 11),
-                GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator",1),
+                GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator", 1),
                 new ItemStack(BlockRegister.BoxRing3, 32),
             },
             new FluidStack[]{
@@ -722,10 +722,10 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get("blockSpaceTime", 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 32026),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12734),
-                GT_OreDictUnificator.get("blockTranscendentMetal",4),
+                GT_OreDictUnificator.get("blockTranscendentMetal", 4),
                 GT_OreDictUnificator.get("blockSpaceTime", 16),
-                GT_ModHandler.getModItem(AppliedEnergistics2.ID,"tile.BlockTinyTNT",1),
-                GT_ModHandler.getModItem(AppliedEnergistics2.ID,"tile.BlockTinyTNT",1),
+                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
+                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
                 GT_OreDictUnificator.get("blockSpaceTime", 4),
                 GT_OreDictUnificator.get("blockSpaceTime", 8),
                 new ItemStack(BlockRegister.BoxRing3, 32),
@@ -747,12 +747,12 @@ public class RecipeLoader implements Runnable {
             new ItemStack[]{
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31151),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 16999),
-                GT_ModHandler.getModItem(GTPlusPlus.ID,"gtplusplus.blockcasings.5",64,14),
-                GT_ModHandler.getModItem(GTPlusPlus.ID,"gtplusplus.blockcasings.5",64,10),
-                GT_ModHandler.getModItem(GTPlusPlus.ID,"gtplusplus.blockcasings.4",64,4),
-                GT_ModHandler.getModItem(GoodGenerator.ID, "FRF_Coil_3",64),
-                GT_OreDictUnificator.get("lensOrundum",1),
-                GT_OreDictUnificator.get("rotorExtremelyUnstableNaquadah",16),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.5", 64, 14),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.5", 64, 10),
+                GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.4", 64, 4),
+                GT_ModHandler.getModItem(GoodGenerator.ID, "FRF_Coil_3", 64),
+                GT_OreDictUnificator.get("lensOrundum", 1),
+                GT_OreDictUnificator.get("rotorExtremelyUnstableNaquadah", 16),
                 ItemList.Timepiece.get(1),
                 ItemList.NaquadriaSupersolid.get(1),
                 ItemList.SuperconductorComposite.get(1),
@@ -773,23 +773,23 @@ public class RecipeLoader implements Runnable {
             "FCF",
             "DED",
             'A',
-            GT_ModHandler.getModItem(GalaxySpace.ID,"item.DysonSwarmParts",1),
+            GT_ModHandler.getModItem(GalaxySpace.ID, "item.DysonSwarmParts", 1),
             'B',
             GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 14001),
             'C',
-            GT_ModHandler.getModItem(GalacticraftMars.ID, "tile.marsMachine",1,4),
+            GT_ModHandler.getModItem(GalacticraftMars.ID, "tile.marsMachine", 1, 4),
             'D',
-            GT_ModHandler.getModItem(GalacticraftAmunRa.ID, "tile.machines2",1,1),
+            GT_ModHandler.getModItem(GalacticraftAmunRa.ID, "tile.machines2", 1, 1),
             'E',
             new ItemStack(BlockRegister.BoxModule, 1, 10),
             'F',
-            GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator",1,8)
-            );
+            GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator", 1, 8)
+        );
         TT_recipeAdder.addResearchableAssemblylineRecipe(
             GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 1145),
-            Integer.MAX_VALUE-1,
+            Integer.MAX_VALUE - 1,
             32767,
-            Integer.MAX_VALUE-1,
+            Integer.MAX_VALUE - 1,
             96,
             new ItemStack[]{
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 4, 1145),
@@ -800,14 +800,14 @@ public class RecipeLoader implements Runnable {
                 ItemList.Sensor_UXV.get(64),
                 ItemList.Robot_Arm_UXV.get(64),
                 ItemList.GigaChad.get(1),
-                GT_ModHandler.getModItem(SGCraft.ID, "stargateRing",8,0),
-                GT_ModHandler.getModItem(SGCraft.ID, "stargateRing",4,1),
-                GT_ModHandler.getModItem(SGCraft.ID, "stargateBase",1),
-                GT_OreDictUnificator.get("batteryERV",64),
+                GT_ModHandler.getModItem(SGCraft.ID, "stargateRing", 8, 0),
+                GT_ModHandler.getModItem(SGCraft.ID, "stargateRing", 4, 1),
+                GT_ModHandler.getModItem(SGCraft.ID, "stargateBase", 1),
+                GT_OreDictUnificator.get("batteryERV", 64),
                 new ItemStack(BlockRegister.BoxRing3, 64),
                 new ItemStack(BlockRegister.BoxRing3, 64),
-                GT_OreDictUnificator.get("ingotTitanium",1),
-                GT_OreDictUnificator.get("ingotSilver",1)
+                GT_OreDictUnificator.get("ingotTitanium", 1),
+                GT_OreDictUnificator.get("ingotSilver", 1)
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("molten.magnetohydrodynamicallyconstrainedstarmatter", 2000000000),
@@ -815,7 +815,7 @@ public class RecipeLoader implements Runnable {
                 FluidRegistry.getFluidStack("molten.titanium", 2000000000),
                 FluidRegistry.getFluidStack("molten.silver", 2000000000)},
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 13),
-            Integer.MAX_VALUE-1,
-            Integer.MAX_VALUE-1);
+            Integer.MAX_VALUE - 1,
+            Integer.MAX_VALUE - 1);
     }
 }
