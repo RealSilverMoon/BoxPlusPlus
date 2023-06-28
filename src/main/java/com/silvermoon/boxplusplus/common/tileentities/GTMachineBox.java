@@ -455,7 +455,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
 
     public void calTime() {
         if (lEUt == 0) {
-            mMaxProgresstime = Math.max((int) Math.pow(recipe.FinalTime, 0.3), 10);
+            mMaxProgresstime = Math.max((int) Math.pow(recipe.FinalTime, 0.2), 10);
             return;
         }
         GT_OverclockCalculator cal = new GT_OverclockCalculator().setRecipeEUt(recipe.FinalVoteage).setDuration(recipe.FinalTime)
