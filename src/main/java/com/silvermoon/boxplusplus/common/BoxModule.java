@@ -119,7 +119,7 @@ public class BoxModule {
             case "gtplusplus.autocrafter.multi", "mxrandomlargemolecularassembler" -> new int[]{1, 0};
             case "multimachine.cracker", "multimachine.distillationtower" -> new int[]{2, 0};
             case "multimachine.multifurnace", "industrialthermalcentrifuge.controller.tier.single",
-                "industrialarcfurnace.controller.tier.single" -> new int[]{3, 0};
+                "industrialarcfurnace.controller.tier.single","industrialalloysmelter.controller.tier.single" -> new int[]{3, 0};
             case "industrialmultimachine.controller.tier.single" -> new int[]{4, 0};
             case "industrialrockcrusher.controller.tier.single", "industrialfluidheater.controller.tier.single" ->
                 new int[]{5, 0};
