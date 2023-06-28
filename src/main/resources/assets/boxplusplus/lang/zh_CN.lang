@@ -161,7 +161,7 @@ tile.boxplusplus.boxUI.module.context.5a=其实AMD并没有晶圆厂，这张卡
 tile.boxplusplus.boxUI.module.context.5b=压缩 | 车床 | 两级磁化 | 发酵槽 | 流体提取 | 提取 | 光刻 | 高压釜 | 固化
 tile.boxplusplus.boxUI.module.context.5c=NVIDIA晶圆厂
 tile.boxplusplus.boxUI.module.context.5d=PCB工厂 | 电路装配线
-tile.boxplusplus.boxUI.module.context.5e=[大型加工厂] 在第1格放置编程电路，其值按1-9对应Tooltip上9种机器  [电路装配线]放置的主机必须已蚀刻电路;原料无需按顺序放入
+tile.boxplusplus.boxUI.module.context.5e=[大型加工厂] 在第1格放置编程电路，其值按1-9对应Tooltip上9种机器  [电路装配线]放置的主机必须已蚀刻电路
 tile.boxplusplus.boxUI.module.context.5f=其实NVIDIA也没有晶圆厂，而且这张卡是AMD
 tile.boxplusplus.boxUI.module.context.6a=在5秒内解答纳维-斯托克斯方程方可使用本模块
 tile.boxplusplus.boxUI.module.context.6b=流体加热 | 碎石机
@@ -216,7 +216,7 @@ tile.boxplusplus.boxUI.module.context.14b=增加16倍并行上限 (即8192X)
 tile.boxplusplus.boxUI.module.context.14c=伊祖米克，生态泉源
 tile.boxplusplus.boxUI.module.context.14d=并行达到巅峰(2147483647)
 tile.boxplusplus.boxUI.module.context.14e=[伊祖米克] 恭喜你通关了本机器!
-tile.boxplusplus.boxUI.module.context.14f=再见，GregTech: New Horizons——
+tile.boxplusplus.boxUI.module.context.14f=再见，所有的GregTech: New Horizons——
 
 tile.boxplusplus.boxwiki.0=下一页
 tile.boxplusplus.boxwiki.1=盒系统百科全书
