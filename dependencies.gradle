@@ -33,4 +33,5 @@ dependencies {
     api('com.github.GTNewHorizons:GTplusplus:1.9.49:dev')
     api('com.github.GTNewHorizons:GoodGenerator:0.6.9:dev')
     api('com.github.GTNewHorizons:GTNH-Lanthanides:0.10.2:dev')
+    api('com.github.GTNewHorizons:amunra:0.4.32:dev')
 }
