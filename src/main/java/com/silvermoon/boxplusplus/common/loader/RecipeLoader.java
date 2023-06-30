@@ -786,6 +786,36 @@ public class RecipeLoader implements Runnable {
             GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator", 1, 8)
         );
         TT_recipeAdder.addResearchableAssemblylineRecipe(
+            new ItemStack(BlockRegister.BoxModule, 1, 13),
+            (int)TierEU.UXV,
+            32767,
+            (int)TierEU.UXV,
+            64,
+            new ItemStack[]{
+                ItemList.Electric_Motor_UXV.get(64),
+                ItemList.Electric_Pump_UXV.get(64),
+                ItemList.Emitter_UXV.get(64),
+                ItemList.Electric_Piston_UXV.get(64),
+                ItemList.Sensor_UXV.get(64),
+                ItemList.Robot_Arm_UXV.get(64),
+                ItemList.GigaChad.get(1),
+                GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator", 48, 8),
+                GT_OreDictUnificator.get("batteryERV", 16),
+                new ItemStack(BlockRegister.BoxRing3, 64),
+                new ItemStack(BlockRegister.BoxRing3, 64),
+                GT_OreDictUnificator.get("ingotTitanium", 1),
+                GT_OreDictUnificator.get("ingotSilver", 1)
+            },
+            new FluidStack[]{
+                FluidRegistry.getFluidStack("molten.magnetohydrodynamicallyconstrainedstarmatter", 20000000),
+                FluidRegistry.getFluidStack("molten.shirabon", 20000000),
+                FluidRegistry.getFluidStack("molten.titanium", 20000000),
+                FluidRegistry.getFluidStack("molten.silver", 20000000)},
+            new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 13),
+            Integer.MAX_VALUE - 1,
+            Integer.MAX_VALUE - 1);
+        //This is the debug test module recipe, maybe oneday we can re-add it...
+        /*TT_recipeAdder.addResearchableAssemblylineRecipe(
             GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 1145),
             Integer.MAX_VALUE - 1,
             32767,
@@ -816,6 +846,6 @@ public class RecipeLoader implements Runnable {
                 FluidRegistry.getFluidStack("molten.silver", 2000000000)},
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 13),
             Integer.MAX_VALUE - 1,
-            Integer.MAX_VALUE - 1);
+            Integer.MAX_VALUE - 1);*/
     }
 }

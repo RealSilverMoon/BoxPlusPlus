@@ -76,7 +76,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private static final IIconContainer boxInactive = new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER");
     private int extendCasing = 0;
     private int routingCount = 1;
-    private final boolean[] moduleSwitch = new boolean[14];
+    private final boolean[] moduleSwitch = new boolean[15];
     private boolean[] moduleActive = new boolean[15];
     private final int[] moduleTier = new int[15];
     private final ArrayList<BoxRoutings> routingMap = new ArrayList<>();
@@ -89,7 +89,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private int maxParallel = 16;
     private int maxRouting = 10;
     //What's that?
-    private static final char[] coreElement = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M'};
+    private static final char[] coreElement = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M','L','K'};
     private BoxRecipe recipe = new BoxRecipe();
     protected TeBoxRing teBoxRing;
     public String userUUID;
@@ -173,6 +173,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 ofBlockAdder((t, b, m) -> {
                     if (b.isAssociatedBlock(BlockRegister.BoxModule) && m == finalI) {
                         t.moduleTier[finalI] = 0;
+                        if(finalI==13)t.maxParallel=2048;
                         return true;
                     }
                     return false;
@@ -180,6 +181,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 ofBlockAdder((t, b, m) -> {
                     if (b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad) && m == finalI) {
                         t.moduleTier[finalI] = 1;
+                        if(finalI==13)t.maxParallel=32768;
                         return true;
                     }
                     t.moduleTier[finalI] = 0;
@@ -295,7 +297,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     @Override
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
         ringCount = 1;
-        moduleActive = new boolean[14];
+        moduleActive = new boolean[moduleActive.length];
         machineError = new int[2];
         switch (ringCountSet) {
             case 1 -> {
@@ -821,7 +823,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             recipe.FinalVoteage += boxRoutings.voltage;
             int[] machine = transMachinesToModule(boxRoutings.RoutingMachine);
             if (!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0], machine[1]);
-            if (boxRoutings.Parallel > 8192 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 1);
+            if (boxRoutings.Parallel > 32768 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(14, 1);
+            if (boxRoutings.Parallel > 2048 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 1);
             if (boxRoutings.Parallel > 512 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 0);
         });
         recipe.FinalItemInput = inputItemContainer.getItemStack();
@@ -1388,7 +1391,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new TextFieldWidget().setGetterInt(() -> routingCount)
                     .setSetterInt(val -> routingCount = val)
-                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 8192 : (Integer.MAX_VALUE - 1)) : maxRouting)
+                    .setNumbers(1, maxRouting)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.04"))
@@ -1567,7 +1570,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 new TextFieldWidget().setGetterInt(() -> routingMap.get(tempCode - 1).Parallel)
                     .setSetterInt(val -> routingMap.get(tempCode - 1).Parallel = val)
-                    .setNumbers(1, moduleActive[13] ? (moduleTier[13] == 0 ? 8192 : (Integer.MAX_VALUE - 1)) : maxParallel)
+                    .setNumbers(1, maxParallel)
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.24"))

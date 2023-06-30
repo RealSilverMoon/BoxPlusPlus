@@ -40,12 +40,10 @@ public class BlockBoxModuleCore extends Block {
 
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
-        for (int i = 0; i < 14; i++) {
+        for (int i = 0; i < 15; i++) {
             ModuleIcon[i] = iconRegister.registerIcon(Tags.MODID +
                 (!isUpdate ? ":modules/BoxModule" : ":modules/BoxModulePlus") + i);
         }
-        ModuleIcon[14] = iconRegister.registerIcon(Tags.MODID +
-            (!isUpdate ? ":modules/BoxModule" : ":modules/BoxModulePlus"));
     }
 
     @Override
@@ -64,7 +62,7 @@ public class BlockBoxModuleCore extends Block {
     }
     @Override
     public void getSubBlocks(Item item, CreativeTabs tabs, List list) {
-        for (int i = 0; i < 14; i++) {
+        for (int i = 0; i < 15; i++) {
             list.add(new ItemStack(item, 1, i));
         }
     }
