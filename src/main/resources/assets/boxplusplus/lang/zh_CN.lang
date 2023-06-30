@@ -29,6 +29,7 @@ tile.boxplusplus_boxmodule.10.name=物态并联矩阵
 tile.boxplusplus_boxmodule.11.name=预留模块
 tile.boxplusplus_boxmodule.12.name=聚焦发生器
 tile.boxplusplus_boxmodule.13.name=如星空般深蓝
+tile.boxplusplus_boxmodule.14.name=[调试物品·隐藏的秘密]:灌铅骰子
 
 tile.boxplusplus_boxmoduleplus.0.name=确定性原理
 tile.boxplusplus_boxmoduleplus.1.name=大集体2.0
@@ -44,6 +45,7 @@ tile.boxplusplus_boxmoduleplus.10.name=真理之箱
 tile.boxplusplus_boxmoduleplus.11.name=预留升级模块
 tile.boxplusplus_boxmoduleplus.12.name=克丽斯腾， “未来”
 tile.boxplusplus_boxmoduleplus.13.name=伊祖米克， 生态泉源
+tile.boxplusplus_boxmoduleplus.14.name=[调试物品·隐藏的秘密]:告别
 
 tile.boxplusplus.boxinfo.02=一盒一世界, 一环一天堂
 tile.boxplusplus.boxinfo.03=掌中握无限, 刹那成永恒
@@ -212,11 +214,15 @@ tile.boxplusplus.boxUI.module.context.13d=解锁无线网络
 tile.boxplusplus.boxUI.module.context.13e=[克丽斯腾] 直接接入机器拥有者的无线网络,时间减少为配方的§41/10000§r(但不会低于§210t§r),消耗电力恒定为配方值.
 tile.boxplusplus.boxUI.module.context.13f=我希望...克丽斯腾希望，这能开启下一个时代
 tile.boxplusplus.boxUI.module.context.14a=是否终有一天，我们会起身反抗曾经交予我们无数谜题的——
-tile.boxplusplus.boxUI.module.context.14b=增加16倍并行上限 (即8192X)
+tile.boxplusplus.boxUI.module.context.14b=增加4倍并行上限 (即2048X)
 tile.boxplusplus.boxUI.module.context.14c=伊祖米克，生态泉源
-tile.boxplusplus.boxUI.module.context.14d=并行达到巅峰(2147483647)
-tile.boxplusplus.boxUI.module.context.14e=[伊祖米克] 恭喜你通关了本机器!
-tile.boxplusplus.boxUI.module.context.14f=再见，所有的GregTech: New Horizons——
+tile.boxplusplus.boxUI.module.context.14d=增加64倍并行上限 (即32768X)
+tile.boxplusplus.boxUI.module.context.14e=[伊祖米克] 我们几乎做到了...
+tile.boxplusplus.boxUI.module.context.14f=如星空般深蓝。
+tile.boxplusplus.boxUI.module.context.15a=上帝是会掷骰子,亲爱的,但是我的骰子灌了铅.
+tile.boxplusplus.boxUI.module.context.15b=锁定概率配方产出为100%
+tile.boxplusplus.boxUI.module.context.15d=盒系统超载作业
+tile.boxplusplus.boxUI.module.context.15f=再见，所有的GregTech: New Horizons——
 
 tile.boxplusplus.boxwiki.0=下一页
 tile.boxplusplus.boxwiki.1=盒系统百科全书
@@ -238,8 +244,8 @@ tile.boxplusplus.boxwiki.16=本页包含盒系统的详细参数。§l若记环�
 tile.boxplusplus.boxwiki.17=R=1，N=16，M=10，不允许超频
 tile.boxplusplus.boxwiki.18=R=2，N=128，M=50，有损超频，(R2开始)支持高电流能源仓
 tile.boxplusplus.boxwiki.19=R=3，N=512，M=99，无损超频
-tile.boxplusplus.boxwiki.20=R=3，安装深蓝之树，N=8192，M=99，无损超频
-tile.boxplusplus.boxwiki.21=R=3，安装伊祖米克，N=2147483648，M=2147483648，无损超频
+tile.boxplusplus.boxwiki.20=R=3，安装深蓝之树，N=2048，M=99，无损超频
+tile.boxplusplus.boxwiki.21=R=3，安装伊祖米克，N=32768，M=999，无损超频
 tile.boxplusplus.boxwiki.22=最终配方的时间计算：
 tile.boxplusplus.boxwiki.23=最终配方的功率计算：
 tile.boxplusplus.boxwiki.24=本页包含了所有盒模块及升级信息。他们是：

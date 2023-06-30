@@ -29,6 +29,7 @@ tile.boxplusplus_boxmodule.10.name=State Parallel Matrix
 tile.boxplusplus_boxmodule.11.name=Reserved Module
 tile.boxplusplus_boxmodule.12.name=Focus Generator
 tile.boxplusplus_boxmodule.13.name=Blue like the Starry Sky
+tile.boxplusplus_boxmodule.14.name=[Debug Item·Hidden Secret] Lead-filled dice
 
 tile.boxplusplus_boxmoduleplus.0.name=Deterministic Principle
 tile.boxplusplus_boxmoduleplus.1.name=Mass Collective 2.0
@@ -44,6 +45,7 @@ tile.boxplusplus_boxmoduleplus.10.name=Box of Truth
 tile.boxplusplus_boxmoduleplus.11.name=Reserved Upgrade Module
 tile.boxplusplus_boxmoduleplus.12.name=Christen, "The Future"
 tile.boxplusplus_boxmoduleplus.13.name=Izumikun, Ecological Spring
+tile.boxplusplus_boxmoduleplus.14.name=[Debug Item·Hidden Secret] Farewell
 
 tile.boxplusplus.boxinfo.02=To see a World in a Box, And a Heaven in a Ring
 tile.boxplusplus.boxinfo.03=Hold Infinity in the palm of your hand, And Eternity in an hour
@@ -212,11 +214,15 @@ tile.boxplusplus.boxUI.module.context.13d=Unlock wireless network
 tile.boxplusplus.boxUI.module.context.13e=[Christen] Directly connects to the wireless network of the machine owner, time reduced to §41/10000§r of the recipe (but not less than §210t§r), constant power consumption equal to the recipe value.
 tile.boxplusplus.boxUI.module.context.13f=I hope... Christen hopes that this will open up the next era.
 tile.boxplusplus.boxUI.module.context.14a=Will there come a day when we rise up against the countless mysteries bestowed upon us by...
-tile.boxplusplus.boxUI.module.context.14b=Increase parallel limit by 16 times (i.e., 8192X)
+tile.boxplusplus.boxUI.module.context.14b=Increase parallel limit by 4 times (2048X)
 tile.boxplusplus.boxUI.module.context.14c=Izumikun, Ecological Wellspring
-tile.boxplusplus.boxUI.module.context.14d=Reach the pinnacle of parallelism (2147483647)
-tile.boxplusplus.boxUI.module.context.14e=[izumikun] Congratulations on completing this machine!
-tile.boxplusplus.boxUI.module.context.14f=Farewell, All of GregTech: New Horizons—
+tile.boxplusplus.boxUI.module.context.14d=Increase parallel limit by 64 times (32768X)
+tile.boxplusplus.boxUI.module.context.14e=[izumikun] We almost there.
+tile.boxplusplus.boxUI.module.context.14f=Blue like the Starry Sky
+tile.boxplusplus.boxUI.module.context.15a=God does play dice, dear, but my dice are loaded.
+tile.boxplusplus.boxUI.module.context.15b=Locking probability formula output to 100%.
+tile.boxplusplus.boxUI.module.context.15d=Box system overload operation.
+tile.boxplusplus.boxUI.module.context.15f=Farewell, all of GregTech: New Horizons——
 
 tile.boxplusplus.boxwiki.0=Next Page
 tile.boxplusplus.boxwiki.1=Box System Encyclopedia
@@ -237,9 +243,9 @@ tile.boxplusplus.boxwiki.15=7. Click §lProcess Details§r to open the first pro
 tile.boxplusplus.boxwiki.16=This page details Box system parameters.We assume: R (number of rings), N (maximum parallelism per process), and M (maximum number of processes).
 tile.boxplusplus.boxwiki.17=R=1, N=16, M=10, no overclocking allowed
 tile.boxplusplus.boxwiki.18=R=2, N=128, M=50, overclocking with loss
-tile.boxplusplus.boxwiki.19=R=3, N=512, M=99, overclocking without loss
-tile.boxplusplus.boxwiki.20=R=3, install Deep Blue Tree, N=2048, M=99, overclocking without loss
-tile.boxplusplus.boxwiki.21=R=3, install Izumik, N=2147483648, M=2147483648, overclocking without loss
+tile.boxplusplus.boxwiki.19=R=3, N=512, M=99, perfect overclocking
+tile.boxplusplus.boxwiki.20=R=3, install Deep Blue Tree, N=2048, M=99, perfect overclocking
+tile.boxplusplus.boxwiki.21=R=3, install Izumik, N=32768, M=999, perfect overclocking
 tile.boxplusplus.boxwiki.22=Time calculation for the final recipe:
 tile.boxplusplus.boxwiki.23=Power calculation for the final recipe:
 tile.boxplusplus.boxwiki.24=This page lists all Box modules and upgrades:
