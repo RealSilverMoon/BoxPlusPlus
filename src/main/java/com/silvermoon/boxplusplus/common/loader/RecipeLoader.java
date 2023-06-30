@@ -43,7 +43,7 @@ public class RecipeLoader implements Runnable {
                 new ItemStack(BlockRegister.SpaceExtend, 64, 0),
                 new ItemStack(BlockRegister.SpaceExtend, 64, 0),
                 new ItemStack(BlockRegister.SpaceExtend, 64, 0),
-                ItemList.Field_Generator_IV.get(32),
+                ItemList.Field_Generator_IV.get(4),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15470),
                 ItemList.Tool_DataOrb.get(16),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiPart", 1, 360),
@@ -716,8 +716,8 @@ public class RecipeLoader implements Runnable {
             (int) TierEU.RECIPE_UIV,
             16,
             new ItemStack[]{
-                GT_ModHandler.getModItem(GoodGenerator.ID, "componentAssemblylineCasing", 16, 32023),
-                GT_ModHandler.getModItem(GoodGenerator.ID, "componentAssemblylineCasing", 16, 32023),
+                GT_ModHandler.getModItem(GoodGenerator.ID, "componentAssemblylineCasing", 16, 10),
+                GT_ModHandler.getModItem(GoodGenerator.ID, "componentAssemblylineCasing", 16, 10),
                 GT_OreDictUnificator.get("blockSpaceTime", 4),
                 GT_OreDictUnificator.get("blockSpaceTime", 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 32026),
@@ -792,6 +792,8 @@ public class RecipeLoader implements Runnable {
             (int)TierEU.UXV,
             64,
             new ItemStack[]{
+                new ItemStack(BlockRegister.BoxRing3, 64),
+                new ItemStack(BlockRegister.BoxRing3, 64),
                 ItemList.Electric_Motor_UXV.get(64),
                 ItemList.Electric_Pump_UXV.get(64),
                 ItemList.Emitter_UXV.get(64),
@@ -801,8 +803,6 @@ public class RecipeLoader implements Runnable {
                 ItemList.GigaChad.get(1),
                 GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator", 48, 8),
                 GT_OreDictUnificator.get("batteryERV", 16),
-                new ItemStack(BlockRegister.BoxRing3, 64),
-                new ItemStack(BlockRegister.BoxRing3, 64),
                 GT_OreDictUnificator.get("ingotTitanium", 1),
                 GT_OreDictUnificator.get("ingotSilver", 1)
             },
