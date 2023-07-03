@@ -1631,7 +1631,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         modules.append(i18n("tile.boxplusplus.boxUI.27"));
         for (int i : recipe.requireModules.keySet()) {
             modules.append(recipe.requireModules.get(i) == 1 ? i18n("tile.boxplusplus.boxUI.module." + (i + 1)) + " (T2)" :
-                i18n("tile.boxplusplus.boxUI.module." + (i + 1))).append(" ");
+                i18n("tile.boxplusplus.boxUI.module." + (i + 1))).append(" | ");
         }
         builder.widget(new TextWidget(modules.toString()).setMaxWidth(180).setPos(25, Ycord += 16))
             .widget(
