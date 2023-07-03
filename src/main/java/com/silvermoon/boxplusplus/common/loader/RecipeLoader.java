@@ -261,38 +261,6 @@ public class RecipeLoader implements Runnable {
             .eut(TierEU.RECIPE_LuV)
             .duration(2400)
             .addTo(sAssemblerRecipes);
-        GT_Values.RA.stdBuilder()
-            .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 3))
-            .noFluidOutputs()
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 1),
-                ItemList.Machine_Multi_Furnace.get(64),
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 849),
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 862),
-                ItemList.Casing_Coil_Cupronickel.get(64),
-                ItemList.LuV_Coil.get(64),
-                ItemList.Casing_Firebox_Titanium.get(64),
-                ItemList.Machine_HV_LightningRod.get(16))
-            .fluidInputs(FluidRegistry.getFluidStack("glue", 64000))
-            .eut(TierEU.RECIPE_LuV)
-            .duration(2400)
-            .addTo(sAssemblerRecipes);
-        GT_Values.RA.stdBuilder()
-            .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 3))
-            .noFluidOutputs()
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 1),
-                ItemList.Machine_Multi_Furnace.get(64),
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 849),
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 862),
-                ItemList.Casing_Coil_Cupronickel.get(64),
-                ItemList.LuV_Coil.get(64),
-                ItemList.Casing_Firebox_Titanium.get(64),
-                ItemList.Machine_HV_LightningRod.get(16))
-            .fluidInputs(FluidRegistry.getFluidStack("glue", 64000))
-            .eut(TierEU.RECIPE_LuV)
-            .duration(2400)
-            .addTo(sAssemblerRecipes);
         GT_Values.RA.stdBuilder().metadata(RESEARCH_ITEM,
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 860))
             .metadata(RESEARCH_TIME, 12000)
