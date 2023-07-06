@@ -100,7 +100,7 @@ tile.boxplusplus.boxUI.28=Rings:
 tile.boxplusplus.boxError.1=Reason: Failed Ring-1 structure check.
 tile.boxplusplus.boxError.2=Reason: Failed Ring-2 structure check.
 tile.boxplusplus.boxError.3=Reason: Failed Ring-3 structure check.
-tile.boxplusplus.boxError.4=Reason: Failed module structure check. Error modules:
+tile.boxplusplus.boxError.4=Error modules:
 tile.boxplusplus.boxError.5=Reason: Failed high-ampere energy hatch check. Hint: Upgrade ring count to 2 or above.
 tile.boxplusplus.boxError.6=Reason: Failed laser energy hatch check. Hint: Install and activate Laser Focus Module.
 

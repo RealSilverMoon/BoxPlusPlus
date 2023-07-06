@@ -16,8 +16,6 @@ public class BoxModule {
     public static BoxModule Phase_Parallel_Matrix = new BoxModule("Phase_Parallel_Matrix", -21, 6, -1);
     public static BoxModule Arrayed_and_Maneuverable_Hyperbeam_Receiver_Redirector = new BoxModule("Arrayed_and_Maneuverable_Hyperbeam_Receiver_Redirector", 2, 7, -1);
     public static BoxModule CAERULA_ARBOR = new BoxModule("CAERULA_ARBOR", 2, -4, -1);
-    public static BoxModule HIDDEN_A = new BoxModule("HIDDEN_A", 2, 7, -1);
-    public static BoxModule HIDDEN_B = new BoxModule("HIDDEN_B", 2, -4, -1);
 
     public String[][] moduleStructure;
     public int horizontalOffset;
@@ -94,16 +92,6 @@ public class BoxModule {
             {"     ", "  G  ", " GMG ", "  G  ", "     "},
             {"     ", "     ", "  G  ", "     ", "     "},
             {"     ", "     ", "  G  ", "     ", "     "}};
-        HIDDEN_A.moduleStructure = new String[][]{
-            {"  G  ", " GGG ", "GGGGG", " GGG ", "  G  "},
-            {"     ", "  G  ", " GLG ", "  G  ", "     "},
-            {"     ", "     ", "  G  ", "     ", "     "},
-            {"     ", "     ", "  G  ", "     ", "     "}};
-        HIDDEN_B.moduleStructure = new String[][]{
-            {"  G  ", " GGG ", "GGGGG", " GGG ", "  G  "},
-            {"     ", "  G  ", " GKG ", "  G  ", "     "},
-            {"     ", "     ", "  G  ", "     ", "     "},
-            {"     ", "     ", "  G  ", "     ", "     "}};
     }
 
     public static BoxModule getModuleByIndex(int index) {
@@ -121,7 +109,6 @@ public class BoxModule {
             case 10, 11 -> Phase_Parallel_Matrix;
             case 12 -> Arrayed_and_Maneuverable_Hyperbeam_Receiver_Redirector;
             case 13 -> CAERULA_ARBOR;
-            case 14 -> HIDDEN_A;
             default -> null;
         };
     }

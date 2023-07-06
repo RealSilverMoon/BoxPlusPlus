@@ -89,10 +89,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private int maxParallel = 16;
     private int maxRouting = 10;
     //What's that?
-    private static final char[] coreElement = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M','L','K'};
+    private static final char[] coreElement = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M'};
     private BoxRecipe recipe = new BoxRecipe();
     protected TeBoxRing teBoxRing;
     public String userUUID;
+    public boolean debug=false;
     public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
 
     static {
@@ -179,9 +180,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     return false;
                 }, BlockRegister.BoxModule, i),
                 ofBlockAdder((t, b, m) -> {
+                    if(m==14&&finalI==13&&b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad)){
+                        t.debug=true;
+                        t.maxParallel=Integer.MAX_VALUE;
+                        return true;
+                    }
                     if (b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad) && m == finalI) {
                         t.moduleTier[finalI] = 1;
-                        if(finalI==13)t.maxParallel=32768;
+                        if(m==13)t.maxParallel=32768;
                         return true;
                     }
                     t.moduleTier[finalI] = 0;
@@ -297,6 +303,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     @Override
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
         ringCount = 1;
+        debug=false;
         moduleActive = new boolean[moduleActive.length];
         machineError = new int[2];
         switch (ringCountSet) {
@@ -350,7 +357,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 return false;
             }
         }
-        for (int i = 0; i < 14; i++) {
+        for (int i = 0; i < 15; i++) {
             if (moduleSwitch[i]) {
                 if (checkPiece(getModuleByIndex(i).name,
                     getModuleByIndex(i).horizontalOffset, getModuleByIndex(i).verticalOffset, getModuleByIndex(i).depthOffset)) {
@@ -395,6 +402,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         if ((inputItem.isEmpty() && !recipe.FinalItemInput.isEmpty())
             || (inputFluid.isEmpty() && !recipe.FinalFluidInput.isEmpty())) return false;
         for (int k : recipe.requireModules.keySet()) {
+            if(k==13&&recipe.requireModules.get(k)==2&&!debug)return false;
             if (!moduleActive[k]) return false;
             if (recipe.requireModules.get(k) == 1 && moduleTier[k] != 1) return false;
         }
@@ -823,9 +831,9 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             recipe.FinalVoteage += boxRoutings.voltage;
             int[] machine = transMachinesToModule(boxRoutings.RoutingMachine);
             if (!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0], machine[1]);
-            if (boxRoutings.Parallel > 32768 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(14, 1);
-            if (boxRoutings.Parallel > 2048 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 1);
-            if (boxRoutings.Parallel > 512 && !recipe.requireModules.containsKey(13)) recipe.requireModules.put(13, 0);
+            if (boxRoutings.Parallel > 32768 ) recipe.requireModules.put(13, 2);
+            else if (boxRoutings.Parallel > 2048 ) recipe.requireModules.put(13, 1);
+            else if (boxRoutings.Parallel > 512 ) recipe.requireModules.put(13, 0);
         });
         recipe.FinalItemInput = inputItemContainer.getItemStack();
         recipe.FinalItemOutput = outputItemContainer.getItemStack();
@@ -841,6 +849,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     @Override
     public void saveNBTData(NBTTagCompound NBT) {
         super.saveNBTData(NBT);
+        NBT.setBoolean("Debug",debug);
         NBTTagCompound Routing = new NBTTagCompound();
         Routing.setInteger("TotalRouting", routingCount);
         Routing.setInteger("ActiveRouting", routingMap.size());
@@ -876,6 +885,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         routingCount = Routing.getInteger("TotalRouting");
         int ActiveRouting = Routing.getInteger("ActiveRouting");
         routingStatus = NBT.getInteger("Status");
+        debug=NBT.getBoolean("Debug");
         routingMap.clear();
         for (int i = 0; i < ActiveRouting; i++) {
             routingMap.add(new BoxRoutings(Routing.getCompoundTag("Routing" + (i + 1))));
