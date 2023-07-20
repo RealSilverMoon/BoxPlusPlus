@@ -143,7 +143,7 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get(OrePrefixes.pipeMedium, Materials.Titanium, 64),
                 GT_OreDictUnificator.get(OrePrefixes.rotor, Materials.Titanium, 64),
                 ItemList.Field_Generator_IV.get(32),
-                GT_OreDictUnificator.get("circuitUltimate", 4))
+                new Object[]{OrePrefixes.circuit.get(Materials.Ultimate), 4})
             .fluidInputs(FluidRegistry.getFluidStack("molten.tanmolyium beta-c", 51840))
             .eut(TierEU.RECIPE_LuV)
             .duration(1200)
@@ -174,13 +174,13 @@ public class RecipeLoader implements Runnable {
             10240,
             8000000,
             32,
-            new ItemStack[]{
+            new Object[]{
                 GT_OreDictUnificator.get("ringAstralTitanium", 64),
                 GT_OreDictUnificator.get("ringAstralTitanium", 64),
                 GT_OreDictUnificator.get("ringAstralTitanium", 64),
                 GT_OreDictUnificator.get("ringAstralTitanium", 64),
                 GT_OreDictUnificator.get("plateDenseAstralTitanium", 64),
-                GT_OreDictUnificator.get("circuitOptical", 32),
+                new Object[]{OrePrefixes.circuit.get(Materials.Optical), 32},
                 GT_OreDictUnificator.get("batteryUMV", 4),
                 ItemList.Field_Generator_UEV.get(4),
                 GT_ModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 64, 12),
@@ -607,14 +607,14 @@ public class RecipeLoader implements Runnable {
             128,
             8000000,
             1,
-            new ItemStack[]{
+            new Object[]{
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 1132),
                 ItemList.Electric_Motor_UEV.get(32),
                 ItemList.Electric_Piston_UEV.get(8),
                 ItemList.Electric_Pump_UEV.get(16),
                 ItemList.Conveyor_Module_UEV.get(8),
                 ItemList.Robot_Arm_UEV.get(8),
-                GT_OreDictUnificator.get("circuitOptical", 4),
+                new Object[]{OrePrefixes.circuit.get(Materials.Optical), 4},
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemExtremeStorageCell.Singularity", 1),
                 GT_OreDictUnificator.get(OrePrefixes.plateDouble, Materials.Titanium, 32),
                 GT_OreDictUnificator.get("rotorAstralTitanium", 16),
