@@ -14,7 +14,7 @@ public class FluidContainer {
         if (!stack.containsKey(name)) {
             stack.put(name, new FluidStack(input.getFluid(), (int) Math.min((long) input.amount * multiple, Integer.MAX_VALUE)));
         } else {
-            stack.get(name).amount = (int) Math.min((long) stack.get(name).amount * multiple + input.amount, Integer.MAX_VALUE);
+            stack.get(name).amount = (int) Math.min(stack.get(name).amount + (long) input.amount * multiple, Integer.MAX_VALUE);
         }
     }
 
