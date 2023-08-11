@@ -690,7 +690,7 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get("blockSpaceTime", 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 32026),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12734),
-                GT_OreDictUnificator.get("blockTranscendentMetal", 4),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 14006),
                 GT_OreDictUnificator.get("blockSpaceTime", 16),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
@@ -715,6 +715,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack[]{
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31151),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 16999),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 799),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.5", 64, 14),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.5", 64, 10),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.4", 64, 4),

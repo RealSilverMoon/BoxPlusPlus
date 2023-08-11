@@ -7,6 +7,7 @@ import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_H
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyTunnel;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
+import com.gtnewhorizons.gtnhintergalactic.recipe.IG_RecipeAdder;
 import com.gtnewhorizons.modularui.api.drawable.AdaptableUITexture;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.Text;
@@ -21,10 +22,7 @@ import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
-import gregtech.api.enums.Element;
-import gregtech.api.enums.ItemList;
-import gregtech.api.enums.Materials;
-import gregtech.api.enums.Textures;
+import gregtech.api.enums.*;
 import gregtech.api.gui.modularui.GT_UIInfos;
 import gregtech.api.gui.modularui.GT_UITextures;
 import gregtech.api.interfaces.IGlobalWirelessEnergy;
@@ -36,6 +34,8 @@ import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_ExtendedPow
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_InputBus;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
+import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.*;
 import gregtech.common.items.behaviors.Behaviour_DataOrb;
@@ -49,8 +49,10 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,7 +95,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private BoxRecipe recipe = new BoxRecipe();
     protected TeBoxRing teBoxRing;
     public String userUUID;
-    public boolean debug=false;
+    public boolean debug = false;
     public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
 
     static {
@@ -174,20 +176,20 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 ofBlockAdder((t, b, m) -> {
                     if (b.isAssociatedBlock(BlockRegister.BoxModule) && m == finalI) {
                         t.moduleTier[finalI] = 0;
-                        if(finalI==13)t.maxParallel=2048;
+                        if (finalI == 13) t.maxParallel = 2048;
                         return true;
                     }
                     return false;
                 }, BlockRegister.BoxModule, i),
                 ofBlockAdder((t, b, m) -> {
-                    if(m==14&&finalI==13&&b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad)){
-                        t.debug=true;
-                        t.maxParallel=Integer.MAX_VALUE;
+                    if (m == 14 && finalI == 13 && b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad)) {
+                        t.debug = true;
+                        t.maxParallel = Integer.MAX_VALUE;
                         return true;
                     }
                     if (b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad) && m == finalI) {
                         t.moduleTier[finalI] = 1;
-                        if(m==13)t.maxParallel=32768;
+                        if (m == 13) t.maxParallel = 32768;
                         return true;
                     }
                     t.moduleTier[finalI] = 0;
@@ -303,7 +305,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     @Override
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
         ringCount = 1;
-        debug=false;
+        debug = false;
         moduleActive = new boolean[moduleActive.length];
         machineError = new int[2];
         switch (ringCountSet) {
@@ -391,20 +393,22 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      * @return true if correct
      */
     @Override
-    public boolean checkRecipe(ItemStack stack) {
+    @NotNull
+    public CheckRecipeResult checkProcessing() {
         lEUt = 0;
         mMaxProgresstime = 0;
         mOutputItems = null;
         mOutputFluids = null;
-        if (!recipe.islocked) return false;
+        if (!recipe.islocked) return CheckRecipeResultRegistry.NO_RECIPE;
         List<ItemStack> inputItem = getStoredInputs();
         List<FluidStack> inputFluid = getStoredFluids();
         if ((inputItem.isEmpty() && !recipe.FinalItemInput.isEmpty())
-            || (inputFluid.isEmpty() && !recipe.FinalFluidInput.isEmpty())) return false;
+            || (inputFluid.isEmpty() && !recipe.FinalFluidInput.isEmpty())) return CheckRecipeResultRegistry.NO_RECIPE;
         for (int k : recipe.requireModules.keySet()) {
-            if(k==13&&recipe.requireModules.get(k)==2&&!debug)return false;
-            if (!moduleActive[k]) return false;
-            if (recipe.requireModules.get(k) == 1 && moduleTier[k] != 1) return false;
+            if (k == 13 && recipe.requireModules.get(k) == 2 && !debug)
+                return CheckRecipeResultRegistry.insufficientMachineTier(13);
+            if (!moduleActive[k] || recipe.requireModules.get(k) == 1 && moduleTier[k] != 1)
+                return CheckRecipeResultRegistry.insufficientMachineTier(k);
         }
         ItemContainer Icontainer = new ItemContainer();
         FluidContainer Fcontainer = new FluidContainer();
@@ -422,9 +426,9 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         BoxRecipe.FluidOneBox(totalInputFluid, requireFluid);
         return (!recipe.FinalItemInput.isEmpty()) ?
             (!recipe.FinalFluidInput.isEmpty() ?
-                (requireItem.isEmpty() && requireFluid.isEmpty() && runBox(inputItem, inputFluid)) :
-                (requireItem.isEmpty() && runBox(inputItem, inputFluid))) :
-            (requireFluid.isEmpty() && runBox(inputItem, inputFluid));
+                ((requireItem.isEmpty() && requireFluid.isEmpty()) ? runBox(inputItem, inputFluid) : CheckRecipeResultRegistry.NO_RECIPE) :
+                (requireItem.isEmpty() ? runBox(inputItem, inputFluid) : CheckRecipeResultRegistry.NO_RECIPE)) :
+            (requireFluid.isEmpty() ? runBox(inputItem, inputFluid) : CheckRecipeResultRegistry.NO_RECIPE);
     }
 
     /**
@@ -434,17 +438,19 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      * @param inputFluid All fluidstack that input
      * @return true if the box starts
      */
-    public boolean runBox(List<ItemStack> inputItem, List<FluidStack> inputFluid) {
+    public CheckRecipeResult runBox(List<ItemStack> inputItem, List<FluidStack> inputFluid) {
         if (!moduleActive[12] || moduleTier[12] == 0) {
-            if (getMaxInputEu() < recipe.FinalVoteage) return false;
+            if (getMaxInputEu() < recipe.FinalVoteage)
+                return CheckRecipeResultRegistry.insufficientPower(recipe.FinalVoteage);
             lEUt = -recipe.FinalVoteage;
         }
         if (moduleActive[12] && moduleTier[12] == 1
             && !addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
-            return false;
+            return CheckRecipeResultRegistry.insufficientPower(recipe.FinalVoteage * recipe.FinalTime);
         }
         calTime();
-        if (this.lEUt >= Long.MAX_VALUE - 1 || this.mMaxProgresstime >= Integer.MAX_VALUE - 1) return false;
+        if (this.lEUt >= Long.MAX_VALUE - 1) return CheckRecipeResultRegistry.POWER_OVERFLOW;
+        if (this.mMaxProgresstime >= Integer.MAX_VALUE - 1) return CheckRecipeResultRegistry.DURATION_OVERFLOW;
         mEfficiencyIncrease = 10000;
         mEfficiency = 10000 - (this.getIdealStatus() - this.getRepairStatus()) * 1000;
         List<ItemStack> requireItem = new ArrayList<>();
@@ -460,7 +466,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         mOutputItems = recipe.FinalItemOutput.toArray(new ItemStack[0]);
         mOutputFluids = recipe.FinalFluidOutput.toArray(new FluidStack[0]);
         updateSlots();
-        return true;
+        return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
     public void calTime() {
@@ -766,13 +772,27 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                 routingStatus = 3;
                                 return;
                             }
-                            case "electricimplosioncompressor" -> RecipeMap = GT_TileEntity_ElectricImplosionCompressor.eicMap;
+                            case "electricimplosioncompressor" ->
+                                RecipeMap = GT_TileEntity_ElectricImplosionCompressor.eicMap;
                             case "preciseassembler" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.PA;
                             case "frf" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.FRF;
-                            case "digester" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
-                            case "dissolution_tank" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
+                            case "digester" ->
+                                RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
+                            case "dissolution_tank" ->
+                                RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
                             case "cyclotron.tier.single" -> RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
-                            case "multimachine.transcendentplasmamixer" -> RecipeMap = GT_Recipe.GT_Recipe_Map.sTranscendentPlasmaMixerRecipes;
+                            case "multimachine.transcendentplasmamixer" ->
+                                RecipeMap = GT_Recipe.GT_Recipe_Map.sTranscendentPlasmaMixerRecipes;
+                            case "projectmoduleassemblert3" ->
+                                RecipeMap = IG_RecipeAdder.instance.sSpaceAssemblerRecipes;
+                            case "industrialmassfab.controller.tier.single" -> {
+                                routingMap.add(new BoxRoutings(FluidRegistry.getFluidStack("ic2uumater", 1000),
+                                    RoutingMachine.getStackForm(1),
+                                    TierEU.RECIPE_UEV,
+                                    20));
+                                routingStatus = 0;
+                                return;
+                            }
                             default -> {
                                 RecipeMap = RoutingMachine.getRecipeMap();
                                 if (RecipeMap == null) {
@@ -829,11 +849,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             OutputFluidContainer.addFluidStackList(boxRoutings.OutputFluid, boxRoutings.Parallel);
             recipe.FinalTime += boxRoutings.time * 333 / (1 + Math.exp(-(boxRoutings.Parallel - 100) / 20.0));
             recipe.FinalVoteage += boxRoutings.voltage;
-            int[] machine = transMachinesToModule(boxRoutings.RoutingMachine);
+            int[] machine = transMachinesToModule(boxRoutings);
             if (!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0], machine[1]);
-            if (boxRoutings.Parallel > 32768 ) recipe.requireModules.put(13, 2);
-            else if (boxRoutings.Parallel > 2048 ) recipe.requireModules.put(13, 1);
-            else if (boxRoutings.Parallel > 512 ) recipe.requireModules.put(13, 0);
+            if (boxRoutings.Parallel > 32768) recipe.requireModules.put(13, 2);
+            else if (boxRoutings.Parallel > 2048) recipe.requireModules.put(13, 1);
+            else if (boxRoutings.Parallel > 512) recipe.requireModules.put(13, 0);
         });
         recipe.FinalItemInput = inputItemContainer.getItemStack();
         recipe.FinalItemOutput = outputItemContainer.getItemStack();
@@ -849,7 +869,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     @Override
     public void saveNBTData(NBTTagCompound NBT) {
         super.saveNBTData(NBT);
-        NBT.setBoolean("Debug",debug);
+        NBT.setBoolean("Debug", debug);
         NBTTagCompound Routing = new NBTTagCompound();
         Routing.setInteger("TotalRouting", routingCount);
         Routing.setInteger("ActiveRouting", routingMap.size());
@@ -885,7 +905,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         routingCount = Routing.getInteger("TotalRouting");
         int ActiveRouting = Routing.getInteger("ActiveRouting");
         routingStatus = NBT.getInteger("Status");
-        debug=NBT.getBoolean("Debug");
+        debug = NBT.getBoolean("Debug");
         routingMap.clear();
         for (int i = 0; i < ActiveRouting; i++) {
             routingMap.add(new BoxRoutings(Routing.getCompoundTag("Routing" + (i + 1))));

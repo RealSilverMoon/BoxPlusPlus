@@ -21,6 +21,7 @@ public class BoxRoutings {
     public List<Integer> OutputChance = new ArrayList<>();
     public List<FluidStack> InputFluid = new ArrayList<>();
     public List<FluidStack> OutputFluid = new ArrayList<>();
+    public int special = 0;
     public int Parallel = 1;
     public int time;
     public Long voltage;
@@ -44,11 +45,13 @@ public class BoxRoutings {
                 time *= 4;
                 OutputFluid.forEach(f -> f.amount = (int) (f.amount * 0.75));
             }
+            case "multimachine.blastfurnace" -> this.special = recipe.mSpecialValue;
             case "componentassemblyline" -> time /= 16;
             case "quantumforcetransformer.controller.tier.single" ->
-                OutputFluid.forEach(f->f.amount= f.amount/(OutputFluid.size()+OutputItem.size()));
+                OutputFluid.forEach(f -> f.amount = f.amount / (OutputFluid.size() + OutputItem.size()));
         }
     }
+
     public BoxRoutings(ItemStack inputs, ItemStack outputs, ItemStack machine, Long v, int t) {
         InputItem.add(inputs);
         OutputItem.add(outputs);
@@ -57,6 +60,7 @@ public class BoxRoutings {
         voltage = v;
         time = t;
     }
+
     public BoxRoutings(ItemStack[] inputs, ItemStack outputs, FluidStack[] fInputs, ItemStack machine, Long v, int t) {
         InputItem.addAll(Arrays.asList(inputs));
         InputFluid.addAll(Arrays.asList(fInputs));
@@ -66,9 +70,17 @@ public class BoxRoutings {
         voltage = v;
         time = t;
     }
+
+    public BoxRoutings(FluidStack fOutputs, ItemStack machine, Long v, int t) {
+        OutputFluid.add(fOutputs);
+        RoutingMachine = machine;
+        voltage = v;
+        time = t;
+    }
+
     public BoxRoutings(InventoryCrafting inputs, ItemStack outputs, ItemStack machine) {
-        for(int i=0;i<9;i++){
-            if(inputs.getStackInSlot(i)==null)break;
+        for (int i = 0; i < 9; i++) {
+            if (inputs.getStackInSlot(i) == null) break;
             InputItem.add(inputs.getStackInSlot(i).copy());
         }
         ItemStack b = outputs.copy();
