@@ -786,7 +786,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             case "projectmoduleassemblert3" ->
                                 RecipeMap = IG_RecipeAdder.instance.sSpaceAssemblerRecipes;
                             case "industrialmassfab.controller.tier.single" -> {
-                                routingMap.add(new BoxRoutings(FluidRegistry.getFluidStack("ic2uumater", 1000),
+                                routingMap.add(new BoxRoutings(FluidRegistry.getFluidStack("ic2uumatter", 1000),
                                     RoutingMachine.getStackForm(1),
                                     TierEU.RECIPE_UEV,
                                     20));

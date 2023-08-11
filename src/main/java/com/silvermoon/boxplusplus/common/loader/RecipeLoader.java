@@ -490,7 +490,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockspecialcasings.1", 56, 13))
             .fluidInputs(
                 FluidRegistry.getFluidStack("refinedglue", 8000),
-                FluidRegistry.getFluidStack("ic2uumater", 128000))
+                FluidRegistry.getFluidStack("ic2uumatter", 128000))
             .eut(TierEU.RECIPE_UV)
             .duration(1200)
             .addTo(AssemblyLine);
