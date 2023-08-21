@@ -117,15 +117,15 @@ public class RecipeLoader implements Runnable {
             8,
             new ItemStack[]{
                 GT_ModHandler.getModItem(GTNHIntergalactic.ID, "gt.blockcasingsSE", 64),
-                GT_OreDictUnificator.get("blockAstralTitanium", 64),
-                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 64, 34),
+                GT_OreDictUnificator.get("blockAstralTitanium", 48),
+                GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 32, 34),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 1, 60),
                 ItemList.Quantum_Tank_IV.get(1),
                 ItemList.Quantum_Chest_IV.get(1),
                 GT_OreDictUnificator.get(OrePrefixes.pipeHuge, "Titanium", 1)
             },
             new FluidStack[]{
-                FluidRegistry.getFluidStack("molten.radoxpoly", 16000),
+                FluidRegistry.getFluidStack("molten.radoxpoly", 576),
                 FluidRegistry.getFluidStack("molten.chromaticglass", 1440),
                 FluidRegistry.getFluidStack("molten.metastable oganesson", 1000),
                 FluidRegistry.getFluidStack("molten.titanium", 144)},
@@ -730,7 +730,7 @@ public class RecipeLoader implements Runnable {
             },
             new FluidStack[]{
                 FluidRegistry.getFluidStack("molten.ethylcyanoacrylatesuperglue", 10240000),
-                FluidRegistry.getFluidStack("naquadah based liquid fuel mk v (depleted)", 128000),
+                FluidRegistry.getFluidStack("naquadah based liquid fuel mkv (depleted)", 128000),
                 FluidRegistry.getFluidStack("molten.eternity", 256000),
                 FluidRegistry.getFluidStack("temporalfluid", 256000)},
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 10),
