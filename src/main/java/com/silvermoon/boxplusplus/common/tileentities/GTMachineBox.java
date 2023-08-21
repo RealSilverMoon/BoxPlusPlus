@@ -5,7 +5,9 @@ import com.github.bartimaeusnek.bartworks.common.tileentities.multis.GT_TileEnti
 import com.github.bartimaeusnek.bartworks.util.BWRecipes;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyMulti;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyTunnel;
+import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
+import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizons.gtnhintergalactic.recipe.IG_RecipeAdder;
 import com.gtnewhorizons.modularui.api.drawable.AdaptableUITexture;
@@ -39,6 +41,8 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.*;
 import gregtech.common.items.behaviors.Behaviour_DataOrb;
+import gregtech.common.tileentities.machines.IDualInputHatch;
+import gregtech.common.tileentities.machines.IDualInputInventory;
 import gtPlusPlus.xmod.gregtech.common.tileentities.machines.multi.production.chemplant.GregtechMTE_ChemicalPlant;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -55,8 +59,7 @@ import net.minecraftforge.fluids.FluidTank;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
 import static com.gtnewhorizons.modularui.api.math.Alignment.TopCenter;
@@ -69,7 +72,7 @@ import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
 import static gregtech.api.util.GT_StructureUtility.buildHatchAdder;
 import static gregtech.common.blocks.GT_Item_Machines.getMetaTileEntity;
 
-public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox> implements IGlobalWirelessEnergy {
+public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox> implements ISurvivalConstructable, IGlobalWirelessEnergy {
     private static final String STRUCTURE_PIECE_MainFrames = "Mainframes";
     private static final String STRUCTURE_PIECE_FirstRing = "FirstRing";
     private static final String STRUCTURE_PIECE_SecondRing = "SecondRing";
@@ -298,6 +301,46 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     @Override
+    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+        if (mMachine) return -1;
+        elementBudget = Math.min(200, elementBudget * 4);
+        int count = 0;
+        switch (ringCountSet) {
+            case 1 -> {
+                switch (stackSize.stackSize) {
+                    case 1 -> {
+                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
+                    }
+                    case 2 -> {
+                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
+                    }
+                    default -> {
+                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_Final, stackSize, 23, 5, 20, elementBudget, env, false, true);
+                    }
+                }
+            }
+            case 2 -> {
+                count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
+            }
+            case 3 -> {
+                count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_Final, stackSize, 23, 5, 20, elementBudget, env, false, true);
+            }
+        }
+        return count <= 0 ? -1 : count;
+    }
+
+    @Override
     public boolean isCorrectMachinePart(ItemStack aStack) {
         return true;
     }
@@ -387,10 +430,16 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         return true;
     }
 
+    @Override
+    public void clearHatches() {
+        super.clearHatches();
+        mDualInputHatches.clear();
+    }
+
     /**
      * Check if the recipe is the final one.
      *
-     * @return true if correct
+     * @return CheckRecipeResultRegistry
      */
     @Override
     @NotNull
@@ -402,6 +451,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         if (!recipe.islocked) return CheckRecipeResultRegistry.NO_RECIPE;
         List<ItemStack> inputItem = getStoredInputs();
         List<FluidStack> inputFluid = getStoredFluids();
+        for (IDualInputHatch hatch : mDualInputHatches) {
+            Iterator<? extends IDualInputInventory> meHatchIter = hatch.inventories();
+            while (meHatchIter.hasNext()) {
+                IDualInputInventory inv = meHatchIter.next();
+                inputItem.addAll(Arrays.asList(inv.getItemInputs()));
+                inputFluid.addAll(Arrays.asList(inv.getFluidInputs()));
+            }
+        }
         if ((inputItem.isEmpty() && !recipe.FinalItemInput.isEmpty())
             || (inputFluid.isEmpty() && !recipe.FinalFluidInput.isEmpty())) return CheckRecipeResultRegistry.NO_RECIPE;
         for (int k : recipe.requireModules.keySet()) {
@@ -424,6 +481,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         }
         BoxRecipe.ItemOneBox(totalInputItem, requireItem);
         BoxRecipe.FluidOneBox(totalInputFluid, requireFluid);
+        inputItem.removeAll(Collections.singleton(null));
+        inputFluid.removeAll(Collections.singleton(null));
         return (!recipe.FinalItemInput.isEmpty()) ?
             (!recipe.FinalFluidInput.isEmpty() ?
                 ((requireItem.isEmpty() && requireFluid.isEmpty()) ? runBox(inputItem, inputFluid) : CheckRecipeResultRegistry.NO_RECIPE) :
@@ -681,7 +740,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     routingStatus = 5;
                                     return;
                                 }
-                                //We acn find assemblyline recipe using the original method, but no need to update it, nor check it
+                                //We can find assemblyline recipe using the original method, but no need to update it, nor check it
                                 GT_AssemblyLineUtils.LookupResult tLookupResult = GT_AssemblyLineUtils
                                     .findAssemblyLineRecipeFromDataStick(data, false);
                                 if (tLookupResult.getType() == GT_AssemblyLineUtils.LookupResultType.INVALID_STICK) {
@@ -1000,7 +1059,6 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .addTooltip(i18n("tile.boxplusplus.boxwiki.1"))
                     .setPos(172, 91));
     }
-
     /**
      * Add main module UI
      *
