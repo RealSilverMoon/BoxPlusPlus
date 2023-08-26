@@ -96,6 +96,8 @@ tile.boxplusplus.boxUI.25=确认配方！
 tile.boxplusplus.boxUI.26=取消配方
 tile.boxplusplus.boxUI.27=模块要求： 
 tile.boxplusplus.boxUI.28=激活环数： 
+tile.boxplusplus.boxUI.30=导入配方(WIP)
+tile.boxplusplus.boxUI.31=导出配方(WIP)
 
 tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
 tile.boxplusplus.boxError.2=原因：未通过2环结构检测。

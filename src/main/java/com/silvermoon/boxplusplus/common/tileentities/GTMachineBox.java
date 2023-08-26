@@ -20,6 +20,7 @@ import com.gtnewhorizons.modularui.api.math.Color;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.*;
+import com.gtnewhorizons.modularui.common.widget.textfield.BaseTextFieldWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
@@ -537,6 +538,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .setEUt(getMaxInputEu());
         switch (ringCount) {
             case 1:
+                this.mMaxProgresstime = recipe.FinalTime;
                 return;
             case 2:
                 break;
@@ -994,6 +996,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         buildContext.addSyncedWindow(13, this::createModuleWindow);
         buildContext.addSyncedWindow(14, this::createSingleModuleWindow);
         buildContext.addSyncedWindow(15, this::createWikiWindow);
+        buildContext.addSyncedWindow(16, this::createImportWindow);
         Synchronize(builder);
         builder.widget(//Module
                 new ButtonWidget().setOnClick(
@@ -1491,6 +1494,41 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 ButtonWidget.closeWindowButton(true)
                     .setPos(220, 5));
+        builder.widget(
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        if (!widget.isClient()) {
+                            widget.getContext().openSyncedWindow(16);
+                        }
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
+                .setPos(200, 25)
+                .setEnabled(routingMap.size() == 0));
+        builder.widget(
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        System.out.println(serialize(recipe.RecipeToNBT()));
+                        if (!widget.isClient()) {
+                            widget.getContext().openSyncedWindow(16);
+                        }
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.31"))
+                .setPos(200, 25)
+                .setEnabled(recipe.islocked));
         for (int i = 1; i <= routingCount; i++) {
             int finalI = i;
             builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + i).setPos(27, 9 + 18 * i))
@@ -1670,6 +1708,44 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(20, 16)
                     .setPos(25, Ycord - 2).setEnabled(recipe.islocked));
         return builder.build();
+    }
+
+    protected ModularWindow createImportWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(300, 220);
+        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        Synchronize(builder);
+        myField textField = new myField();
+        return builder.widget(
+            textField
+                .setTextAlignment(Alignment.CenterLeft)
+                .setTextColor(Color.WHITE.dark(1))
+                .setFocusOnGuiOpen(true)
+                .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
+                .setPos(25, 10)
+                .setSize(250, 180)
+        ).widget(
+            new ButtonWidget().setOnClick(
+                    (clickData, widget) -> {
+                        List<String> ls = textField.getLastText();
+                        if (ls != null && ls.size() > 0) {
+                            for (String s : ls) {
+                                if (s.equals("")) continue;
+                                NBTTagCompound nbt = deserialize(textField.getLastText().get(0));
+                                if (nbt != null) recipe = new BoxRecipe(nbt);
+                            }
+                        }
+                    })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
+                .setPos(140, 200)
+        ).build();
     }
 
     /**
@@ -2055,6 +2131,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             builder.widget(new FakeSyncWidget.BooleanSyncer(() -> moduleSwitch[finalI], var1 -> moduleSwitch[finalI] = var1))
                 .widget(new FakeSyncWidget.BooleanSyncer(() -> moduleActive[finalI], var1 -> moduleActive[finalI] = var1))
                 .widget(new FakeSyncWidget.IntegerSyncer(() -> moduleTier[finalI], var1 -> moduleTier[finalI] = var1));
+        }
+    }
+
+    class myField extends BaseTextFieldWidget {
+        public myField() {
+            super();
+            this.handler.setMaxLines(1000);
         }
     }
 }
