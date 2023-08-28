@@ -96,6 +96,8 @@ tile.boxplusplus.boxUI.25=Confirm Recipe!
 tile.boxplusplus.boxUI.26=Cancel Recipe
 tile.boxplusplus.boxUI.27=Module Requirements:
 tile.boxplusplus.boxUI.28=Rings:
+tile.boxplusplus.boxUI.30=Import Routing
+tile.boxplusplus.boxUI.31=Export Routing
 
 tile.boxplusplus.boxError.1=Reason: Failed Ring-1 structure check.
 tile.boxplusplus.boxError.2=Reason: Failed Ring-2 structure check.
@@ -111,6 +113,7 @@ tile.boxplusplus.boxUI.ErrorCode.4=This process requires a programming circuit t
 tile.boxplusplus.boxUI.ErrorCode.5=Assembly Line requires a flash memory to determine the recipe!
 tile.boxplusplus.boxUI.ErrorCode.6=Circuit Assembly Line requires circuit imprinting in the host!
 tile.boxplusplus.boxUI.ErrorCode.7=Failed to read correct data orbs!
+tile.boxplusplus.boxUI.ErrorCode.8=The routing list you import has too much routings. Try to upgrade the ring.
 
 tile.boxplusplus.boxUI.module.1=Atomic Manipulator
 tile.boxplusplus.boxUI.module.2=Facility No. 3826
