@@ -20,7 +20,6 @@ import com.gtnewhorizons.modularui.api.math.Color;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.widget.*;
-import com.gtnewhorizons.modularui.common.widget.textfield.BaseTextFieldWidget;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
@@ -1715,9 +1714,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
-        myField textField = new myField();
+        TextFieldWidget textField = new TextFieldWidget();
         return builder.widget(
             textField
+                .setMaxLength(10000)
                 .setTextAlignment(Alignment.CenterLeft)
                 .setTextColor(Color.WHITE.dark(1))
                 .setFocusOnGuiOpen(true)
@@ -1727,14 +1727,9 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         ).widget(
             new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
-                        List<String> ls = textField.getLastText();
-                        if (ls != null && ls.size() > 0) {
-                            for (String s : ls) {
-                                if (s.equals("")) continue;
-                                NBTTagCompound nbt = deserialize(textField.getLastText().get(0));
-                                if (nbt != null) recipe = new BoxRecipe(nbt);
-                            }
-                        }
+                        String ls = textField.getText();
+                        NBTTagCompound nbt = deserialize(ls);
+                        if (nbt != null) recipe = new BoxRecipe(nbt);
                     })
                 .setSize(16, 16)
                 .setBackground(() -> {
@@ -2134,10 +2129,4 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         }
     }
 
-    class myField extends BaseTextFieldWidget {
-        public myField() {
-            super();
-            this.handler.setMaxLines(1000);
-        }
-    }
 }

@@ -7,15 +7,17 @@ import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemContainer {
     private final Table<Item, Integer, Long> stack = HashBasedTable.create();
 
     public void addItemStack(ItemStack input, int multiple, int chance) {
         if (input.getItem() == null) return;
-        if (stack.containsRow(input.getItem()) && stack.containsColumn(input.getItemDamage())) {
+        Optional<Long> isNull = Optional.ofNullable(stack.get(input.getItem(), input.getItemDamage()));
+        if (isNull.isPresent()) {
             stack.put(input.getItem(), input.getItemDamage(),
-                chance * (long) input.stackSize * multiple + stack.get(input.getItem(), input.getItemDamage()));
+                chance * (long) input.stackSize * multiple + isNull.get());
         } else {
             stack.put(input.getItem(), input.getItemDamage(), chance * (long) input.stackSize * multiple);
         }
