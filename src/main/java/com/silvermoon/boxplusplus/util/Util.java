@@ -4,14 +4,12 @@ import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import gregtech.api.util.GT_Recipe;
-import io.netty.buffer.Unpooled;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -107,12 +105,11 @@ public class Util {
     }
 
     public static String serialize(NBTTagCompound nbt) {
-        PacketBuffer p = new PacketBuffer(Unpooled.buffer());
         try {
-            p.writeNBTTagCompoundToBuffer(nbt);
+            return org.apache.commons.codec.binary.Base64.encodeBase64String(CompressedStreamTools.compress(nbt));
         } catch (IOException ignored) {
         }
-        return org.apache.commons.codec.binary.Base64.encodeBase64String(p.array());
+        return null;
     }
 
     public static @Nullable NBTTagCompound deserialize(String str) {

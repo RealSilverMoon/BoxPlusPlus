@@ -10,6 +10,7 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import com.gtnewhorizons.gtnhintergalactic.recipe.IG_RecipeAdder;
+import com.gtnewhorizons.modularui.api.KeyboardUtil;
 import com.gtnewhorizons.modularui.api.drawable.AdaptableUITexture;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
 import com.gtnewhorizons.modularui.api.drawable.Text;
@@ -19,6 +20,7 @@ import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.math.Color;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
+import com.gtnewhorizons.modularui.common.internal.network.NetworkUtils;
 import com.gtnewhorizons.modularui.common.widget.*;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
@@ -44,6 +46,7 @@ import gregtech.common.items.behaviors.Behaviour_DataOrb;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gtPlusPlus.xmod.gregtech.common.tileentities.machines.multi.production.chemplant.GregtechMTE_ChemicalPlant;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
@@ -51,6 +54,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -984,7 +988,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     /**
-     * Add main UI with 3 bottoms
+     * Add main UI with 4 bottoms
      */
     @Override
     public void addUIWidgets(ModularWindow.Builder builder, UIBuildContext buildContext) {
@@ -1513,9 +1517,15 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         builder.widget(
             new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
-                        System.out.println(serialize(recipe.RecipeToNBT()));
-                        if (!widget.isClient()) {
-                            widget.getContext().openSyncedWindow(16);
+                        if (widget.isClient()) {
+                            NBTTagCompound Routing = new NBTTagCompound();
+                            Routing.setInteger("TotalRouting", routingCount);
+                            for (int i = 0; i < routingMap.size(); i++) {
+                                Routing.setTag("Routing" + (i + 1), routingMap.get(i).routingToNbt());
+                            }
+                            GuiScreen.setClipboardString(serialize(Routing));
+                            player.addChatMessage(new ChatComponentText("已输出工序代码至剪切板！"));
+                            player.closeScreen();
                         }
                     })
                 .setSize(16, 16)
@@ -1714,7 +1724,39 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
-        TextFieldWidget textField = new TextFieldWidget();
+        TextFieldWidget textField = new TextFieldWidget() {
+            @Override
+            public boolean onKeyPressed(char character, int keyCode) {
+                if (KeyboardUtil.isKeyComboCtrlV(keyCode)) {
+                    handler.getText().add(GuiScreen.getClipboardString());
+                    handler.onChanged();
+                    return true;
+                }
+                return super.onKeyPressed(character, keyCode);
+            }
+
+            @NotNull
+            public String getText() {
+                if (handler.getText().isEmpty()) {
+                    return "";
+                }
+                return handler.getText().get(0);
+            }
+
+            @Override
+            public void onRemoveFocus() {
+                if (handler.getText().size() > 1) {
+                    player.closeScreen();
+                    player.addChatMessage(new ChatComponentText("输入有误，请检查工序代码。(注意必须在一行内)"));
+                }
+                this.renderer.setCursor(false);
+                this.cursorTimer = 0;
+                this.scrollOffset = 0;
+                if (syncsToServer()) {
+                    syncToServer(1, buffer -> NetworkUtils.writeStringSafe(buffer, getText()));
+                }
+            }
+        };
         return builder.widget(
             textField
                 .setMaxLength(10000)
@@ -1727,9 +1769,29 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         ).widget(
             new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
-                        String ls = textField.getText();
-                        NBTTagCompound nbt = deserialize(ls);
-                        if (nbt != null) recipe = new BoxRecipe(nbt);
+                        if (!widget.isClient()) {
+                            String ls = textField.getText();
+                            NBTTagCompound routing = deserialize(ls);
+                            try {
+                                if (routing != null) {
+                                    int count = routing.getInteger("TotalRouting");
+                                    if (count > maxRouting) {
+                                        routingStatus = 8;
+                                        return;
+                                    }
+                                    routingMap.clear();
+                                    for (int i = 1; i <= count; i++) {
+                                        routingMap.add(new BoxRoutings(routing.getCompoundTag("Routing" + i)));
+                                    }
+                                    routingCount = count;
+                                    player.addChatMessage(new ChatComponentText("导入" + count + "条工序成功！"));
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("输入有误，请检查工序代码。"));
+                                }
+                            } finally {
+                                player.closeScreen();
+                            }
+                        }
                     })
                 .setSize(16, 16)
                 .setBackground(() -> {
