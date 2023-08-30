@@ -45,7 +45,7 @@ import gregtech.api.util.*;
 import gregtech.common.items.behaviors.Behaviour_DataOrb;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
-import gtPlusPlus.xmod.gregtech.common.tileentities.machines.multi.production.chemplant.GregtechMTE_ChemicalPlant;
+import gtPlusPlus.core.util.minecraft.ItemUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -305,40 +305,40 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     @Override
-    public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
+    public int survivalConstruct(ItemStack stack, int elementBudget, ISurvivalBuildEnvironment env) {
         if (mMachine) return -1;
         elementBudget = Math.min(200, elementBudget * 4);
         int count = 0;
         switch (ringCountSet) {
             case 1 -> {
-                switch (stackSize.stackSize) {
+                switch (stack.stackSize) {
                     case 1 -> {
-                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
-                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stack, 3, 3, 0, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stack, 11, 3, 8, elementBudget, env, false, true);
                     }
                     case 2 -> {
-                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
-                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
-                        count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stack, 3, 3, 0, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stack, 11, 3, 8, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stack, 17, 5, 14, elementBudget, env, false, true);
                     }
                     default -> {
-                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
-                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
-                        count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
-                        count += survivialBuildPiece(STRUCTURE_PIECE_Final, stackSize, 23, 5, 20, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stack, 3, 3, 0, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stack, 11, 3, 8, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stack, 17, 5, 14, elementBudget, env, false, true);
+                        count += survivialBuildPiece(STRUCTURE_PIECE_Final, stack, 23, 5, 20, elementBudget, env, false, true);
                     }
                 }
             }
             case 2 -> {
-                count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
-                count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
-                count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stack, 3, 3, 0, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stack, 11, 3, 8, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stack, 17, 5, 14, elementBudget, env, false, true);
             }
             case 3 -> {
-                count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stackSize, 3, 3, 0, elementBudget, env, false, true);
-                count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stackSize, 11, 3, 8, elementBudget, env, false, true);
-                count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stackSize, 17, 5, 14, elementBudget, env, false, true);
-                count += survivialBuildPiece(STRUCTURE_PIECE_Final, stackSize, 23, 5, 20, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_MainFrames, stack, 3, 3, 0, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_FirstRing, stack, 11, 3, 8, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_SecondRing, stack, 17, 5, 14, elementBudget, env, false, true);
+                count += survivialBuildPiece(STRUCTURE_PIECE_Final, stack, 23, 5, 20, elementBudget, env, false, true);
             }
         }
         return count <= 0 ? -1 : count;
@@ -765,7 +765,19 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     return;
                                 }
                                 //The chemicalplant use tier-based recipe check method, it will be better not to change it.
-                                RoutingRecipe = ((GregtechMTE_ChemicalPlant) RoutingMachine).findRecipe(null, Long.MAX_VALUE / 10, 7, ItemInputs, FluidInputs);
+                                //But not anymore.
+                                RoutingRecipe = RoutingMachine.getRecipeMap().findRecipe(getBaseMetaTileEntity(), true, Long.MAX_VALUE / 10, FluidInputs, ItemInputs);
+                                if (RoutingRecipe == null) {
+                                    routingStatus = 3;
+                                    return;
+                                }
+                                RoutingRecipe = RoutingRecipe.copy();
+                                for (ItemStack item : RoutingRecipe.mInputs) {
+                                    if (ItemUtils.isCatalyst(item)) {
+                                        item.stackSize = 0;
+                                        break;
+                                    }
+                                }
                             }
                             case "largefusioncomputer5" -> {
                                 //Why there are two fusionRecipeMaps?! FK!
