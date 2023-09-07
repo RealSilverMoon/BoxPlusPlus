@@ -80,7 +80,7 @@ public class BoxRoutings {
 
     public BoxRoutings(InventoryCrafting inputs, ItemStack outputs, ItemStack machine) {
         for (int i = 0; i < 9; i++) {
-            if (inputs.getStackInSlot(i) == null) break;
+            if (inputs.getStackInSlot(i) == null) continue;
             InputItem.add(inputs.getStackInSlot(i).copy());
         }
         ItemStack b = outputs.copy();

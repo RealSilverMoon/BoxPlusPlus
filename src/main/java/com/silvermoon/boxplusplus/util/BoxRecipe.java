@@ -19,7 +19,8 @@ public class BoxRecipe {
     public List<FluidStack> FinalFluidOutput = new ArrayList<>();
     public HashMap<Integer,Integer> requireModules = new HashMap<>();
     public int FinalTime = 0;
-    public Long FinalVoteage=0L;
+    public Long parallel = 0L;
+    public Long FinalVoteage = 0L;
     public boolean islocked =false;
 
     public BoxRecipe() {
@@ -53,6 +54,7 @@ public class BoxRecipe {
         FinalTime = nbt.getInteger("Time");
         FinalVoteage= nbt.getLong("Voteage");
         islocked = nbt.getBoolean("islocked");
+        parallel = nbt.getLong("parallel");
     }
 
     public static void ItemOneBox(List<ItemStack> input, List<ItemStack> output){
@@ -117,6 +119,7 @@ public class BoxRecipe {
         recipe.setTag("requireModule",requireModule);
         recipe.setInteger("Time", FinalTime);
         recipe.setBoolean("islocked", islocked);
+        recipe.setLong("parallel", parallel);
         return recipe;
     }
 

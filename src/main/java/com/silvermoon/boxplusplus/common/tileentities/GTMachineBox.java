@@ -95,8 +95,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     public int ringCountSet = 1;
     private int routingStatus = 0;
     private int[] machineError = new int[2];
-    private int maxParallel = 16;
-    private int maxRouting = 10;
+    private int maxParallel = 160;
+    private int maxRouting = 16;
     //What's that?
     private static final char[] coreElement = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M'};
     private BoxRecipe recipe = new BoxRecipe();
@@ -183,7 +183,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 ofBlockAdder((t, b, m) -> {
                     if (b.isAssociatedBlock(BlockRegister.BoxModule) && m == finalI) {
                         t.moduleTier[finalI] = 0;
-                        if (finalI == 13) t.maxParallel = 2048;
+                        if (finalI == 13) t.maxParallel = 1280000;
                         return true;
                     }
                     return false;
@@ -192,11 +192,15 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     if (m == 14 && finalI == 13 && b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad)) {
                         t.debug = true;
                         t.maxParallel = Integer.MAX_VALUE;
+                        t.maxRouting = Integer.MAX_VALUE;
                         return true;
                     }
                     if (b.isAssociatedBlock(BlockRegister.BoxModuleUpgrad) && m == finalI) {
                         t.moduleTier[finalI] = 1;
-                        if (m == 13) t.maxParallel = 32768;
+                        if (m == 13) {
+                            t.maxParallel = 99900000;
+                            t.maxRouting = 999;
+                        }
                         return true;
                     }
                     t.moduleTier[finalI] = 0;
@@ -374,8 +378,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     checkPiece(STRUCTURE_PIECE_FirstRing, 11, 3, 8) &&
                     checkPiece(STRUCTURE_PIECE_SecondRing, 17, 5, 14)) {
                     ringCount = 2;
-                    maxParallel = 128;
-                    maxRouting = 50;
+                    maxParallel = 6400;
+                    maxRouting = 64;
                     break;
                 }
                 if (teBoxRing != null) {
@@ -391,8 +395,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     checkPiece(STRUCTURE_PIECE_SecondRing, 17, 5, 14) &&
                     checkPiece(STRUCTURE_PIECE_Final, 23, 5, 20)) {
                     ringCount = 3;
-                    maxParallel = 512;
-                    maxRouting = 100;
+                    maxParallel = 128000;
+                    maxRouting = 128;
                     break;
                 }
                 if (teBoxRing != null) {
@@ -925,11 +929,9 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             OutputFluidContainer.addFluidStackList(boxRoutings.OutputFluid, boxRoutings.Parallel);
             recipe.FinalTime += boxRoutings.time * 333 / (1 + Math.exp(-(boxRoutings.Parallel - 100) / 20.0));
             recipe.FinalVoteage += boxRoutings.voltage;
+            recipe.parallel += boxRoutings.Parallel;
             int[] machine = transMachinesToModule(boxRoutings);
             if (!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0], machine[1]);
-            if (boxRoutings.Parallel > 32768) recipe.requireModules.put(13, 2);
-            else if (boxRoutings.Parallel > 2048) recipe.requireModules.put(13, 1);
-            else if (boxRoutings.Parallel > 512) recipe.requireModules.put(13, 0);
         });
         recipe.FinalItemInput = inputItemContainer.getItemStack();
         recipe.FinalItemOutput = outputItemContainer.getItemStack();
@@ -937,6 +939,9 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         recipe.FinalFluidOutput = OutputFluidContainer.getFluidStack();
         BoxRecipe.ItemOneBox(recipe.FinalItemInput, recipe.FinalItemOutput);
         BoxRecipe.FluidOneBox(recipe.FinalFluidInput, recipe.FinalFluidOutput);
+        if (recipe.parallel > 99900000) recipe.requireModules.put(13, 2);
+        else if (recipe.parallel > 1280000) recipe.requireModules.put(13, 1);
+        else if (recipe.parallel > 128000) recipe.requireModules.put(13, 0);
     }
 
     /**
@@ -1823,7 +1828,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      * @param player who is using the box
      */
     protected ModularWindow createFinalRecipeWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(220, 120 + recipe.calHeight() * 18);
+        ModularWindow.Builder builder = ModularWindow.builder(220, 150 + recipe.calHeight() * 20);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         builder.widget(
@@ -1860,13 +1865,15 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16") + recipe.FinalVoteage + " eu/t").setPos(50, Ycord += 20))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.17") + recipe.FinalTime / 20.00 + "s (" +
                 recipe.FinalTime + "tick)").setPos(50, Ycord += 16));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.29") + recipe.parallel).setMaxWidth(180).setPos(50, Ycord += 16));
+        builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.32").replace("%max", String.valueOf(maxParallel))).setMaxWidth(180).setPos(25, Ycord += 16).setEnabled(recipe.parallel > maxParallel));
         StringBuilder modules = new StringBuilder();
         modules.append(i18n("tile.boxplusplus.boxUI.27"));
         for (int i : recipe.requireModules.keySet()) {
             modules.append(recipe.requireModules.get(i) == 1 ? i18n("tile.boxplusplus.boxUI.module." + (i + 1)) + " (T2)" :
                 i18n("tile.boxplusplus.boxUI.module." + (i + 1))).append(" | ");
         }
-        builder.widget(new TextWidget(modules.toString()).setMaxWidth(180).setPos(25, Ycord += 16))
+        builder.widget(new TextWidget(modules.toString()).setMaxWidth(180).setPos(25, Ycord += 32))
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
@@ -1885,7 +1892,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.25"))
                     .setPos(80, Ycord + 30)
-                    .setEnabled(!recipe.islocked))
+                    .setEnabled(!recipe.islocked && recipe.parallel <= maxParallel))
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {

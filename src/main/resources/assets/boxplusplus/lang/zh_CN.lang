@@ -96,8 +96,10 @@ tile.boxplusplus.boxUI.25=确认配方！
 tile.boxplusplus.boxUI.26=取消配方
 tile.boxplusplus.boxUI.27=模块要求： 
 tile.boxplusplus.boxUI.28=激活环数： 
+tile.boxplusplus.boxUI.29=全工序并行总数： 
 tile.boxplusplus.boxUI.30=导入工序
 tile.boxplusplus.boxUI.31=导出工序
+tile.boxplusplus.boxUI.32=§l§4警告! 并行总数超过了当前盒系统上限(%max), 本配方无法写入!
 
 tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
 tile.boxplusplus.boxError.2=原因：未通过2环结构检测。
@@ -217,9 +219,9 @@ tile.boxplusplus.boxUI.module.context.13d=解锁无线网络
 tile.boxplusplus.boxUI.module.context.13e=[克丽斯腾] 直接接入机器拥有者的无线网络,时间减少为配方的§41/10000§r(但不会低于§210t§r),消耗电力恒定为配方值.
 tile.boxplusplus.boxUI.module.context.13f=我希望...克丽斯腾希望，这能开启下一个时代
 tile.boxplusplus.boxUI.module.context.14a=是否终有一天，我们会起身反抗曾经交予我们无数谜题的——
-tile.boxplusplus.boxUI.module.context.14b=增加4倍并行上限 (即2048X)
+tile.boxplusplus.boxUI.module.context.14b=增加10倍并行上限
 tile.boxplusplus.boxUI.module.context.14c=伊祖米克，生态泉源
-tile.boxplusplus.boxUI.module.context.14d=增加64倍并行上限 (即32768X)
+tile.boxplusplus.boxUI.module.context.14d=增加大约78倍并行上限
 tile.boxplusplus.boxUI.module.context.14e=[伊祖米克] 我们几乎做到了...
 tile.boxplusplus.boxUI.module.context.14f=如星空般深蓝。
 tile.boxplusplus.boxUI.module.context.15a=上帝是会掷骰子,亲爱的,但是我的骰子灌了铅.
@@ -243,12 +245,12 @@ tile.boxplusplus.boxwiki.12=本章介绍如何运行盒系统。盒系统的核�
 tile.boxplusplus.boxwiki.13=1.打开主机GUI，点击§l原料及工序§r按钮; 2.在上方§l工序数目§r中输入你期望封装是配方数量; 3.关闭界面，然后重新打开§l原料及工序§r,确认工序数量是否正确; 
 tile.boxplusplus.boxwiki.14=4.将你想要封装的§l第一个配方§r，其对应§4多方块机器主机§r以及§4一份§r原料放入输入总线、输入仓; 5.回到原料及工序，点击§l检测工序§r, 如果原料正确，第一条工序会被读取；有误则会提示对应错误;  
 tile.boxplusplus.boxwiki.15=7.点击§l工序细节§r，打开第一条工序，修改这条工序的并行系数; 8.重复5-8，直到所有工序均写入，原料及工序的右方将出现§l计算最终配方§r按钮; 9.确认计算后的最终配方，查看模块要求，确认无误即可点击下方√，配方将锁定。Box将按本配方运行。
-tile.boxplusplus.boxwiki.16=本页包含盒系统的详细参数。§l若记环数为R，单工序并行上限为N，总工序上限为M§r，则有：
-tile.boxplusplus.boxwiki.17=R=1，N=16，M=10，不允许超频
-tile.boxplusplus.boxwiki.18=R=2，N=128，M=50，有损超频，(R2开始)支持高电流能源仓
-tile.boxplusplus.boxwiki.19=R=3，N=512，M=99，无损超频
-tile.boxplusplus.boxwiki.20=R=3，安装深蓝之树，N=2048，M=99，无损超频
-tile.boxplusplus.boxwiki.21=R=3，安装伊祖米克，N=32768，M=999，无损超频
+tile.boxplusplus.boxwiki.16=本页包含盒系统的详细参数。§l若记环数为R，总工序上限为M§r，全部工序总并行上限为N，则有：
+tile.boxplusplus.boxwiki.17=R=1，M=16，N=160，不允许超频
+tile.boxplusplus.boxwiki.18=R=2，M=64，N=6400，有损超频，(R2开始)支持高电流能源仓
+tile.boxplusplus.boxwiki.19=R=3，M=128，N=128000，无损超频
+tile.boxplusplus.boxwiki.20=R=3，安装深蓝之树，M=128，N=1280000，无损超频
+tile.boxplusplus.boxwiki.21=R=3，安装伊祖米克，M=999，N=99900000，无损超频
 tile.boxplusplus.boxwiki.22=最终配方的时间计算：
 tile.boxplusplus.boxwiki.23=最终配方的功率计算：
 tile.boxplusplus.boxwiki.24=本页包含了所有盒模块及升级信息。他们是：
