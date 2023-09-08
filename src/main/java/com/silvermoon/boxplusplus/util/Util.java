@@ -3,6 +3,7 @@ package com.silvermoon.boxplusplus.util;
 import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import gregtech.api.util.GT_ModHandler;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -58,6 +59,37 @@ public class Util {
         }
 
         return nbt;
+    }
+
+    public static NBTTagCompound writeBoxItemToUNBT(ItemStack item, NBTTagCompound nbt) {
+        String registerName = item.getItem().delegate.name();
+        nbt.setString("modID", registerName.substring(0, registerName.indexOf(':')));
+        nbt.setString("name", registerName.substring(registerName.indexOf(':') + 1));
+        nbt.setInteger("Count", item.stackSize);
+        nbt.setShort("Damage", (short) item.getItemDamage());
+
+        if (item.stackTagCompound != null) {
+            nbt.setTag("tag", item.stackTagCompound);
+        }
+
+        return nbt;
+    }
+
+    public static ItemStack readBoxItemFromUNBT(NBTTagCompound nbt) {
+        int stackSize = nbt.getInteger("Count");
+        int itemDamage = nbt.getShort("Damage");
+        if (itemDamage < 0) {
+            itemDamage = 0;
+        }
+        ItemStack boxItem = GT_ModHandler.getModItem(
+            nbt.getString("modID"),
+            nbt.getString("name"),
+            stackSize,
+            itemDamage);
+        if (nbt.hasKey("tag", 10)) {
+            boxItem.stackTagCompound = nbt.getCompoundTag("tag");
+        }
+        return boxItem;
     }
 
     public static ItemStack loadBoxItemFromNBT(NBTTagCompound nbt) {

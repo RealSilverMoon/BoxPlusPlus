@@ -11,8 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.silvermoon.boxplusplus.util.Util.loadBoxItemFromNBT;
-import static com.silvermoon.boxplusplus.util.Util.writeBoxItemToNBT;
+import static com.silvermoon.boxplusplus.util.Util.*;
 
 public class BoxRoutings {
     public ItemStack RoutingMachine;
@@ -119,13 +118,41 @@ public class BoxRoutings {
         time = routingNBT.getInteger("Time");
     }
 
+    public BoxRoutings(NBTTagCompound routingNBT, boolean isUNBT) {
+        RoutingMachine = readBoxItemFromUNBT(routingNBT.getCompoundTag("machine"));
+        int i = 0;
+        while (routingNBT.hasKey("InputItem" + (i + 1))) {
+            InputItem.add(readBoxItemFromUNBT(routingNBT.getCompoundTag("InputItem" + (i + 1))));
+            i++;
+        }
+        i = 0;
+        while (routingNBT.hasKey("OutputItem" + (i + 1))) {
+            OutputItem.add(readBoxItemFromUNBT(routingNBT.getCompoundTag("OutputItem" + (i + 1))));
+            OutputChance.add(routingNBT.getInteger("OutputChance" + (i + 1)));
+            i++;
+        }
+        i = 0;
+        while (routingNBT.hasKey("InputFluid" + (i + 1))) {
+            InputFluid.add(FluidStack.loadFluidStackFromNBT(routingNBT.getCompoundTag("InputFluid" + (i + 1))));
+            i++;
+        }
+        i = 0;
+        while (routingNBT.hasKey("OutputFluid" + (i + 1))) {
+            OutputFluid.add(FluidStack.loadFluidStackFromNBT(routingNBT.getCompoundTag("OutputFluid" + (i + 1))));
+            i++;
+        }
+        voltage = routingNBT.getLong("Voltage");
+        Parallel = routingNBT.getInteger("Parallel");
+        time = routingNBT.getInteger("Time");
+    }
+
     public NBTTagCompound routingToNbt() {
         NBTTagCompound routing = new NBTTagCompound();
         routing.setTag("machine", RoutingMachine.writeToNBT(new NBTTagCompound()));
         for (int i = 0; i < InputItem.size(); i++)
-            routing.setTag("InputItem" + (i + 1), writeBoxItemToNBT(InputItem.get(i),new NBTTagCompound()));
+            routing.setTag("InputItem" + (i + 1), writeBoxItemToNBT(InputItem.get(i), new NBTTagCompound()));
         for (int i = 0; i < OutputItem.size(); i++) {
-            routing.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(OutputItem.get(i),new NBTTagCompound()));
+            routing.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(OutputItem.get(i), new NBTTagCompound()));
             routing.setInteger("OutputChance" + (i + 1), OutputChance.get(i));
         }
         for (int i = 0; i < InputFluid.size(); i++)
@@ -134,9 +161,29 @@ public class BoxRoutings {
             routing.setTag("OutputFluid" + (i + 1), OutputFluid.get(i).writeToNBT(new NBTTagCompound()));
         routing.setLong("Voltage", voltage);
         routing.setInteger("Parallel", Parallel);
-        routing.setInteger("Time",time);
+        routing.setInteger("Time", time);
         return routing;
     }
+
+    public NBTTagCompound routingToUNbt() {
+        NBTTagCompound routing = new NBTTagCompound();
+        routing.setTag("machine", writeBoxItemToUNBT(RoutingMachine, new NBTTagCompound()));
+        for (int i = 0; i < InputItem.size(); i++)
+            routing.setTag("InputItem" + (i + 1), writeBoxItemToUNBT(InputItem.get(i), new NBTTagCompound()));
+        for (int i = 0; i < OutputItem.size(); i++) {
+            routing.setTag("OutputItem" + (i + 1), writeBoxItemToUNBT(OutputItem.get(i), new NBTTagCompound()));
+            routing.setInteger("OutputChance" + (i + 1), OutputChance.get(i));
+        }
+        for (int i = 0; i < InputFluid.size(); i++)
+            routing.setTag("InputFluid" + (i + 1), InputFluid.get(i).writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < OutputFluid.size(); i++)
+            routing.setTag("OutputFluid" + (i + 1), OutputFluid.get(i).writeToNBT(new NBTTagCompound()));
+        routing.setLong("Voltage", voltage);
+        routing.setInteger("Parallel", Parallel);
+        routing.setInteger("Time", time);
+        return routing;
+    }
+
 
     public int calHeight() {
         return InputItem.size() + OutputItem.size() + InputFluid.size() + OutputFluid.size();

@@ -1538,7 +1538,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             NBTTagCompound Routing = new NBTTagCompound();
                             Routing.setInteger("TotalRouting", routingCount);
                             for (int i = 0; i < routingMap.size(); i++) {
-                                Routing.setTag("Routing" + (i + 1), routingMap.get(i).routingToNbt());
+                                Routing.setTag("Routing" + (i + 1), routingMap.get(i).routingToUNbt());
                             }
                             GuiScreen.setClipboardString(serialize(Routing));
                             player.addChatMessage(new ChatComponentText("已输出工序代码至剪切板！"));
@@ -1798,7 +1798,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     }
                                     routingMap.clear();
                                     for (int i = 1; i <= count; i++) {
-                                        routingMap.add(new BoxRoutings(routing.getCompoundTag("Routing" + i)));
+                                        routingMap.add(new BoxRoutings(routing.getCompoundTag("Routing" + i), true));
                                     }
                                     routingCount = count;
                                     player.addChatMessage(new ChatComponentText("导入" + count + "条工序成功！"));
