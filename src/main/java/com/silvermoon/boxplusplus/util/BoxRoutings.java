@@ -116,6 +116,7 @@ public class BoxRoutings {
         voltage = routingNBT.getLong("Voltage");
         Parallel = routingNBT.getInteger("Parallel");
         time = routingNBT.getInteger("Time");
+        special = routingNBT.getInteger("Sp");
     }
 
     public BoxRoutings(NBTTagCompound routingNBT, boolean isUNBT) {
@@ -144,6 +145,7 @@ public class BoxRoutings {
         voltage = routingNBT.getLong("Voltage");
         Parallel = routingNBT.getInteger("Parallel");
         time = routingNBT.getInteger("Time");
+        special = routingNBT.getInteger("Sp");
     }
 
     public NBTTagCompound routingToNbt() {
@@ -162,6 +164,7 @@ public class BoxRoutings {
         routing.setLong("Voltage", voltage);
         routing.setInteger("Parallel", Parallel);
         routing.setInteger("Time", time);
+        routing.setInteger("Sp", special);
         return routing;
     }
 
@@ -181,6 +184,7 @@ public class BoxRoutings {
         routing.setLong("Voltage", voltage);
         routing.setInteger("Parallel", Parallel);
         routing.setInteger("Time", time);
+        routing.setInteger("Sp", special);
         return routing;
     }
 
