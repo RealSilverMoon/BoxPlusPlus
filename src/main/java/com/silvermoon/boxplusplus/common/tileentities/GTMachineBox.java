@@ -1598,6 +1598,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .widget(
                     new ButtonWidget().setOnClick(
                             (clickData, widget) -> {
+                                if (!clickData.shift) return;
                                 tempCode = finalI;
                                 routingMap.remove(tempCode - 1);
                                 if (!widget.isClient()) {
@@ -1794,6 +1795,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     int count = routing.getInteger("TotalRouting");
                                     if (count > maxRouting) {
                                         routingStatus = 8;
+                                        player.addChatMessage(new ChatComponentText("你导入的工序数量大于本盒支持的工序上限了！"));
                                         return;
                                     }
                                     routingMap.clear();
@@ -1802,6 +1804,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     }
                                     routingCount = count;
                                     player.addChatMessage(new ChatComponentText("导入" + count + "条工序成功！"));
+                                    routingStatus = 0;
                                 } else {
                                     player.addChatMessage(new ChatComponentText("输入有误，请检查工序代码。"));
                                 }
