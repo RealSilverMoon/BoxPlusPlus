@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
@@ -41,7 +42,7 @@ public class Util {
         };
     }
 
-    public static ItemStack findfirstCircuit(ItemStack[] input) {
+    public static ItemStack findfirstCircuit(List<ItemStack> input) {
         for (ItemStack item : input) {
             if (item.getUnlocalizedName().equals("gt.integrated_circuit")) return item;
         }
