@@ -1,5 +1,6 @@
 package com.silvermoon.boxplusplus.util;
 
+import gregtech.api.util.GT_OreDictUnificator;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
@@ -57,18 +58,20 @@ public class BoxRecipe {
         parallel = nbt.getLong("parallel");
     }
 
-    public static void ItemOneBox(List<ItemStack> input, List<ItemStack> output){
+    public static void ItemOnBox(List<ItemStack> input, List<ItemStack> output) {
         for (ItemStack iItem : input) {
             for (ItemStack oItem : output) {
-                if (Objects.equals(oItem.getUnlocalizedName(), iItem.getUnlocalizedName())) {
+                if (Objects.equals(oItem.getUnlocalizedName(), iItem.getUnlocalizedName()) ||
+                    (oItem.getUnlocalizedName().startsWith("item.Circiut") &&
+                        GT_OreDictUnificator.isInputStackEqual(iItem, GT_OreDictUnificator.get(oItem)))) {
                     if (iItem.stackSize == oItem.stackSize) {
-                        iItem.stackSize=0;
-                        oItem.stackSize=0;
+                        iItem.stackSize = 0;
+                        oItem.stackSize = 0;
                         continue;
                     }
                     if (iItem.stackSize > oItem.stackSize) {
                         iItem.stackSize -= oItem.stackSize;
-                        oItem.stackSize=0;
+                        oItem.stackSize = 0;
                     } else {
                         oItem.stackSize -= iItem.stackSize;
                         iItem.stackSize=0;
@@ -80,13 +83,13 @@ public class BoxRecipe {
         output.removeIf(item -> item.stackSize == 0);
     }
 
-    public static void FluidOneBox(List<FluidStack> input, List<FluidStack> output){
+    public static void FluidOnBox(List<FluidStack> input, List<FluidStack> output) {
         for (FluidStack iFluid : input) {
             for (FluidStack oFluid : output) {
                 if (Objects.equals(oFluid.getUnlocalizedName(), iFluid.getUnlocalizedName())) {
                     if (iFluid.amount == oFluid.amount) {
-                        iFluid.amount=0;
-                        oFluid.amount=0;
+                        iFluid.amount = 0;
+                        oFluid.amount = 0;
                         continue;
                     }
                     if (iFluid.amount > oFluid.amount) {
