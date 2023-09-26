@@ -17,7 +17,6 @@ import static gregtech.api.util.GT_Recipe.GT_Recipe_Map.sMultiblockChemicalRecip
 import static gregtech.api.util.GT_RecipeConstants.*;
 
 public class RecipeLoader implements Runnable {
-    //todo: Add recipes
     public void run() {
         addBoxRecipe();
         addMachineBlockRecipe();
@@ -690,7 +689,7 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get("blockSpaceTime", 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 32026),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12734),
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 14006),
+                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 16, 14006),
                 GT_OreDictUnificator.get("blockSpaceTime", 16),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockTinyTNT", 1),
