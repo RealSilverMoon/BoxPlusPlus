@@ -14,10 +14,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -154,5 +156,23 @@ public class Util {
             }
         }
         return null;
+    }
+
+    public static List<ItemStack> deepCopyItemList(List<ItemStack> org) {
+        List<ItemStack> newList = new ArrayList<>();
+        if (org == null) return newList;
+        for (ItemStack t : org) {
+            newList.add(t.copy());
+        }
+        return newList;
+    }
+
+    public static List<FluidStack> deepCopyFluidList(List<FluidStack> org) {
+        List<FluidStack> newList = new ArrayList<>();
+        if (org == null) return newList;
+        for (FluidStack t : org) {
+            newList.add(t.copy());
+        }
+        return newList;
     }
 }

@@ -1,6 +1,7 @@
 package com.silvermoon.boxplusplus.util;
 
 import gregtech.api.util.GT_OreDictUnificator;
+import gregtech.api.util.GT_Utility;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
@@ -61,8 +62,8 @@ public class BoxRecipe {
     public static void ItemOnBox(List<ItemStack> input, List<ItemStack> output) {
         for (ItemStack iItem : input) {
             for (ItemStack oItem : output) {
-                if (Objects.equals(oItem.getUnlocalizedName(), iItem.getUnlocalizedName()) ||
-                    (oItem.getUnlocalizedName().startsWith("item.Circiut") &&
+                if (GT_Utility.areStacksEqual(oItem, iItem, true) ||
+                    (oItem.getUnlocalizedName().startsWith("item.Circuit") &&
                         GT_OreDictUnificator.isInputStackEqual(iItem, GT_OreDictUnificator.get(oItem)))) {
                     if (iItem.stackSize == oItem.stackSize) {
                         iItem.stackSize = 0;

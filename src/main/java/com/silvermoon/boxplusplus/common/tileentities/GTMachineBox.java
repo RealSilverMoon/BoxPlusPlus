@@ -479,10 +479,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         FluidContainer Fcontainer = new FluidContainer();
         List<ItemStack> totalInputItem = Icontainer.addItemStackList(inputItem, 1).getItemStack();
         List<FluidStack> totalInputFluid = Fcontainer.addFluidStackList(inputFluid, 1).getFluidStack();
-        List<ItemStack> requireItem = new ArrayList<>();
-        List<FluidStack> requireFluid = new ArrayList<>();
-        Collections.copy(requireItem, recipe.FinalItemInput);
-        Collections.copy(requireFluid, recipe.FinalFluidInput);
+        List<ItemStack> requireItem = deepCopyItemList(recipe.FinalItemInput);
+        List<FluidStack> requireFluid = deepCopyFluidList(recipe.FinalFluidInput);
         BoxRecipe.ItemOnBox(totalInputItem, requireItem);
         BoxRecipe.FluidOnBox(totalInputFluid, requireFluid);
         inputItem.removeAll(Collections.singleton(null));
@@ -516,10 +514,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         if (this.mMaxProgresstime >= Integer.MAX_VALUE - 1) return CheckRecipeResultRegistry.DURATION_OVERFLOW;
         mEfficiencyIncrease = 10000;
         mEfficiency = 10000 - (this.getIdealStatus() - this.getRepairStatus()) * 1000;
-        List<ItemStack> requireItem = new ArrayList<>();
-        List<FluidStack> requireFluid = new ArrayList<>();
-        Collections.copy(requireItem, recipe.FinalItemInput);
-        Collections.copy(requireFluid, recipe.FinalFluidInput);
+        List<ItemStack> requireItem = deepCopyItemList(recipe.FinalItemInput);
+        List<FluidStack> requireFluid = deepCopyFluidList(recipe.FinalFluidInput);
         BoxRecipe.ItemOnBox(requireItem, inputItem);
         BoxRecipe.FluidOnBox(requireFluid, inputFluid);
         mOutputItems = recipe.FinalItemOutput.toArray(new ItemStack[0]);
@@ -633,10 +629,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     if (getMetaTileEntity(inputBus.getStackInSlot(i)) instanceof
                         GT_MetaTileEntity_MultiBlockBase RoutingMachine) {
                         System.out.println(RoutingMachine.mName);
-                        List<ItemStack> ItemInputs = new ArrayList<>();
-                        List<FluidStack> FluidInputs = new ArrayList<>();
-                        Collections.copy(ItemInputs, getStoredInputs());
-                        Collections.copy(FluidInputs, getStoredFluids());
+                        List<ItemStack> ItemInputs = deepCopyItemList(getStoredInputs());
+                        List<FluidStack> FluidInputs = deepCopyFluidList(getStoredFluids());
                         switch (RoutingMachine.mName) {
                             case "industrialmultimachine.controller.tier.single" -> {
                                 ItemStack Circuit = findfirstCircuit(ItemInputs);
@@ -754,7 +748,18 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     return;
                                 }
                                 GT_Recipe.GT_Recipe_AssemblyLine tRecipe = tLookupResult.getRecipe();
-                                routingMap.add(new BoxRoutings(tRecipe.mInputs, tRecipe.mOutput, tRecipe.mFluidInputs,
+                                ItemStack[] in = Arrays.copyOf(tRecipe.mInputs, tRecipe.mInputs.length);
+                                for (int j = 0; j < tRecipe.mOreDictAlt.length; j++) {
+                                    if (tRecipe.mOreDictAlt[j] == null) continue;
+                                    in[j] = GT_OreDictUnificator.get(false, in[j]);
+                                    for (ItemStack replace : ItemInputs) {
+                                        if (GT_OreDictUnificator.getAssociation(replace) != null &&
+                                            GT_OreDictUnificator.isInputStackEqual(replace, in[j])) {
+                                            in[j] = new ItemStack(replace.getItem(), in[j].stackSize, replace.getItemDamage());
+                                        }
+                                    }
+                                }
+                                routingMap.add(new BoxRoutings(in, tRecipe.mOutput, tRecipe.mFluidInputs,
                                     RoutingMachine.getStackForm(1), (long) tRecipe.mEUt, tRecipe.mDuration));
                                 routingStatus = 0;
                                 return;
@@ -884,6 +889,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                 }
                             }
                         }
+                        ItemInputs.remove(inputBus.getStackInSlot(i));
                         if (RoutingRecipe == null) RoutingRecipe = RecipeMap.findRecipe(
                             getBaseMetaTileEntity(),
                             true,
