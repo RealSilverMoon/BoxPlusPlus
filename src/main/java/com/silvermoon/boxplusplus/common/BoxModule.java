@@ -115,7 +115,7 @@ public class BoxModule {
 
     public static int[] transMachinesToModule(BoxRoutings routing) {
         if (routing.special != 0) {
-            if (routing.special > 1802) {
+            if (routing.special > 5402) {
                 return new int[]{8, 1};
             }
             return new int[]{8, 0};
