@@ -524,7 +524,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
-    public void calTime() {
+    private void calTime() {
         if (lEUt == 0) {
             mMaxProgresstime = Math.max((int) Math.pow(recipe.FinalTime, 0.2), 10);
             return;
@@ -597,7 +597,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     /**
      * Check each routing.
      */
-    public void checkRouting() {
+    public void checkRouting(EntityPlayer player) {
         if (mInputBusses.isEmpty()) {
             routingStatus = 1;
             return;
@@ -762,6 +762,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                 routingMap.add(new BoxRoutings(in, tRecipe.mOutput, tRecipe.mFluidInputs,
                                     RoutingMachine.getStackForm(1), (long) tRecipe.mEUt, tRecipe.mDuration));
                                 routingStatus = 0;
+                                player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.1")));
                                 return;
                             }
                             case "chemicalplant.controller.tier.single" -> {
@@ -951,6 +952,22 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         if (recipe.parallel > 99900000) recipe.requireModules.put(13, 2);
         else if (recipe.parallel > 1280000) recipe.requireModules.put(13, 1);
         else if (recipe.parallel > 128000) recipe.requireModules.put(13, 0);
+    }
+
+    private void doubleRecipe() {
+        for (BoxRoutings r : routingMap) {
+            r.Parallel *= 2;
+        }
+    }
+
+    private boolean halveRecipe() {
+        for (BoxRoutings r : routingMap) {
+            if ((r.Parallel & 1) == 1) return false;
+        }
+        for (BoxRoutings r : routingMap) {
+            r.Parallel /= 2;
+        }
+        return true;
     }
 
     /**
@@ -1550,7 +1567,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                 Routing.setTag("Routing" + (i + 1), routingMap.get(i).routingToUNbt());
                             }
                             GuiScreen.setClipboardString(serialize(Routing));
-                            player.addChatMessage(new ChatComponentText("已输出工序代码至剪切板！"));
+                            player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.2")));
                             player.closeScreen();
                         }
                     })
@@ -1570,10 +1587,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .widget(
                     new ButtonWidget().setOnClick(
                             (clickData, widget) -> {
-                                checkRouting();
+                                checkRouting(player);
                                 if (!widget.isClient()) {
                                     player.closeScreen();
                                     GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
+                                    widget.getContext().openSyncedWindow(10);
                                 }
                             })
                         .setSize(16, 16)
@@ -1655,6 +1673,46 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.20"))
                     .setPos(140, 26)
+                    .setEnabled(routingMap.size() == routingCount && !recipe.islocked))
+            //Double Recipe
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if (!widget.isClient()) {
+                                doubleRecipe();
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(10);
+                            }
+                        })
+                    .setSize(14, 14)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(AdaptableUITexture.of(Tags.MODID, "textures/gui/double.png", 16, 16, 1));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.33"))
+                    .setPos(175, 26)
+                    .setEnabled(routingMap.size() == routingCount && !recipe.islocked))
+            //Halve Recipe
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            if (!widget.isClient()) {
+                                routingStatus = halveRecipe() ? 0 : 9;
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(10);
+                            }
+                        })
+                    .setSize(14, 14)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(AdaptableUITexture.of(Tags.MODID, "textures/gui/halve.png", 16, 16, 1));
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.34"))
+                    .setPos(175, 44)
                     .setEnabled(routingMap.size() == routingCount && !recipe.islocked))
             .widget(
                 new ButtonWidget().setOnClick(
@@ -1747,7 +1805,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     protected ModularWindow createImportWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(300, 220);
+        ModularWindow.Builder builder = ModularWindow.builder(300, 50);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
@@ -1774,7 +1832,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             public void onRemoveFocus() {
                 if (handler.getText().size() > 1) {
                     player.closeScreen();
-                    player.addChatMessage(new ChatComponentText("输入有误，请检查工序代码。(注意必须在一行内)"));
+                    player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.3")));
                 }
                 this.renderer.setCursor(false);
                 this.cursorTimer = 0;
@@ -1804,7 +1862,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     int count = routing.getInteger("TotalRouting");
                                     if (count > maxRouting) {
                                         routingStatus = 8;
-                                        player.addChatMessage(new ChatComponentText("你导入的工序数量大于本盒支持的工序上限了！"));
+                                        player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.4")));
                                         return;
                                     }
                                     routingMap.clear();
@@ -1812,10 +1870,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                         routingMap.add(new BoxRoutings(routing.getCompoundTag("Routing" + i), true));
                                     }
                                     routingCount = count;
-                                    player.addChatMessage(new ChatComponentText("导入" + count + "条工序成功！"));
+                                    player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.5").replaceFirst("%count", String.valueOf(count))));
                                     routingStatus = 0;
                                 } else {
-                                    player.addChatMessage(new ChatComponentText("输入有误，请检查工序代码。"));
+                                    player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.6")));
                                 }
                             } finally {
                                 player.closeScreen();
@@ -1921,7 +1979,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         UI.add(GT_UITextures.OVERLAY_BUTTON_CROSS);
                         return UI.toArray(new IDrawable[0]);
                     })
-                    .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.35"))
                     .setPos(120, Ycord + 30)
                     .setEnabled(!recipe.islocked));
         return builder.build();

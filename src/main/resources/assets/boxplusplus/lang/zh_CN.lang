@@ -119,6 +119,7 @@ tile.boxplusplus.boxUI.ErrorCode.5=装配线需要放置闪存决定配方！
 tile.boxplusplus.boxUI.ErrorCode.6=电路装配线需要在主机蚀刻电路!
 tile.boxplusplus.boxUI.ErrorCode.7=未读取到正确的数据球!
 tile.boxplusplus.boxUI.ErrorCode.8=你导入的工序数量大于本盒支持的工序上限了！尝试升级一下环数。
+tile.boxplusplus.boxUI.ErrorCode.9=配方存在奇数并行，无法减半
 
 tile.boxplusplus.boxUI.module.1=原子操控爪
 tile.boxplusplus.boxUI.module.2=3826号设施
