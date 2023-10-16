@@ -44,7 +44,8 @@ public class BoxRoutings {
                 time *= 4;
                 OutputFluid.forEach(f -> f.amount = (int) (f.amount * 0.75));
             }
-            case "multimachine.blastfurnace" -> this.special = recipe.mSpecialValue;
+            case "multimachine.blastfurnace", "multimachine.adv.blastfurnace", "megablastfurnace" ->
+                this.special = recipe.mSpecialValue;
             case "componentassemblyline" -> time /= 16;
             case "quantumforcetransformer.controller.tier.single" ->
                 OutputFluid.forEach(f -> f.amount = f.amount / (OutputFluid.size() + OutputItem.size()));

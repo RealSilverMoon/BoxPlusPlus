@@ -123,7 +123,8 @@ public class BoxModule {
         return switch (routing.RoutingMachine.getUnlocalizedName().substring(17)) {
             case "industrialmixer.controller.tier.single", "multimachine.chemicalreactor" -> new int[]{0, 0};
             case "gtplusplus.autocrafter.multi", "mxrandomlargemolecularassembler" -> new int[]{1, 0};
-            case "multimachine.cracker", "multimachine.distillationtower" -> new int[]{2, 0};
+            case "multimachine.cracker", "megadistillationtower", "multimachine.adv.distillationtower", "megaoilcracker", "multimachine.distillationtower" ->
+                new int[]{2, 0};
             case "multimachine.multifurnace", "industrialthermalcentrifuge.controller.tier.single",
                 "industrialarcfurnace.controller.tier.single", "industrialalloysmelter.controller.tier.single" ->
                 new int[]{3, 0};
@@ -137,7 +138,8 @@ public class BoxModule {
             case "industrialwashplant.controller.tier.single", "industrialsifter.controller.tier.single",
                 "industrialcentrifuge.controller.tier.single", "industrialelectrolyzer.controller.tier.single",
                 "digester", "basicmachine.electromagneticseparator.tier.06" -> new int[]{7, 0};
-            case "industrialcokeoven.controller.tier.single", "multimachine.vacuumfreezer" -> new int[]{8, 0};
+            case "industrialcokeoven.controller.tier.single", "multimachine.pyro", "multimachine.vacuumfreezer", "multimachine.adv.industrialfreezer" ->
+                new int[]{8, 0};
             case "multimachine.assemblyline" -> new int[]{9, 0};
             case "industrialsalloyamelter.controller.tier.single" -> new int[]{10, 0};
             case "moleculartransformer.controller.tier.single", "gtpp.multimachine.replicator" -> new int[]{0, 1};
