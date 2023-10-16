@@ -267,7 +267,7 @@ tile.boxplusplus.boxwiki.50=盒运行(第二页)
 tile.boxplusplus.boxwiki.51=盒数据(公式页)
 tile.boxplusplus.boxwiki.52=式中,T-工序耗时 m-当前工序数 N-单配方并行 t-单配方耗时 v-单配方功率
 
-tile.boxplusplus.chatmessage.1=提示:装配线配方可以在输入总线放置一个额外的电路板，它会替换配方中的”任意等级电路板“.
+tile.boxplusplus.chatmessage.1=提示:装配线配方可以在输入总线放置一个额外的电路板，它会替换配方中的"任意等级电路板".
 tile.boxplusplus.chatmessage.2=已输出工序代码至剪切板！
 tile.boxplusplus.chatmessage.3=输入有误，请检查工序代码。(注意必须在一行内)
 tile.boxplusplus.chatmessage.4=你导入的工序数量大于本盒支持的工序上限了！
