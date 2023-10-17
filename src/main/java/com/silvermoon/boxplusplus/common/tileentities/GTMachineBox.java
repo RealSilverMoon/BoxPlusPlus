@@ -88,14 +88,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private static final IIconContainer boxActive = new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER_ACTIVE");
     private static final IIconContainer boxInactive = new Textures.BlockIcons.CustomIcon("iconsets/EM_COLLIDER");
     private int extendCasing = 0;
-    private int routingCount = 1;
     private final boolean[] moduleSwitch = new boolean[15];
     private boolean[] moduleActive = new boolean[15];
     private final int[] moduleTier = new int[15];
     private final ArrayList<BoxRoutings> routingMap = new ArrayList<>();
     public int tempCode = 1;
     public int ringCount = 1;
-    public int wiki = 1;
+    public int wikiPageCode = 1;
+    public int routingPageCode = 1;
     public int ringCountSet = 1;
     private int routingStatus = 0;
     private int[] machineError = new int[2];
@@ -994,10 +994,16 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         else if (recipe.parallel > 128000) recipe.requireModules.put(13, 0);
     }
 
-    private void doubleRecipe() {
+    private boolean doubleRecipe() {
+        int count = 0;
+        for (BoxRoutings r : routingMap) {
+            count += r.Parallel;
+        }
+        if (2 * count > maxParallel) return false;
         for (BoxRoutings r : routingMap) {
             r.Parallel *= 2;
         }
+        return true;
     }
 
     private boolean halveRecipe() {
@@ -1018,7 +1024,6 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         super.saveNBTData(NBT);
         NBT.setBoolean("Debug", debug);
         NBTTagCompound Routing = new NBTTagCompound();
-        Routing.setInteger("TotalRouting", routingCount);
         Routing.setInteger("ActiveRouting", routingMap.size());
         for (int i = 0; i < routingMap.size(); i++) {
             Routing.setTag("Routing" + (i + 1), routingMap.get(i).routingToNbt());
@@ -1049,7 +1054,6 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     public void loadNBTData(final NBTTagCompound NBT) {
         super.loadNBTData(NBT);
         NBTTagCompound Routing = NBT.getCompoundTag("Routing");
-        routingCount = Routing.getInteger("TotalRouting");
         int ActiveRouting = Routing.getInteger("ActiveRouting");
         routingStatus = NBT.getInteger("Status");
         debug = NBT.getBoolean("Debug");
@@ -1556,7 +1560,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      * @param player who is using the box
      */
     protected ModularWindow createInitialingWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(240, 50 + routingCount * 18);
+        ModularWindow.Builder builder = ModularWindow.builder(240, 215);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
@@ -1565,19 +1569,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setPos(5, 5)
                     .setSize(16, 16))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.05") + i18n("tile.boxplusplus.boxUI.06")).setPos(25, 9))
-            .widget(new TextWidget(String.valueOf(routingCount)).setPos(140, 9).setEnabled(recipe.islocked))
-            .widget(
-                new TextFieldWidget().setGetterInt(() -> routingCount)
-                    .setSetterInt(val -> routingCount = val)
-                    .setNumbers(1, maxRouting)
-                    .setTextColor(Color.WHITE.normal)
-                    .setTextAlignment(Alignment.Center)
-                    .addTooltip(i18n("tile.boxplusplus.boxUI.04"))
-                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD)
-                    .setSize(14, 14)
-                    .setPos(140, 7)
-                    .setEnabled(!recipe.islocked))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.28") + ringCount).setPos(160, 9))
+            .widget(new TextWidget(String.valueOf(maxRouting)).setPos(160, 9))
             .widget(
                 ButtonWidget.closeWindowButton(true)
                     .setPos(220, 5));
@@ -1598,12 +1590,52 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
                 .setPos(200, 25)
                 .setEnabled(routingMap.size() == 0));
+        //Next Page & Previous Page
+        builder.widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            routingPageCode += 1;
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(10);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.38"))
+                    .setPos(200, 48)
+                    .setEnabled(routingPageCode < Math.ceil((routingMap.size() + (recipe.islocked ? 0 : 1)) / 10.0)))
+            .widget(
+                new ButtonWidget().setOnClick(
+                        (clickData, widget) -> {
+                            routingPageCode -= 1;
+                            if (!widget.isClient()) {
+                                widget.getWindow().closeWindow();
+                                widget.getContext().openSyncedWindow(10);
+                            }
+                        })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_UP);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.39"))
+                    .setPos(200, 71)
+                    .setEnabled(routingPageCode != 1));
+        //export
         builder.widget(
             new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
                         if (widget.isClient()) {
                             NBTTagCompound Routing = new NBTTagCompound();
-                            Routing.setInteger("TotalRouting", routingCount);
+                            Routing.setInteger("TotalRouting", routingMap.size());
                             for (int i = 0; i < routingMap.size(); i++) {
                                 Routing.setTag("Routing" + (i + 1), routingMap.get(i).routingToUNbt());
                             }
@@ -1622,9 +1654,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .addTooltip(i18n("tile.boxplusplus.boxUI.31"))
                 .setPos(200, 25)
                 .setEnabled(recipe.islocked));
-        for (int i = 1; i <= routingCount; i++) {
+        for (int i = 10 * routingPageCode - 9; i <= Math.min(10 * routingPageCode, routingMap.size() + (recipe.islocked ? 0 : 1)); i++) {
             int finalI = i;
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + i).setPos(27, 9 + 18 * i))
+            int posY = 18 * (i % 10 == 0 ? 10 : i % 10);
+            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + i).setPos(43, 9 + posY))
                 .widget(
                     new ButtonWidget().setOnClick(
                             (clickData, widget) -> {
@@ -1643,7 +1676,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             return UI.toArray(new IDrawable[0]);
                         })
                         .addTooltip(i18n("tile.boxplusplus.boxUI.08") + i)
-                        .setPos(65, 7 + 18 * i)
+                        .setPos(81, 7 + posY)
                         .setEnabled(routingMap.size() == (i - 1)))
                 .widget(
                     new ButtonWidget().setOnClick(
@@ -1661,7 +1694,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             return UI.toArray(new IDrawable[0]);
                         })
                         .addTooltip(i18n("tile.boxplusplus.boxUI.09"))
-                        .setPos(65, 7 + 18 * i)
+                        .setPos(81, 7 + posY)
                         .setEnabled(routingMap.size() >= i))
                 .widget(
                     new ButtonWidget().setOnClick(
@@ -1682,21 +1715,27 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             return UI.toArray(new IDrawable[0]);
                         })
                         .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
-                        .setPos(85, 7 + 18 * i)
+                        .setPos(101, 7 + posY)
                         .setEnabled(routingMap.size() >= i && !recipe.islocked));
+            if (routingMap.size() != i - 1) {
+                ItemStackHandler drawitem = new ItemStackHandler(1);
+                drawitem.setStackInSlot(0, routingMap.get(i - 1).RoutingMachine);
+                builder.widget(SlotWidget.phantom(drawitem, 0).disableInteraction()
+                    .setSize(16, 16).setPos(21, 7 + posY));
+            }
         }
         builder.widget(
                 new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CROSS)
-                    .setPos(100, 22)
+                    .setPos(140, 71)
                     .setSize(24, 24)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.ErrorCode." + routingStatus))
-                    .setEnabled(routingStatus != 0))
+                    .setEnabled(routingStatus != 0 && !recipe.islocked))
             .widget(
                 new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CHECKMARK)
-                    .setPos(100, 22)
+                    .setPos(140, 71)
                     .setSize(36, 36)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.19"))
-                    .setEnabled(routingStatus == 0));
+                    .setEnabled(routingStatus == 0 && !recipe.islocked));
         builder.widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
@@ -1714,13 +1753,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.20"))
                     .setPos(140, 26)
-                    .setEnabled(routingMap.size() == routingCount && !recipe.islocked))
+                    .setEnabled(!routingMap.isEmpty() && !recipe.islocked))
             //Double Recipe
             .widget(
                 new ButtonWidget().setOnClick(
                         (clickData, widget) -> {
                             if (!widget.isClient()) {
-                                doubleRecipe();
+                                routingStatus = doubleRecipe() ? 0 : 10;
                                 widget.getWindow().closeWindow();
                                 widget.getContext().openSyncedWindow(10);
                             }
@@ -1734,7 +1773,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.33"))
                     .setPos(175, 26)
-                    .setEnabled(routingMap.size() == routingCount && !recipe.islocked))
+                    .setEnabled(!routingMap.isEmpty() && !recipe.islocked))
             //Halve Recipe
             .widget(
                 new ButtonWidget().setOnClick(
@@ -1754,7 +1793,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.34"))
                     .setPos(175, 44)
-                    .setEnabled(routingMap.size() == routingCount && !recipe.islocked))
+                    .setEnabled(!routingMap.isEmpty() && !recipe.islocked))
             //export AE pattern
             .widget(
                 new ButtonWidget().setOnClick(
@@ -1910,7 +1949,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setFocusOnGuiOpen(true)
                 .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
                 .setPos(25, 10)
-                .setSize(250, 180)
+                .setSize(250, 20)
         ).widget(
             new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
@@ -1929,7 +1968,6 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                     for (int i = 1; i <= count; i++) {
                                         routingMap.add(new BoxRoutings(routing.getCompoundTag("Routing" + i), true));
                                     }
-                                    routingCount = count;
                                     player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.5").replaceFirst("%count", String.valueOf(count))));
                                     routingStatus = 0;
                                 } else {
@@ -1948,7 +1986,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
-                .setPos(140, 200)
+                .setPos(140, 34)
         ).build();
     }
 

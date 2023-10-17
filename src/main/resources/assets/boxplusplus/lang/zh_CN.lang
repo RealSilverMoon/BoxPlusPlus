@@ -74,7 +74,7 @@ tile.boxplusplus.boxUI.02=外约束星环渲染开关
 tile.boxplusplus.boxUI.03=原料及工序
 tile.boxplusplus.boxUI.04=在框中填入你需要设定的工序数量，然后重新打开GUI。生成最终配方后，本参数不可更改
 tile.boxplusplus.boxUI.05=盒系统初始化中   
-tile.boxplusplus.boxUI.06=工序数目 
+tile.boxplusplus.boxUI.06=最大工序数目 
 tile.boxplusplus.boxUI.07=工序：
 tile.boxplusplus.boxUI.08=检测工序
 tile.boxplusplus.boxUI.09=查看工序细节
@@ -106,6 +106,8 @@ tile.boxplusplus.boxUI.34=减半配方
 tile.boxplusplus.boxUI.35=取消最终配方
 tile.boxplusplus.boxUI.36=导出AE2样板(需要输入总线中存在空白样板)
 tile.boxplusplus.boxUI.37=配方需要启用以下模块:
+tile.boxplusplus.boxUI.38=下一页
+tile.boxplusplus.boxUI.39=上一页
 
 tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
 tile.boxplusplus.boxError.2=原因：未通过2环结构检测。
@@ -123,6 +125,7 @@ tile.boxplusplus.boxUI.ErrorCode.6=电路装配线需要在主机蚀刻电路!
 tile.boxplusplus.boxUI.ErrorCode.7=未读取到正确的数据球!
 tile.boxplusplus.boxUI.ErrorCode.8=你导入的工序数量大于本盒支持的工序上限了！尝试升级一下环数。
 tile.boxplusplus.boxUI.ErrorCode.9=配方存在奇数并行，无法减半
+tile.boxplusplus.boxUI.ErrorCode.10=再次翻倍将超过本盒的最大并行上限！
 
 tile.boxplusplus.boxUI.module.1=原子操控爪
 tile.boxplusplus.boxUI.module.2=3826号设施
