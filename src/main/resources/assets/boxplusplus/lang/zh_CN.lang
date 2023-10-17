@@ -61,6 +61,7 @@ tile.boxplusplus.boxinfo.12=仅当启用模块后， 多方块投影仪才会指
 tile.boxplusplus.boxinfo.13=结构环数R将影响最大工序数量，单工序并行，超频
 tile.boxplusplus.boxinfo.14=升级3环将突破虚境的高维壁垒，可在GUI中关闭来保护FPS
 tile.boxplusplus.boxinfo.15=更多信息(最终配方耗时、最终功率等)与教程请参阅GUI中内置WIKI
+tile.boxplusplus.boxinfo.16=通过一台BOX
 
 tile.boxplusplus.boxStructure.01=盒系统由核心、三重星环和14个模块组成, 结构太复杂了！
 tile.boxplusplus.boxStructure.02=核心外侧中央
@@ -103,6 +104,8 @@ tile.boxplusplus.boxUI.32=§l§4警告! 并行总数超过了当前盒系统上�
 tile.boxplusplus.boxUI.33=双倍配方
 tile.boxplusplus.boxUI.34=减半配方
 tile.boxplusplus.boxUI.35=取消最终配方
+tile.boxplusplus.boxUI.36=导出AE2样板(需要输入总线中存在空白样板)
+tile.boxplusplus.boxUI.37=配方需要启用以下模块:
 
 tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
 tile.boxplusplus.boxError.2=原因：未通过2环结构检测。
@@ -273,3 +276,8 @@ tile.boxplusplus.chatmessage.3=输入有误，请检查工序代码。(注意必
 tile.boxplusplus.chatmessage.4=你导入的工序数量大于本盒支持的工序上限了！
 tile.boxplusplus.chatmessage.5=导入%count条工序成功！
 tile.boxplusplus.chatmessage.6=输入有误，请检查工序代码。
+tile.boxplusplus.chatmessage.7=已将配方写入一份空白样板
+tile.boxplusplus.chatmessage.8=在输入总线中没有找到空白样板
+
+GT5U.gui.text.box_debugmode=这个配方不可能运行。(除非...)
+GT5U.gui.text.no_wireless_power=无线网络剩余电力不足运行本配方
