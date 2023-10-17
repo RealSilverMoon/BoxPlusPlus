@@ -7,9 +7,11 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import static com.silvermoon.boxplusplus.util.Util.i18n;
 
 public class TileEntitiesLoader {
+
     public static GTMachineBox Box;
-    public static void register(){
-        Box = new GTMachineBox(17001,"multimachine_Box",i18n("tile.boxplusplus.box"));
+
+    public static void register() {
+        Box = new GTMachineBox(17001, "multimachine_Box", i18n("tile.boxplusplus.box"));
         GameRegistry.registerTileEntity(TeBoxRing.class, "BoxRing");
     }
 }

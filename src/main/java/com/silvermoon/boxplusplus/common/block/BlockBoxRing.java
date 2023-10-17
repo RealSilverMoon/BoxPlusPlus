@@ -12,37 +12,44 @@ import net.minecraft.world.World;
 import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
 
 public class BlockBoxRing extends Block implements ITileEntityProvider {
+
     public BlockBoxRing(int i) {
         super(Material.iron);
-        setBlockName("boxplusplus_BoxRing"+i);
+        setBlockName("boxplusplus_BoxRing" + i);
         setCreativeTab(BoxTab);
         setHarvestLevel("pickaxe", 2);
     }
+
     @Override
     public TileEntity createNewTileEntity(World world, int meta) {
         return new TeBoxRing();
     }
-    public void registerBlock(){
+
+    public void registerBlock() {
         super.setHardness(5);
         super.setCreativeTab(BoxTab);
-        GameRegistry.registerBlock(this,getUnlocalizedName());
+        GameRegistry.registerBlock(this, getUnlocalizedName());
     }
+
     @Override
     public int getRenderType() {
         return -1;
     }
+
     @Override
     public boolean renderAsNormalBlock() {
         return false;
     }
+
     @Override
     public Block setBlockName(String name) {
         super.setBlockName(name);
         this.setBlockTextureName(Tags.MODID + ":" + name);
         return this;
     }
+
     @Override
-    public boolean isOpaqueCube(){
+    public boolean isOpaqueCube() {
         return false;
     }
 }

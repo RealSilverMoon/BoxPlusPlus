@@ -28,6 +28,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 public class Util {
+
     public static String i18n(String info) {
         return StatCollector.translateToLocal(info);
     }
@@ -49,7 +50,8 @@ public class Util {
 
     public static ItemStack findfirstCircuit(List<ItemStack> input) {
         for (ItemStack item : input) {
-            if (item.getUnlocalizedName().equals("gt.integrated_circuit")) return item;
+            if (item.getUnlocalizedName()
+                .equals("gt.integrated_circuit")) return item;
         }
         return null;
     }
@@ -59,10 +61,15 @@ public class Util {
             return false;
         }
 
-        final IDefinitions definitions = AEApi.instance().definitions();
+        final IDefinitions definitions = AEApi.instance()
+            .definitions();
 
-        boolean isPattern = definitions.items().encodedPattern().isSameAs(output);
-        isPattern |= definitions.materials().blankPattern().isSameAs(output);
+        boolean isPattern = definitions.items()
+            .encodedPattern()
+            .isSameAs(output);
+        isPattern |= definitions.materials()
+            .blankPattern()
+            .isSameAs(output);
 
         return isPattern;
     }
@@ -78,7 +85,7 @@ public class Util {
         return c;
     }
 
-    //Ah...ha? Forge only use byte to store itemstacksize, which is far enough for box. Let's fix it.
+    // Ah...ha? Forge only use byte to store itemstacksize, which is far enough for box. Let's fix it.
     public static NBTTagCompound writeBoxItemToNBT(ItemStack item, NBTTagCompound nbt) {
         nbt.setShort("id", (short) Item.getIdFromItem(item.getItem()));
         nbt.setInteger("Count", item.stackSize);
@@ -90,6 +97,7 @@ public class Util {
 
         return nbt;
     }
+
     public static NBTTagCompound writeBoxItemToUNBT(ItemStack item, NBTTagCompound nbt) {
         String registerName = item.getItem().delegate.name();
         nbt.setString("modID", registerName.substring(0, registerName.indexOf(':')));
@@ -110,11 +118,8 @@ public class Util {
         if (itemDamage < 0) {
             itemDamage = 0;
         }
-        ItemStack boxItem = GT_ModHandler.getModItem(
-            nbt.getString("modID"),
-            nbt.getString("name"),
-            stackSize,
-            itemDamage);
+        ItemStack boxItem = GT_ModHandler
+            .getModItem(nbt.getString("modID"), nbt.getString("name"), stackSize, itemDamage);
         if (nbt.hasKey("tag", 10)) {
             boxItem.stackTagCompound = nbt.getCompoundTag("tag");
         }
@@ -136,9 +141,9 @@ public class Util {
         return boxItem.getItem() != null ? boxItem : null;
     }
 
-    //Auto place TEBlock
-    public static <T, E> IStructureElement<T> RingTileAdder(BiPredicate<T, E> iTileAdder,
-                                                            Class<E> tileClass, Block hintBlock, int hintMeta, Function<T, Block> RingAdder) {
+    // Auto place TEBlock
+    public static <T, E> IStructureElement<T> RingTileAdder(BiPredicate<T, E> iTileAdder, Class<E> tileClass,
+        Block hintBlock, int hintMeta, Function<T, Block> RingAdder) {
         if (iTileAdder == null || hintBlock == null || tileClass == null) {
             throw new IllegalArgumentException();
         }
@@ -158,8 +163,14 @@ public class Util {
 
             @Override
             public boolean placeBlock(T t, World world, int x, int y, int z, ItemStack trigger) {
-                world.setBlock(x, y, z, trigger.stackSize == 1 ? RingAdder.apply(t)
-                    : (trigger.stackSize == 2 ? BlockRegister.BoxRing2 : BlockRegister.BoxRing3), hintMeta, 2);
+                world.setBlock(
+                    x,
+                    y,
+                    z,
+                    trigger.stackSize == 1 ? RingAdder.apply(t)
+                        : (trigger.stackSize == 2 ? BlockRegister.BoxRing2 : BlockRegister.BoxRing3),
+                    hintMeta,
+                    2);
                 return true;
             }
         };
@@ -168,8 +179,7 @@ public class Util {
     public static String serialize(NBTTagCompound nbt) {
         try {
             return org.apache.commons.codec.binary.Base64.encodeBase64String(CompressedStreamTools.compress(nbt));
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
         return null;
     }
 
@@ -178,8 +188,7 @@ public class Util {
             byte[] b = org.apache.commons.codec.binary.Base64.decodeBase64(str);
             try {
                 return CompressedStreamTools.func_152457_a(b, new NBTSizeTracker(2097152L));
-            } catch (IOException ignored) {
-            }
+            } catch (IOException ignored) {}
         }
         return null;
     }

@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class ItemContainer {
+
     private final Table<Item, Integer, Long> stack = HashBasedTable.create();
 
     public void addItemStack(ItemStack input, int multiple, int chance) {
         if (input.getItem() == null) return;
         Optional<Long> isNull = Optional.ofNullable(stack.get(input.getItem(), input.getItemDamage()));
         if (isNull.isPresent()) {
-            stack.put(input.getItem(), input.getItemDamage(),
-                chance * (long) input.stackSize * multiple + isNull.get());
+            stack
+                .put(input.getItem(), input.getItemDamage(), chance * (long) input.stackSize * multiple + isNull.get());
         } else {
             stack.put(input.getItem(), input.getItemDamage(), chance * (long) input.stackSize * multiple);
         }
@@ -42,8 +43,11 @@ public class ItemContainer {
         for (Item item : stack.rowKeySet()) {
             for (int meta : stack.columnKeySet()) {
                 if (stack.get(item, meta) != null) {
-                    output.add(new ItemStack(item,
-                        (int) Math.min(stack.get(item, meta) / 10000, Integer.MAX_VALUE - 1), meta));
+                    output.add(
+                        new ItemStack(
+                            item,
+                            (int) Math.min(stack.get(item, meta) / 10000, Integer.MAX_VALUE - 1),
+                            meta));
                 }
             }
         }

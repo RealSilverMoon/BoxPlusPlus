@@ -8,6 +8,7 @@ import net.minecraft.util.EnumChatFormatting;
 import static com.silvermoon.boxplusplus.util.Util.i18n;
 
 public class ResultModuleRequirement implements CheckRecipeResult {
+
     private int required;
     private boolean isUpdated;
 

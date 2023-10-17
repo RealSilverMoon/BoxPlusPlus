@@ -17,8 +17,7 @@ import org.apache.logging.log4j.Logger;
     modid = Tags.MODID,
     version = Tags.VERSION,
     name = Tags.MODNAME,
-    dependencies = "required-after:IC2;"
-        + "required-after:structurelib;"
+    dependencies = "required-after:IC2;" + "required-after:structurelib;"
         + "required-after:modularui;"
         + "after:GalacticraftCore;"
         + "required-after:bartworks;"
@@ -31,7 +30,9 @@ public class boxplusplus {
 
     public static final Logger LOG = LogManager.getLogger(Tags.MODID);
 
-    @SidedProxy(clientSide = "com.silvermoon.boxplusplus.client.ClientProxy", serverSide = "com.silvermoon.boxplusplus.common.CommonProxy")
+    @SidedProxy(
+        clientSide = "com.silvermoon.boxplusplus.client.ClientProxy",
+        serverSide = "com.silvermoon.boxplusplus.common.CommonProxy")
     public static CommonProxy proxy;
 
     @Mod.Instance(Tags.MODID)
@@ -63,6 +64,7 @@ public class boxplusplus {
     }
 
     public static final CreativeTabs BoxTab = new CreativeTabs("BoxPlusPlus") {
+
         @Override
         public Item getTabIconItem() {
             return Item.getItemFromBlock(BlockRegister.BoxRing2);

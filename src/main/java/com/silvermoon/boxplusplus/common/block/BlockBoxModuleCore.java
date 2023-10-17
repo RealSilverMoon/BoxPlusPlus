@@ -20,6 +20,7 @@ import java.util.List;
 import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
 
 public class BlockBoxModuleCore extends Block {
+
     private final IIcon[] ModuleIcon = new IIcon[15];
     public final boolean isUpdate;
 
@@ -41,8 +42,8 @@ public class BlockBoxModuleCore extends Block {
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
         for (int i = 0; i < 15; i++) {
-            ModuleIcon[i] = iconRegister.registerIcon(Tags.MODID +
-                (!isUpdate ? ":modules/BoxModule" : ":modules/BoxModulePlus") + i);
+            ModuleIcon[i] = iconRegister
+                .registerIcon(Tags.MODID + (!isUpdate ? ":modules/BoxModule" : ":modules/BoxModulePlus") + i);
         }
     }
 
@@ -60,6 +61,7 @@ public class BlockBoxModuleCore extends Block {
         super.setHarvestLevel(tool, hardness);
         return this;
     }
+
     @Override
     public void getSubBlocks(Item item, CreativeTabs tabs, List list) {
         for (int i = 0; i < 15; i++) {

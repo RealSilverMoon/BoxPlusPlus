@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 
 public class TeBoxRing extends TileEntityAdvanced {
+
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
     public double Rotation = 0;
     @Annotations.NetworkedField(targetSide = Side.CLIENT)

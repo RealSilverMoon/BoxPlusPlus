@@ -14,6 +14,7 @@ import java.util.List;
 import static com.silvermoon.boxplusplus.util.Util.*;
 
 public class BoxRoutings {
+
     public ItemStack RoutingMachine;
     public List<ItemStack> InputItem = new ArrayList<>();
     public List<ItemStack> OutputItem = new ArrayList<>();
@@ -25,30 +26,31 @@ public class BoxRoutings {
     public int time;
     public Long voltage;
 
-    public BoxRoutings(GT_Recipe recipe, ItemStack machine ) {
+    public BoxRoutings(GT_Recipe recipe, ItemStack machine) {
         InputItem.addAll(Arrays.asList(recipe.mInputs));
         InputItem.removeAll(Collections.singleton(null));
         OutputItem.addAll(Arrays.asList(recipe.mOutputs));
-        if(machine.getUnlocalizedName().contains("multimachine.plasmaforge")){
-            for(int i=0;i<OutputItem.size();i++) OutputChance.add(7500);
-        }else for(int i=0;i<OutputItem.size();i++) OutputChance.add(recipe.getOutputChance(i));
+        if (machine.getUnlocalizedName()
+            .contains("multimachine.plasmaforge")) {
+            for (int i = 0; i < OutputItem.size(); i++) OutputChance.add(7500);
+        } else for (int i = 0; i < OutputItem.size(); i++) OutputChance.add(recipe.getOutputChance(i));
         OutputItem.removeAll(Collections.singleton(null));
         InputFluid.addAll(Arrays.asList(recipe.mFluidInputs));
         OutputFluid.addAll(Arrays.asList(recipe.mFluidOutputs));
         RoutingMachine = machine;
         voltage = (long) recipe.mEUt;
         time = recipe.mDuration;
-        //do some special service
-        switch (machine.getUnlocalizedName().substring(17)) {
+        // do some special service
+        switch (machine.getUnlocalizedName()
+            .substring(17)) {
             case "multimachine.plasmaforge" -> {
                 time *= 4;
                 OutputFluid.forEach(f -> f.amount = (int) (f.amount * 0.75));
             }
-            case "multimachine.blastfurnace", "multimachine.adv.blastfurnace", "megablastfurnace" ->
-                this.special = recipe.mSpecialValue;
+            case "multimachine.blastfurnace", "multimachine.adv.blastfurnace", "megablastfurnace" -> this.special = recipe.mSpecialValue;
             case "componentassemblyline" -> time /= 16;
-            case "quantumforcetransformer.controller.tier.single" ->
-                OutputFluid.forEach(f -> f.amount = f.amount / (OutputFluid.size() + OutputItem.size()));
+            case "quantumforcetransformer.controller.tier.single" -> OutputFluid
+                .forEach(f -> f.amount = f.amount / (OutputFluid.size() + OutputItem.size()));
         }
     }
 
@@ -81,7 +83,9 @@ public class BoxRoutings {
     public BoxRoutings(InventoryCrafting inputs, ItemStack outputs, ItemStack machine) {
         for (int i = 0; i < 9; i++) {
             if (inputs.getStackInSlot(i) == null) continue;
-            InputItem.add(inputs.getStackInSlot(i).copy());
+            InputItem.add(
+                inputs.getStackInSlot(i)
+                    .copy());
         }
         ItemStack b = outputs.copy();
         OutputItem.add(b);
@@ -101,7 +105,7 @@ public class BoxRoutings {
         i = 0;
         while (routingNBT.hasKey("OutputItem" + (i + 1))) {
             OutputItem.add(loadBoxItemFromNBT(routingNBT.getCompoundTag("OutputItem" + (i + 1))));
-            OutputChance.add(routingNBT.getInteger("OutputChance"+(i+1)));
+            OutputChance.add(routingNBT.getInteger("OutputChance" + (i + 1)));
             i++;
         }
         i = 0;
@@ -158,10 +162,14 @@ public class BoxRoutings {
             routing.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(OutputItem.get(i), new NBTTagCompound()));
             routing.setInteger("OutputChance" + (i + 1), OutputChance.get(i));
         }
-        for (int i = 0; i < InputFluid.size(); i++)
-            routing.setTag("InputFluid" + (i + 1), InputFluid.get(i).writeToNBT(new NBTTagCompound()));
-        for (int i = 0; i < OutputFluid.size(); i++)
-            routing.setTag("OutputFluid" + (i + 1), OutputFluid.get(i).writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < InputFluid.size(); i++) routing.setTag(
+            "InputFluid" + (i + 1),
+            InputFluid.get(i)
+                .writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < OutputFluid.size(); i++) routing.setTag(
+            "OutputFluid" + (i + 1),
+            OutputFluid.get(i)
+                .writeToNBT(new NBTTagCompound()));
         routing.setLong("Voltage", voltage);
         routing.setInteger("Parallel", Parallel);
         routing.setInteger("Time", time);
@@ -178,17 +186,20 @@ public class BoxRoutings {
             routing.setTag("OutputItem" + (i + 1), writeBoxItemToUNBT(OutputItem.get(i), new NBTTagCompound()));
             routing.setInteger("OutputChance" + (i + 1), OutputChance.get(i));
         }
-        for (int i = 0; i < InputFluid.size(); i++)
-            routing.setTag("InputFluid" + (i + 1), InputFluid.get(i).writeToNBT(new NBTTagCompound()));
-        for (int i = 0; i < OutputFluid.size(); i++)
-            routing.setTag("OutputFluid" + (i + 1), OutputFluid.get(i).writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < InputFluid.size(); i++) routing.setTag(
+            "InputFluid" + (i + 1),
+            InputFluid.get(i)
+                .writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < OutputFluid.size(); i++) routing.setTag(
+            "OutputFluid" + (i + 1),
+            OutputFluid.get(i)
+                .writeToNBT(new NBTTagCompound()));
         routing.setLong("Voltage", voltage);
         routing.setInteger("Parallel", Parallel);
         routing.setInteger("Time", time);
         routing.setInteger("Sp", special);
         return routing;
     }
-
 
     public int calHeight() {
         return InputItem.size() + OutputItem.size() + InputFluid.size() + OutputFluid.size();

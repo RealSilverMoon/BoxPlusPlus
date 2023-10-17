@@ -7,8 +7,9 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 
 public class ClientProxy extends CommonProxy {
+
     @Override
-    public void init(FMLInitializationEvent e){
+    public void init(FMLInitializationEvent e) {
         super.init(e);
         ClientRegistry.bindTileEntitySpecialRenderer(TeBoxRing.class, new RenderBoxRing());
     }

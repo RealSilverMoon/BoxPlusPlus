@@ -15,7 +15,7 @@ public class CommonProxy {
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
-        //ItemRegister.Register();
+        // ItemRegister.Register();
         BlockRegister.register();
     }
 
