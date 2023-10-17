@@ -1,5 +1,7 @@
 package com.silvermoon.boxplusplus.util;
 
+import appeng.api.AEApi;
+import appeng.api.definitions.IDefinitions;
 import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
@@ -9,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -51,6 +54,30 @@ public class Util {
         return null;
     }
 
+    public static boolean isPattern(final ItemStack output) {
+        if (output == null) {
+            return false;
+        }
+
+        final IDefinitions definitions = AEApi.instance().definitions();
+
+        boolean isPattern = definitions.items().encodedPattern().isSameAs(output);
+        isPattern |= definitions.materials().blankPattern().isSameAs(output);
+
+        return isPattern;
+    }
+
+    public static NBTBase createItemTag(final ItemStack i) {
+        final NBTTagCompound c = new NBTTagCompound();
+
+        if (i != null) {
+            i.writeToNBT(c);
+            c.setInteger("Count", i.stackSize);
+        }
+
+        return c;
+    }
+
     //Ah...ha? Forge only use byte to store itemstacksize, which is far enough for box. Let's fix it.
     public static NBTTagCompound writeBoxItemToNBT(ItemStack item, NBTTagCompound nbt) {
         nbt.setShort("id", (short) Item.getIdFromItem(item.getItem()));
@@ -63,7 +90,6 @@ public class Util {
 
         return nbt;
     }
-
     public static NBTTagCompound writeBoxItemToUNBT(ItemStack item, NBTTagCompound nbt) {
         String registerName = item.getItem().delegate.name();
         nbt.setString("modID", registerName.substring(0, registerName.indexOf(':')));

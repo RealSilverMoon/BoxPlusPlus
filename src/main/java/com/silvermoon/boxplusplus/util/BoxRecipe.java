@@ -1,9 +1,13 @@
 package com.silvermoon.boxplusplus.util;
 
+import appeng.api.storage.data.IAEItemStack;
+import appeng.util.item.AEItemStack;
+import com.glodblock.github.common.item.ItemFluidDrop;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Utility;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -19,11 +23,11 @@ public class BoxRecipe {
     public List<ItemStack> FinalItemOutput = new ArrayList<>();
     public List<FluidStack> FinalFluidInput = new ArrayList<>();
     public List<FluidStack> FinalFluidOutput = new ArrayList<>();
-    public HashMap<Integer,Integer> requireModules = new HashMap<>();
+    public HashMap<Integer, Integer> requireModules = new HashMap<>();
     public int FinalTime = 0;
     public Long parallel = 0L;
     public Long FinalVoteage = 0L;
-    public boolean islocked =false;
+    public boolean islocked = false;
 
     public BoxRecipe() {
     }
@@ -49,12 +53,13 @@ public class BoxRecipe {
             FinalFluidOutput.add(FluidStack.loadFluidStackFromNBT(nbt.getCompoundTag("OutputFluid" + (i + 1))));
             i++;
         }
-        NBTTagCompound requireModule=nbt.getCompoundTag("requireModule");
-        for(i=0;i<15;i++){
-            if(requireModule.hasKey(String.valueOf(i))) requireModules.put(i,requireModule.getInteger(String.valueOf(i)));
+        NBTTagCompound requireModule = nbt.getCompoundTag("requireModule");
+        for (i = 0; i < 15; i++) {
+            if (requireModule.hasKey(String.valueOf(i)))
+                requireModules.put(i, requireModule.getInteger(String.valueOf(i)));
         }
         FinalTime = nbt.getInteger("Time");
-        FinalVoteage= nbt.getLong("Voteage");
+        FinalVoteage = nbt.getLong("Voteage");
         islocked = nbt.getBoolean("islocked");
         parallel = nbt.getLong("parallel");
     }
@@ -75,7 +80,7 @@ public class BoxRecipe {
                         oItem.stackSize = 0;
                     } else {
                         oItem.stackSize -= iItem.stackSize;
-                        iItem.stackSize=0;
+                        iItem.stackSize = 0;
                     }
                 }
             }
@@ -95,10 +100,10 @@ public class BoxRecipe {
                     }
                     if (iFluid.amount > oFluid.amount) {
                         iFluid.amount -= oFluid.amount;
-                        oFluid.amount=0;
+                        oFluid.amount = 0;
                     } else {
                         oFluid.amount -= iFluid.amount;
-                        iFluid.amount=0;
+                        iFluid.amount = 0;
                     }
                 }
             }
@@ -110,24 +115,70 @@ public class BoxRecipe {
     public NBTTagCompound RecipeToNBT() {
         NBTTagCompound recipe = new NBTTagCompound();
         for (int i = 0; i < FinalItemInput.size(); i++)
-            recipe.setTag("InputItem" + (i + 1), writeBoxItemToNBT(FinalItemInput.get(i),new NBTTagCompound()));
+            recipe.setTag("InputItem" + (i + 1), writeBoxItemToNBT(FinalItemInput.get(i), new NBTTagCompound()));
         for (int i = 0; i < FinalItemOutput.size(); i++)
-            recipe.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(FinalItemOutput.get(i),new NBTTagCompound()));
+            recipe.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(FinalItemOutput.get(i), new NBTTagCompound()));
         for (int i = 0; i < FinalFluidInput.size(); i++)
             recipe.setTag("InputFluid" + (i + 1), FinalFluidInput.get(i).writeToNBT(new NBTTagCompound()));
         for (int i = 0; i < FinalFluidOutput.size(); i++)
             recipe.setTag("OutputFluid" + (i + 1), FinalFluidOutput.get(i).writeToNBT(new NBTTagCompound()));
         NBTTagCompound requireModule = new NBTTagCompound();
-        requireModules.forEach((k,v)-> requireModule.setInteger(String.valueOf(k),v));
-        recipe.setLong("Voteage",FinalVoteage);
-        recipe.setTag("requireModule",requireModule);
+        requireModules.forEach((k, v) -> requireModule.setInteger(String.valueOf(k), v));
+        recipe.setLong("Voteage", FinalVoteage);
+        recipe.setTag("requireModule", requireModule);
         recipe.setInteger("Time", FinalTime);
         recipe.setBoolean("islocked", islocked);
         recipe.setLong("parallel", parallel);
         return recipe;
     }
 
+    public NBTTagCompound RecipeToAE2ItemPattern() {
+        final NBTTagCompound encodedValue = new NBTTagCompound();
+        final NBTTagList tagIn = new NBTTagList();
+        final NBTTagList tagOut = new NBTTagList();
+        for (final ItemStack i : this.FinalItemInput) {
+            tagIn.appendTag(Util.createItemTag(i));
+        }
+        for (final ItemStack i : this.FinalItemOutput) {
+            tagOut.appendTag(Util.createItemTag(i));
+        }
+        encodedValue.setTag("in", tagIn);
+        encodedValue.setTag("out", tagOut);
+        encodedValue.setBoolean("crafting", false);
+        encodedValue.setBoolean("substitute", false);
+        encodedValue.setBoolean("beSubstitute", false);
+        return encodedValue;
+    }
+
     public int calHeight() {
         return FinalItemInput.size() + FinalFluidInput.size() + FinalItemOutput.size() + FinalFluidOutput.size();
+    }
+
+    public IAEItemStack[] transInputsToAE2Stuff() {
+        IAEItemStack[] stacks = new IAEItemStack[FinalItemInput.size() + FinalFluidInput.size()];
+        int i = 0;
+        for (ItemStack item : FinalItemInput) {
+            stacks[i] = AEItemStack.create(item);
+            i++;
+        }
+        for (FluidStack fluid : FinalFluidInput) {
+            stacks[i] = ItemFluidDrop.newAeStack(fluid);
+            i++;
+        }
+        return stacks;
+    }
+
+    public IAEItemStack[] transOutputsToAE2Stuff() {
+        IAEItemStack[] stacks = new IAEItemStack[FinalItemOutput.size() + FinalFluidOutput.size()];
+        int i = 0;
+        for (ItemStack item : FinalItemOutput) {
+            stacks[i] = AEItemStack.create(item);
+            i++;
+        }
+        for (FluidStack fluid : FinalFluidOutput) {
+            stacks[i] = ItemFluidDrop.newAeStack(fluid);
+            i++;
+        }
+        return stacks;
     }
 }
