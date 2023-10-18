@@ -1,17 +1,18 @@
 package com.silvermoon.boxplusplus.util;
 
-import gregtech.api.util.GT_Recipe;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fluids.FluidStack;
+import static com.silvermoon.boxplusplus.util.Util.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.silvermoon.boxplusplus.util.Util.*;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidStack;
+
+import gregtech.api.util.GT_Recipe;
 
 public class BoxRoutings {
 

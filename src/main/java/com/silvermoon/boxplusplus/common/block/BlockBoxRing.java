@@ -1,15 +1,17 @@
 package com.silvermoon.boxplusplus.common.block;
 
-import com.silvermoon.boxplusplus.Tags;
-import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
-import cpw.mods.fml.common.registry.GameRegistry;
+import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
+import com.silvermoon.boxplusplus.Tags;
+import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class BlockBoxRing extends Block implements ITileEntityProvider {
 

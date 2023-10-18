@@ -1,16 +1,19 @@
 package com.silvermoon.boxplusplus.common.render;
 
-import com.silvermoon.boxplusplus.Tags;
-import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+
 import org.lwjgl.opengl.GL11;
+
+import com.silvermoon.boxplusplus.Tags;
+import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderBoxRing extends TileEntitySpecialRenderer {

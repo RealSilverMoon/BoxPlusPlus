@@ -1,15 +1,16 @@
 package com.silvermoon.boxplusplus.common.items;
 
-import com.silvermoon.boxplusplus.common.block.BlockBoxModuleCore;
+import static com.silvermoon.boxplusplus.util.Util.i18n;
+
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.util.List;
-
-import static com.silvermoon.boxplusplus.util.Util.i18n;
+import com.silvermoon.boxplusplus.common.block.BlockBoxModuleCore;
 
 public class IB_BoxModule extends ItemBlock {
 

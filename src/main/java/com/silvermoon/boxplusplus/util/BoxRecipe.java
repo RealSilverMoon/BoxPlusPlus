@@ -1,22 +1,24 @@
 package com.silvermoon.boxplusplus.util;
 
-import appeng.api.storage.data.IAEItemStack;
-import appeng.util.item.AEItemStack;
-import com.glodblock.github.common.item.ItemFluidDrop;
-import gregtech.api.util.GT_OreDictUnificator;
-import gregtech.api.util.GT_Utility;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraftforge.fluids.FluidStack;
+import static com.silvermoon.boxplusplus.util.Util.loadBoxItemFromNBT;
+import static com.silvermoon.boxplusplus.util.Util.writeBoxItemToNBT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static com.silvermoon.boxplusplus.util.Util.loadBoxItemFromNBT;
-import static com.silvermoon.boxplusplus.util.Util.writeBoxItemToNBT;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.fluids.FluidStack;
+
+import com.glodblock.github.common.item.ItemFluidDrop;
+
+import appeng.api.storage.data.IAEItemStack;
+import appeng.util.item.AEItemStack;
+import gregtech.api.util.GT_OreDictUnificator;
+import gregtech.api.util.GT_Utility;
 
 public class BoxRecipe {
 

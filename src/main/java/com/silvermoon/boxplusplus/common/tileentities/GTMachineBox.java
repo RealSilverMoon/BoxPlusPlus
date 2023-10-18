@@ -1,7 +1,36 @@
 package com.silvermoon.boxplusplus.common.tileentities;
 
-import appeng.api.AEApi;
-import appeng.container.ContainerNull;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizons.modularui.api.math.Alignment.TopCenter;
+import static com.gtnewhorizons.modularui.api.math.Alignment.TopLeft;
+import static com.silvermoon.boxplusplus.common.BoxModule.getModuleByIndex;
+import static com.silvermoon.boxplusplus.common.BoxModule.transMachinesToModule;
+import static com.silvermoon.boxplusplus.util.Util.*;
+import static gregtech.api.enums.GT_HatchElement.*;
+import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
+import static gregtech.api.util.GT_StructureUtility.buildHatchAdder;
+import static gregtech.common.blocks.GT_Item_Machines.getMetaTileEntity;
+
+import java.io.IOException;
+import java.util.*;
+
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.github.bartimaeusnek.bartworks.common.tileentities.multis.GT_TileEntity_ElectricImplosionCompressor;
 import com.github.bartimaeusnek.bartworks.util.BWRecipes;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyMulti;
@@ -29,6 +58,9 @@ import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
+
+import appeng.api.AEApi;
+import appeng.container.ContainerNull;
 import gregtech.api.enums.*;
 import gregtech.api.gui.modularui.GT_UIInfos;
 import gregtech.api.gui.modularui.GT_UITextures;
@@ -50,35 +82,6 @@ import gregtech.common.items.behaviors.Behaviour_DataOrb;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gtPlusPlus.core.util.minecraft.ItemUtils;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.util.*;
-
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
-import static com.gtnewhorizons.modularui.api.math.Alignment.TopCenter;
-import static com.gtnewhorizons.modularui.api.math.Alignment.TopLeft;
-import static com.silvermoon.boxplusplus.common.BoxModule.getModuleByIndex;
-import static com.silvermoon.boxplusplus.common.BoxModule.transMachinesToModule;
-import static com.silvermoon.boxplusplus.util.Util.*;
-import static gregtech.api.enums.GT_HatchElement.*;
-import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
-import static gregtech.api.util.GT_StructureUtility.buildHatchAdder;
-import static gregtech.common.blocks.GT_Item_Machines.getMetaTileEntity;
 
 public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox>
     implements ISurvivalConstructable, IGlobalWirelessEnergy {

@@ -1,13 +1,14 @@
 package com.silvermoon.boxplusplus.util;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 
 public class ItemContainer {
 

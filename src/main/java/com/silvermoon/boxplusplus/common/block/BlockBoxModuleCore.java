@@ -1,9 +1,9 @@
 package com.silvermoon.boxplusplus.common.block;
 
-import com.silvermoon.boxplusplus.Tags;
-import com.silvermoon.boxplusplus.common.items.IB_BoxModule;
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTech_API;
+import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
+
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -15,9 +15,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import java.util.List;
+import com.silvermoon.boxplusplus.Tags;
+import com.silvermoon.boxplusplus.common.items.IB_BoxModule;
 
-import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
+import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.GregTech_API;
 
 public class BlockBoxModuleCore extends Block {
 

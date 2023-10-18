@@ -1,10 +1,10 @@
 package com.silvermoon.boxplusplus.util;
 
-import net.minecraftforge.fluids.FluidStack;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import net.minecraftforge.fluids.FluidStack;
 
 public class FluidContainer {
 

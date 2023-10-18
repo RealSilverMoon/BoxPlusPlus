@@ -1,20 +1,22 @@
 package com.silvermoon.boxplusplus.common.loader;
 
-import com.github.technus.tectech.recipe.TT_recipeAdder;
-import gregtech.api.enums.*;
-import gregtech.api.util.GTPP_Recipe;
-import gregtech.api.util.GT_ModHandler;
-import gregtech.api.util.GT_OreDictUnificator;
-import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
+import static gregtech.api.enums.Mods.*;
+import static gregtech.api.util.GT_Recipe.GT_Recipe_Map.sAssemblerRecipes;
+import static gregtech.api.util.GT_Recipe.GT_Recipe_Map.sMultiblockChemicalRecipes;
+import static gregtech.api.util.GT_RecipeConstants.*;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import static gregtech.api.enums.Mods.*;
-import static gregtech.api.util.GT_Recipe.GT_Recipe_Map.sAssemblerRecipes;
-import static gregtech.api.util.GT_Recipe.GT_Recipe_Map.sMultiblockChemicalRecipes;
-import static gregtech.api.util.GT_RecipeConstants.*;
+import com.github.technus.tectech.recipe.TT_recipeAdder;
+
+import gregtech.api.enums.*;
+import gregtech.api.util.GTPP_Recipe;
+import gregtech.api.util.GT_ModHandler;
+import gregtech.api.util.GT_OreDictUnificator;
+import gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList;
 
 public class RecipeLoader implements Runnable {
 

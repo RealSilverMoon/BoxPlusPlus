@@ -1,11 +1,12 @@
 package com.silvermoon.boxplusplus.util;
 
-import gregtech.api.recipe.check.CheckRecipeResult;
-import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import static com.silvermoon.boxplusplus.util.Util.i18n;
+
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumChatFormatting;
 
-import static com.silvermoon.boxplusplus.util.Util.i18n;
+import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 
 public class ResultModuleRequirement implements CheckRecipeResult {
 

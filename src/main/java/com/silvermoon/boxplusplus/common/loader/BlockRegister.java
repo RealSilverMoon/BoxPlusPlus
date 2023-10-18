@@ -1,9 +1,10 @@
 package com.silvermoon.boxplusplus.common.loader;
 
+import net.minecraft.block.material.Material;
+
 import com.silvermoon.boxplusplus.common.block.BlockBoxModuleCore;
 import com.silvermoon.boxplusplus.common.block.BlockBoxRing;
 import com.silvermoon.boxplusplus.common.block.BlockMachineBase;
-import net.minecraft.block.material.Material;
 
 public class BlockRegister {
 

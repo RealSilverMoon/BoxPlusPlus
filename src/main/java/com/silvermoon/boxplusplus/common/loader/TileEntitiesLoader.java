@@ -1,10 +1,11 @@
 package com.silvermoon.boxplusplus.common.loader;
 
+import static com.silvermoon.boxplusplus.util.Util.i18n;
+
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
 import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
-import cpw.mods.fml.common.registry.GameRegistry;
 
-import static com.silvermoon.boxplusplus.util.Util.i18n;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TileEntitiesLoader {
 

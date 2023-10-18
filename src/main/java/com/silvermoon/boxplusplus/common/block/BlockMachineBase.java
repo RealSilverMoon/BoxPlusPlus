@@ -1,11 +1,7 @@
 package com.silvermoon.boxplusplus.common.block;
 
-import com.silvermoon.boxplusplus.Tags;
-import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTech_API;
-import gregtech.api.enums.Textures;
-import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GT_Utility;
+import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -14,7 +10,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
+import com.silvermoon.boxplusplus.Tags;
+
+import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.GregTech_API;
+import gregtech.api.enums.Textures;
+import gregtech.api.render.TextureFactory;
+import gregtech.api.util.GT_Utility;
 
 public class BlockMachineBase extends Block {
 
