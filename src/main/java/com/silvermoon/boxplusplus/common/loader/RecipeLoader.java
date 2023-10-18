@@ -140,7 +140,7 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get(OrePrefixes.pipeMedium, Materials.Titanium, 64),
                 GT_OreDictUnificator.get(OrePrefixes.rotor, Materials.Titanium, 64),
                 ItemList.Field_Generator_IV.get(4),
-                new Object[]{OrePrefixes.circuit.get(Materials.Ultimate), 4})
+                new Object[] { OrePrefixes.circuit.get(Materials.Ultimate), 4 })
             .fluidInputs(FluidRegistry.getFluidStack("molten.tanmolyium beta-c", 51840))
             .eut(TierEU.RECIPE_LuV)
             .duration(1200)

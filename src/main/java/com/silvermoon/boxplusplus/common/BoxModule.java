@@ -111,13 +111,11 @@ public class BoxModule {
                 2, 0 };
             case "multimachine.multifurnace", "industrialthermalcentrifuge.controller.tier.single", "industrialarcfurnace.controller.tier.single", "industrialalloysmelter.controller.tier.single" -> new int[] {
                 3, 0 };
-            case "industrialmultimachine.controller.tier.single" -> new int[]{4, 0};
-            case "industrialrockcrusher.controller.tier.single", "industrialfluidheater.controller.tier.single", "ompressor" ->
-                new int[]{
-                    5, 0};
-            case "industrialcuttingmachine.controller.tier.01", "industrialmacerator.controller.tier.single", "industrialbender.controller.tier.single", "industrialextruder.controller.tier.single", "industrialwiremill.controller.tier.single", "industrialhammer.controller.tier.single" ->
-                new int[]{
-                    6, 0};
+            case "industrialmultimachine.controller.tier.single" -> new int[] { 4, 0 };
+            case "industrialrockcrusher.controller.tier.single", "industrialfluidheater.controller.tier.single", "ompressor" -> new int[] {
+                5, 0 };
+            case "industrialcuttingmachine.controller.tier.01", "industrialmacerator.controller.tier.single", "industrialbender.controller.tier.single", "industrialextruder.controller.tier.single", "industrialwiremill.controller.tier.single", "industrialhammer.controller.tier.single" -> new int[] {
+                6, 0 };
             case "industrialwashplant.controller.tier.single", "industrialsifter.controller.tier.single", "industrialcentrifuge.controller.tier.single", "industrialelectrolyzer.controller.tier.single", "digester", "basicmachine.electromagneticseparator.tier.06" -> new int[] {
                 7, 0 };
             case "industrialcokeoven.controller.tier.single", "multimachine.pyro", "multimachine.vacuumfreezer", "multimachine.adv.industrialfreezer" -> new int[] {

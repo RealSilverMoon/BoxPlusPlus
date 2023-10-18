@@ -110,7 +110,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     public String userUUID;
     public boolean debug = false;
     public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
-    //The spotless made my structure a mess. Shit.
+    // The spotless made my structure a mess. Shit.
     static {
         StructureDefinition.Builder<GTMachineBox> A = IStructureDefinition.<GTMachineBox>builder()
             .addShape(
@@ -1547,7 +1547,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             ItemStack out = fox.spiteful.avaritia.crafting.CompressorManager.getOutput(item);
                             if (out != null) {
                                 out.stackSize = fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
-                                routingMap.add(new BoxRoutings(item, out, inputBus.getStackInSlot(i), TierEU.RECIPE_ZPM, TickTime.MINUTE));
+                                routingMap.add(
+                                    new BoxRoutings(
+                                        item,
+                                        out,
+                                        inputBus.getStackInSlot(i),
+                                        TierEU.RECIPE_ZPM,
+                                        TickTime.MINUTE));
                                 routingStatus = 0;
                                 return;
                             }
@@ -2482,10 +2488,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         builder.widget(
-                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_UP)
-                    .setPos(5, 5)
-                    .setSize(16, 16))
-            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.05") + i18n("tile.boxplusplus.boxUI.06") + maxRouting).setPos(25, 9))
+            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_UP)
+                .setPos(5, 5)
+                .setSize(16, 16))
+            .widget(
+                new TextWidget(i18n("tile.boxplusplus.boxUI.05") + i18n("tile.boxplusplus.boxUI.06") + maxRouting)
+                    .setPos(25, 9))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.40") + maxParallel).setPos(170, 9))
             .widget(
                 ButtonWidget.closeWindowButton(true)
@@ -3075,7 +3083,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     player.closeScreen();
                     GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
                 }
-                })
+            })
                 .setSize(20, 20)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
@@ -3094,7 +3102,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     widget.getContext()
                         .openSyncedWindow(10);
                 }
-                })
+            })
                 .setSize(20, 20)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
