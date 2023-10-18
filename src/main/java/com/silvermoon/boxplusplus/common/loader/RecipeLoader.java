@@ -59,13 +59,13 @@ public class RecipeLoader implements Runnable {
 
     public void addMachineBlockRecipe() {
         GT_Values.RA.stdBuilder()
-            .itemOutputs(new ItemStack(BlockRegister.SpaceExtend, 4, 0))
+            .itemOutputs(new ItemStack(BlockRegister.SpaceExtend, 32, 0))
             .noFluidOutputs()
             .itemInputs(
                 ItemList.Casing_StableTitanium.get(64),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 32),
-                ItemList.Electric_Motor_LuV.get(2),
-                ItemList.Electric_Piston_LuV.get(2),
+                ItemList.Electric_Motor_LuV.get(16),
+                ItemList.Electric_Piston_LuV.get(16),
                 GT_ModHandler.getModItem(NewHorizonsCoreMod.ID, "item.IrradiantReinforcedTitaniumPlate", 4))
             .noFluidInputs()
             .eut(TierEU.RECIPE_LuV)
@@ -74,7 +74,7 @@ public class RecipeLoader implements Runnable {
         GT_Values.RA.stdBuilder()
             .metadata(RESEARCH_ITEM, new ItemStack(BlockRegister.SpaceExtend))
             .metadata(RESEARCH_TIME, 24000)
-            .itemOutputs(new ItemStack(BlockRegister.SpaceCompress, 2, 0))
+            .itemOutputs(new ItemStack(BlockRegister.SpaceCompress, 16, 0))
             .noFluidOutputs()
             .itemInputs(
                 ItemList.Casing_StableTitanium.get(64),
@@ -92,14 +92,14 @@ public class RecipeLoader implements Runnable {
         GT_Values.RA.stdBuilder()
             .metadata(RESEARCH_ITEM, new ItemStack(BlockRegister.SpaceCompress))
             .metadata(RESEARCH_TIME, 48000)
-            .itemOutputs(new ItemStack(BlockRegister.SpaceConstraint, 1, 0))
+            .itemOutputs(new ItemStack(BlockRegister.SpaceConstraint, 2, 0))
             .noFluidOutputs()
             .itemInputs(
                 ItemList.Casing_StableTitanium.get(64),
                 ItemList.Casing_StableTitanium.get(64),
                 ItemList.Casing_StableTitanium.get(64),
                 ItemList.Casing_StableTitanium.get(64),
-                GT_OreDictUnificator.get("plateDoubleAdvancedNitinol", 16),
+                GT_OreDictUnificator.get("plateDoubleAdvancedNitinol", 8),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 34),
                 ItemList.Quantum_Tank_LV.get(1),
                 ItemList.Quantum_Chest_LV.get(1))
@@ -139,8 +139,8 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get(OrePrefixes.ring, Materials.Titanium, 64),
                 GT_OreDictUnificator.get(OrePrefixes.pipeMedium, Materials.Titanium, 64),
                 GT_OreDictUnificator.get(OrePrefixes.rotor, Materials.Titanium, 64),
-                ItemList.Field_Generator_IV.get(32),
-                new Object[] { OrePrefixes.circuit.get(Materials.Ultimate), 4 })
+                ItemList.Field_Generator_IV.get(4),
+                new Object[]{OrePrefixes.circuit.get(Materials.Ultimate), 4})
             .fluidInputs(FluidRegistry.getFluidStack("molten.tanmolyium beta-c", 51840))
             .eut(TierEU.RECIPE_LuV)
             .duration(1200)
@@ -282,6 +282,7 @@ public class RecipeLoader implements Runnable {
                 new ItemStack(BlockRegister.BoxRing2, 2),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31077),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31065),
+                GT_ModHandler.getModItem(Avaritia.ID, "tile.neutronium_compressor", 4),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "MU-metaitem.01", 16, 32044),
                 GT_ModHandler.getModItem(ExtraUtilities.ID, "nodeUpgrade", 64, 2),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "dummyResearch", 1),
