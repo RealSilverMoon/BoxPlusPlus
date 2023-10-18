@@ -108,6 +108,7 @@ tile.boxplusplus.boxUI.36=导出AE2样板(需要输入总线中存在空白样�
 tile.boxplusplus.boxUI.37=配方需要启用以下模块:
 tile.boxplusplus.boxUI.38=下一页
 tile.boxplusplus.boxUI.39=上一页
+tile.boxplusplus.boxUI.40= 最大并行 
 
 tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
 tile.boxplusplus.boxError.2=原因：未通过2环结构检测。
@@ -181,7 +182,7 @@ tile.boxplusplus.boxUI.module.context.5d=PCB工厂 | 电路装配线
 tile.boxplusplus.boxUI.module.context.5e=[大型加工厂] 在第1格放置编程电路，其值按1-9对应Tooltip上9种机器  [电路装配线]放置的主机必须已蚀刻电路
 tile.boxplusplus.boxUI.module.context.5f=其实NVIDIA也没有晶圆厂，而且这张卡是AMD
 tile.boxplusplus.boxUI.module.context.6a=在5秒内解答纳维-斯托克斯方程方可使用本模块
-tile.boxplusplus.boxUI.module.context.6b=流体加热 | 碎石机
+tile.boxplusplus.boxUI.module.context.6b=流体加热 | 碎石机 | 中子态素压缩机
 tile.boxplusplus.boxUI.module.context.6c=托马斯费米模型
 tile.boxplusplus.boxUI.module.context.6d=核聚变反应堆
 tile.boxplusplus.boxUI.module.context.6e=[工业碎石机] 在第1格放置编程电路，其值按1-3对应圆石,石头,黑曜石,不消耗流体 [核聚变反应堆] 使用压缩聚变V主机
