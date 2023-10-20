@@ -284,7 +284,7 @@ public class RecipeLoader implements Runnable {
                 new ItemStack(BlockRegister.BoxRing2, 2),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31077),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31065),
-                GT_ModHandler.getModItem(Avaritia.ID, "tile.neutronium_compressor", 4),
+                GT_ModHandler.getModItem(Avaritia.ID, "Neutronium_Compressor", 4),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "MU-metaitem.01", 16, 32044),
                 GT_ModHandler.getModItem(ExtraUtilities.ID, "nodeUpgrade", 64, 2),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "dummyResearch", 1),

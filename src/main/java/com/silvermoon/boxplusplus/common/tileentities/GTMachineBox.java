@@ -1551,12 +1551,15 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         for (ItemStack item : getStoredInputs()) {
                             ItemStack out = fox.spiteful.avaritia.crafting.CompressorManager.getOutput(item);
                             if (out != null) {
-                                out.stackSize = fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
+                                ItemStack in=item.copy();
+                                in.stackSize=fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
+                                ItemStack machine=inputBus.getStackInSlot(i).copy();
+                                machine.stackSize=1;
                                 routingMap.add(
                                     new BoxRoutings(
-                                        item,
+                                        in,
                                         out,
-                                        inputBus.getStackInSlot(i),
+                                        machine,
                                         TierEU.RECIPE_ZPM,
                                         TickTime.MINUTE));
                                 routingStatus = 0;
