@@ -116,6 +116,7 @@ tile.boxplusplus.boxUI.44=如果确认，请按
 tile.boxplusplus.boxUI.45=清除完成。
 tile.boxplusplus.boxUI.46=粘贴完整工序代码:
 tile.boxplusplus.boxUI.47=错误,紧急中止清理进程!
+tile.boxplusplus.boxUI.48=指定你希望输出在样板中的玩意。格式:物品编号/流体编号。例如：1,3-7,13/8,9输出1、3-7、13号物品和8号、9号流体; 留空默认输出全部
 
 tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
 tile.boxplusplus.boxError.2=原因：未通过2环结构检测。

@@ -1,10 +1,12 @@
 package com.silvermoon.boxplusplus.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -212,5 +214,51 @@ public class Util {
             newList.add(t.copy());
         }
         return newList;
+    }
+
+    public static String validator(BoxRecipe recipe, String var) {
+        // wrong format?
+        Matcher m = Pattern.compile("^[0-9,/-]+$")
+            .matcher(var);
+        if (!m.matches()) return "";
+        // The second number cannot bigger then the first one!
+        Matcher matcher = Pattern.compile("\\d+-\\d+")
+            .matcher(var);
+        if (matcher.find()) {
+            boolean isSmaller = Stream.iterate(true, b -> b)
+                .limit(10)
+                .map(match -> match ? matcher.group() : null)
+                .filter(Objects::nonNull)
+                .map(match -> {
+                    String[] parts = match.split("-");
+                    int num1 = Integer.parseInt(parts[0]);
+                    int num2 = Integer.parseInt(parts[1]);
+                    return num1 < num2;
+                })
+                .reduce((x, y) -> x && y)
+                .orElse(false);
+            if (!isSmaller) return "";
+        }
+        // fluid out of boundary
+        if (var.contains("/")) {
+            boolean isFluidOutArray = Stream.of(
+                var.substring(var.indexOf("/") + 1)
+                    .split(","))
+                .flatMap(s -> Arrays.stream(s.split("-")))
+                .map(Integer::parseInt)
+                .max(Integer::compareTo)
+                .map(max -> max > recipe.FinalFluidOutput.size())
+                .orElse(true);
+            if (isFluidOutArray) return "";
+        }
+        String var2 = var.contains("/") ? var.substring(0, var.indexOf("/")) : var;
+        // item out of boundary
+        boolean isItemOutArray = Stream.of(var2.split(","))
+            .flatMap(s -> Arrays.stream(s.split("-")))
+            .map(Integer::parseInt)
+            .max(Integer::compareTo)
+            .map(max -> max > recipe.FinalItemOutput.size())
+            .orElse(true);
+        return isItemOutArray ? "" : var;
     }
 }

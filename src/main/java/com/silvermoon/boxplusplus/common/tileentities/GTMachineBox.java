@@ -1476,7 +1476,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      *
      * @param player Who is making it
      */
-    private void makeAE2Pattern(EntityPlayer player) {
+    private void makeAE2Pattern(EntityPlayer player, String ls) {
         if (mProgresstime != 0) return;
         for (ItemStack pattern : getStoredInputs()) {
             if (Util.isPattern(pattern)) {
@@ -1489,14 +1489,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         .maybeStack(1)
                         .asSet()) {
                         outputPattern = encodedPatternStack;
-                        NBTTagCompound encodedValue = recipe.RecipeToAE2ItemPattern();
+                        NBTTagCompound encodedValue = recipe.RecipeToAE2ItemPattern(ls);
                         outputPattern.setTagCompound(encodedValue);
                     }
                 } else {
                     outputPattern = new ItemStack(ItemAndBlockHolder.PATTERN);
                     FluidPatternDetails patternDetail = new FluidPatternDetails(outputPattern);
                     patternDetail.setInputs(recipe.transInputsToAE2Stuff());
-                    patternDetail.setOutputs(recipe.transOutputsToAE2Stuff());
+                    patternDetail.setOutputs(recipe.transOutputsToAE2Stuff(ls));
                     patternDetail.setCanBeSubstitute(0);
                     outputPattern = patternDetail.writeToStack();
                 }
@@ -1551,17 +1551,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         for (ItemStack item : getStoredInputs()) {
                             ItemStack out = fox.spiteful.avaritia.crafting.CompressorManager.getOutput(item);
                             if (out != null) {
-                                ItemStack in=item.copy();
-                                in.stackSize=fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
-                                ItemStack machine=inputBus.getStackInSlot(i).copy();
-                                machine.stackSize=1;
-                                routingMap.add(
-                                    new BoxRoutings(
-                                        in,
-                                        out,
-                                        machine,
-                                        TierEU.RECIPE_ZPM,
-                                        TickTime.MINUTE));
+                                ItemStack in = item.copy();
+                                in.stackSize = fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
+                                ItemStack machine = inputBus.getStackInSlot(i)
+                                    .copy();
+                                machine.stackSize = 1;
+                                routingMap.add(new BoxRoutings(in, out, machine, TierEU.RECIPE_ZPM, TickTime.MINUTE));
                                 routingStatus = 0;
                                 return;
                             }
@@ -2026,6 +2021,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         buildContext.addSyncedWindow(14, this::createSingleModuleWindow);
         buildContext.addSyncedWindow(15, this::createWikiWindow);
         buildContext.addSyncedWindow(16, this::createImportWindow);
+        buildContext.addSyncedWindow(17, this::createExportPatternWindow);
         buildContext.addSyncedWindow(20, this::createClearWindow);
         Synchronize(builder);
         builder.widget(// Module
@@ -2736,8 +2732,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             // export AE pattern
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 if (!widget.isClient()) {
-                    makeAE2Pattern(player);
-                    player.closeScreen();
+                    widget.getContext()
+                        .openSyncedWindow(17);
                 }
             })
                 .setSize(14, 14)
@@ -3009,6 +3005,39 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
                 .setPos(270, 16))
+            .build();
+    }
+
+    protected ModularWindow createExportPatternWindow(final EntityPlayer player) {
+        ModularWindow.Builder builder = ModularWindow.builder(168, 100);
+        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setGuiTint(getGUIColorization());
+        Synchronize(builder);
+        TextFieldWidget input = new TextFieldWidget().setValidator(var -> Util.validator(recipe, var));
+        return builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.48")).setPos(5, 25))
+            .widget(
+                input.setTextAlignment(Alignment.CenterLeft)
+                    .setTextColor(Color.WHITE.dark(1))
+                    .setFocusOnGuiOpen(true)
+                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
+                    .setPos(5, 5)
+                    .setSize(140, 12))
+            .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
+                if (!widget.isClient()) {
+                    String ls = input.getText();
+                    makeAE2Pattern(player, ls);
+                    player.closeScreen();
+                }
+            })
+                .setSize(16, 16)
+                .setBackground(() -> {
+                    List<UITexture> UI = new ArrayList<>();
+                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                    return UI.toArray(new IDrawable[0]);
+                })
+                .addTooltip(i18n("tile.boxplusplus.boxUI.36"))
+                .setPos(145, 5))
             .build();
     }
 

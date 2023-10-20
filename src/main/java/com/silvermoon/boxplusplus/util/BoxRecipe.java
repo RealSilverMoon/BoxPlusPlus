@@ -138,15 +138,29 @@ public class BoxRecipe {
         return recipe;
     }
 
-    public NBTTagCompound RecipeToAE2ItemPattern() {
+    public NBTTagCompound RecipeToAE2ItemPattern(String ls) {
         final NBTTagCompound encodedValue = new NBTTagCompound();
         final NBTTagList tagIn = new NBTTagList();
         final NBTTagList tagOut = new NBTTagList();
         for (final ItemStack i : this.FinalItemInput) {
             tagIn.appendTag(Util.createItemTag(i));
         }
-        for (final ItemStack i : this.FinalItemOutput) {
-            tagOut.appendTag(Util.createItemTag(i));
+        if (ls.equals("")) {
+            for (final ItemStack i : this.FinalItemOutput) {
+                tagOut.appendTag(Util.createItemTag(i));
+            }
+        } else {
+            String[] var1 = ls.split(",");
+            for (String s : var1) {
+                if (s.contains("-")) {
+                    String[] var2 = s.split("-");
+                    int start = Integer.parseInt(var2[0]);
+                    int end = Integer.parseInt(var2[1]);
+                    for (int i = start - 1; i < end; i++) {
+                        tagOut.appendTag(Util.createItemTag(FinalItemOutput.get(i)));
+                    }
+                } else tagOut.appendTag(Util.createItemTag(FinalItemOutput.get(Integer.parseInt(s) - 1)));
+            }
         }
         encodedValue.setTag("in", tagIn);
         encodedValue.setTag("out", tagOut);
@@ -174,17 +188,43 @@ public class BoxRecipe {
         return stacks;
     }
 
-    public IAEItemStack[] transOutputsToAE2Stuff() {
-        IAEItemStack[] stacks = new IAEItemStack[FinalItemOutput.size() + FinalFluidOutput.size()];
-        int i = 0;
-        for (ItemStack item : FinalItemOutput) {
-            stacks[i] = AEItemStack.create(item);
-            i++;
+    public IAEItemStack[] transOutputsToAE2Stuff(String ls) {
+        List<IAEItemStack> stacks = new ArrayList<>();
+        if (ls.equals("")) {
+            for (FluidStack fluid : FinalFluidOutput) {
+                stacks.add(ItemFluidDrop.newAeStack(fluid));
+            }
+            for (ItemStack item : FinalItemOutput) {
+                stacks.add(AEItemStack.create(item));
+            }
+        } else {
+            if (ls.contains("/")) {
+                String[] var1 = ls.substring(ls.indexOf("/") + 1)
+                    .split(",");
+                for (String s : var1) {
+                    if (s.contains("-")) {
+                        String[] var2 = s.split("-");
+                        int start = Integer.parseInt(var2[0]);
+                        int end = Integer.parseInt(var2[1]);
+                        for (int i = start - 1; i < end; i++) {
+                            stacks.add(ItemFluidDrop.newAeStack(FinalFluidOutput.get(i)));
+                        }
+                    } else stacks.add(ItemFluidDrop.newAeStack(FinalFluidOutput.get(Integer.parseInt(s) - 1)));
+                }
+            }
+            ls = ls.contains("/") ? ls.substring(0, ls.indexOf("/")) : ls;
+            String[] var1 = ls.split(",");
+            for (String s : var1) {
+                if (s.contains("-")) {
+                    String[] var2 = s.split("-");
+                    int start = Integer.parseInt(var2[0]);
+                    int end = Integer.parseInt(var2[1]);
+                    for (int i = start - 1; i < end; i++) {
+                        stacks.add(AEItemStack.create(FinalItemOutput.get(i)));
+                    }
+                } else stacks.add(AEItemStack.create(FinalItemOutput.get(Integer.parseInt(s) - 1)));
+            }
         }
-        for (FluidStack fluid : FinalFluidOutput) {
-            stacks[i] = ItemFluidDrop.newAeStack(fluid);
-            i++;
-        }
-        return stacks;
+        return stacks.toArray(new IAEItemStack[0]);
     }
 }
