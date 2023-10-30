@@ -61,6 +61,8 @@ import com.silvermoon.boxplusplus.util.*;
 
 import appeng.api.AEApi;
 import appeng.container.ContainerNull;
+import fox.spiteful.avaritia.crafting.ExtremeShapedOreRecipe;
+import fox.spiteful.avaritia.crafting.ExtremeShapedRecipe;
 import gregtech.api.enums.*;
 import gregtech.api.gui.modularui.GT_UIInfos;
 import gregtech.api.gui.modularui.GT_UITextures;
@@ -1568,6 +1570,72 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                                 routingMap.add(new BoxRoutings(in, out, machine, TierEU.RECIPE_ZPM, TickTime.MINUTE));
                                 routingStatus = 0;
                                 return;
+                            }
+                        }
+                        routingStatus = 3;
+                        return;
+                    }
+                    if (inputBus.getStackInSlot(i)
+                        .getUnlocalizedName()
+                        .equals("tile.dire_crafting")) {
+                        for (ItemStack item : getStoredInputs()) {
+                            List recipeList = fox.spiteful.avaritia.crafting.ExtremeCraftingManager.getInstance()
+                                .getRecipeList();
+                            for (Object recipe : recipeList) {
+                                if (recipe instanceof ExtremeShapedRecipe exRecipe) {
+                                    if (GT_OreDictUnificator.isInputStackEqual(
+                                        item,
+                                        GT_OreDictUnificator.get(exRecipe.getRecipeOutput()))) {
+                                        ItemStack[] in = exRecipe.recipeItems;
+                                        ItemContainer var = new ItemContainer();
+                                        for (ItemStack itemIn : in) {
+                                            if (itemIn == null) continue;
+                                            var.addItemStack(itemIn, 1, 10000);
+                                        }
+                                        ItemStack machine = inputBus.getStackInSlot(i)
+                                            .copy();
+                                        machine.stackSize = 1;
+                                        routingMap.add(
+                                            new BoxRoutings(
+                                                var.getItemStack()
+                                                    .toArray(new ItemStack[0]),
+                                                exRecipe.getRecipeOutput(),
+                                                new FluidStack[] {},
+                                                machine,
+                                                TierEU.RECIPE_UV,
+                                                TickTime.MINUTE));
+                                        routingStatus = 0;
+                                        return;
+                                    }
+                                } else if (recipe instanceof ExtremeShapedOreRecipe exRecipe) {
+                                    if (GT_OreDictUnificator.isInputStackEqual(item, exRecipe.getRecipeOutput())) {
+                                        Object[] in = exRecipe.getInput();
+                                        ItemContainer var = new ItemContainer();
+                                        for (Object ObjtecIn : in) {
+                                            if (ObjtecIn == null) continue;
+                                            if (ObjtecIn instanceof ItemStack itemIn)
+                                                var.addItemStack(GT_OreDictUnificator.get(itemIn), 1, 10000);
+                                            if (ObjtecIn instanceof ArrayList listIn) var.addItemStack(
+                                                GT_OreDictUnificator.get((ItemStack) listIn.get(0)),
+                                                1,
+                                                10000);
+                                        }
+                                        ItemStack machine = inputBus.getStackInSlot(i)
+                                            .copy();
+                                        machine.stackSize = 1;
+                                        routingMap.add(
+                                            new BoxRoutings(
+                                                var.getItemStack()
+                                                    .toArray(new ItemStack[0]),
+                                                exRecipe.getRecipeOutput(),
+                                                new FluidStack[] {},
+                                                machine,
+                                                TierEU.RECIPE_UV,
+                                                TickTime.MINUTE));
+                                        routingStatus = 0;
+                                        return;
+                                    }
+                                }
                             }
                         }
                         routingStatus = 3;

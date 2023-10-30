@@ -471,7 +471,7 @@ public class RecipeLoader implements Runnable {
                 new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 32018),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "preciseUnitCasing", 64, 2),
-                GT_ModHandler.getModItem(GoodGenerator.ID, "preciseUnitCasing", 15, 2),
+                GT_ModHandler.getModItem(Avaritia.ID, "Dire_Crafting", 64),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "huiCircuit", 64, 1),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "huiCircuit", 32, 2),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "huiCircuit", 16, 3),

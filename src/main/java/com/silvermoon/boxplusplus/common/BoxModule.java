@@ -123,7 +123,7 @@ public class BoxModule {
             case "multimachine.assemblyline" -> new int[] { 9, 0 };
             case "industrialsalloyamelter.controller.tier.single" -> new int[] { 10, 0 };
             case "moleculartransformer.controller.tier.single", "gtpp.multimachine.replicator" -> new int[] { 0, 1 };
-            case "preciseassembler" -> new int[] { 1, 1 };
+            case "preciseassembler", "tile.dire_crafting" -> new int[] { 1, 1 };
             case "chemicalplant.controller.tier.single" -> new int[] { 2, 1 };
             case "cyclotron.tier.single" -> new int[] { 3, 1 };
             case "multimachine.pcbfactory", "circuitassemblyline" -> new int[] { 4, 1 };
