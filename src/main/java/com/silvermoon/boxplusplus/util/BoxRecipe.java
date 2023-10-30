@@ -188,32 +188,13 @@ public class BoxRecipe {
         return stacks;
     }
 
-    public IAEItemStack[] transOutputsToAE2Stuff(String ls) {
+    public IAEItemStack[] transOutputsToAE2Stuff(String itemKey, String fluidKey) {
         List<IAEItemStack> stacks = new ArrayList<>();
-        if (ls.equals("")) {
-            for (FluidStack fluid : FinalFluidOutput) {
-                stacks.add(ItemFluidDrop.newAeStack(fluid));
-            }
-            for (ItemStack item : FinalItemOutput) {
-                stacks.add(AEItemStack.create(item));
-            }
-        } else {
-            if (ls.contains("/")) {
-                String[] var1 = ls.substring(ls.indexOf("/") + 1)
-                    .split(",");
-                for (String s : var1) {
-                    if (s.contains("-")) {
-                        String[] var2 = s.split("-");
-                        int start = Integer.parseInt(var2[0]);
-                        int end = Integer.parseInt(var2[1]);
-                        for (int i = start - 1; i < end; i++) {
-                            stacks.add(ItemFluidDrop.newAeStack(FinalFluidOutput.get(i)));
-                        }
-                    } else stacks.add(ItemFluidDrop.newAeStack(FinalFluidOutput.get(Integer.parseInt(s) - 1)));
-                }
-            }
-            ls = ls.contains("/") ? ls.substring(0, ls.indexOf("/")) : ls;
-            String[] var1 = ls.split(",");
+        if (itemKey.equals("")) for (FluidStack fluid : FinalFluidOutput) {
+            stacks.add(ItemFluidDrop.newAeStack(fluid));
+        }
+        else if (!itemKey.equals("0")) {
+            String[] var1 = itemKey.split(",");
             for (String s : var1) {
                 if (s.contains("-")) {
                     String[] var2 = s.split("-");
@@ -223,6 +204,23 @@ public class BoxRecipe {
                         stacks.add(AEItemStack.create(FinalItemOutput.get(i)));
                     }
                 } else stacks.add(AEItemStack.create(FinalItemOutput.get(Integer.parseInt(s) - 1)));
+            }
+        }
+        if (fluidKey.equals("")) {
+            for (ItemStack item : FinalItemOutput) {
+                stacks.add(AEItemStack.create(item));
+            }
+        } else if (!fluidKey.equals("0")) {
+            String[] var1 = fluidKey.split(",");
+            for (String s : var1) {
+                if (s.contains("-")) {
+                    String[] var2 = s.split("-");
+                    int start = Integer.parseInt(var2[0]);
+                    int end = Integer.parseInt(var2[1]);
+                    for (int i = start - 1; i < end; i++) {
+                        stacks.add(ItemFluidDrop.newAeStack(FinalFluidOutput.get(i)));
+                    }
+                } else stacks.add(ItemFluidDrop.newAeStack(FinalFluidOutput.get(Integer.parseInt(s) - 1)));
             }
         }
         return stacks.toArray(new IAEItemStack[0]);

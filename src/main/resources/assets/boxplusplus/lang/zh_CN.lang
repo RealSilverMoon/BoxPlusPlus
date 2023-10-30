@@ -116,7 +116,7 @@ tile.boxplusplus.boxUI.44=如果确认，请按
 tile.boxplusplus.boxUI.45=清除完成。
 tile.boxplusplus.boxUI.46=粘贴完整工序代码:
 tile.boxplusplus.boxUI.47=错误,紧急中止清理进程!
-tile.boxplusplus.boxUI.48=指定你希望输出在样板中的玩意。格式:物品编号/流体编号。例如：1,3-7,13/8,9输出1、3-7、13号物品和8号、9号流体; 留空默认输出全部
+tile.boxplusplus.boxUI.48=指定你希望输出在样板中的玩意。例如：1,3-7,13表示输出1、3-7、13号物品或流体; 留空默认输出全部; 0表示全部不输出
 
 tile.boxplusplus.boxError.1=原因：未通过1环结构检测。
 tile.boxplusplus.boxError.2=原因：未通过2环结构检测。
@@ -287,7 +287,7 @@ tile.boxplusplus.chatmessage.2=已输出工序代码至剪切板！
 tile.boxplusplus.chatmessage.3=输入有误，请检查工序代码。(注意必须在一行内)
 tile.boxplusplus.chatmessage.4=你导入的工序数量大于本盒支持的工序上限了！
 tile.boxplusplus.chatmessage.5=导入%count条工序成功！
-tile.boxplusplus.chatmessage.6=输入有误，请检查工序代码。
+tile.boxplusplus.chatmessage.6=输入时遇到了错误，请检查。
 tile.boxplusplus.chatmessage.7=已将配方写入一份空白样板
 tile.boxplusplus.chatmessage.8=在输入总线中没有找到空白样板
 

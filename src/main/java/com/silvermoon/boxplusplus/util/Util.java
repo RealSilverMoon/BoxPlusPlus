@@ -216,9 +216,10 @@ public class Util {
         return newList;
     }
 
-    public static String validator(BoxRecipe recipe, String var) {
+    public static String validator(BoxRecipe recipe, String var, boolean isFluid) {
+        if (var.equals("0")) return var;
         // wrong format?
-        Matcher m = Pattern.compile("^[0-9,/-]+$")
+        Matcher m = Pattern.compile("^[0-9-,]+$")
             .matcher(var);
         if (!m.matches()) return "";
         // The second number cannot bigger then the first one!
@@ -239,26 +240,13 @@ public class Util {
                 .orElse(false);
             if (!isSmaller) return "";
         }
-        // fluid out of boundary
-        if (var.contains("/")) {
-            boolean isFluidOutArray = Stream.of(
-                var.substring(var.indexOf("/") + 1)
-                    .split(","))
-                .flatMap(s -> Arrays.stream(s.split("-")))
-                .map(Integer::parseInt)
-                .max(Integer::compareTo)
-                .map(max -> max > recipe.FinalFluidOutput.size())
-                .orElse(true);
-            if (isFluidOutArray) return "";
-        }
-        String var2 = var.contains("/") ? var.substring(0, var.indexOf("/")) : var;
-        // item out of boundary
-        boolean isItemOutArray = Stream.of(var2.split(","))
+        // out of boundary
+        boolean isOutArray = Stream.of(var.split(","))
             .flatMap(s -> Arrays.stream(s.split("-")))
             .map(Integer::parseInt)
             .max(Integer::compareTo)
-            .map(max -> max > recipe.FinalItemOutput.size())
+            .map(max -> max > (isFluid ? recipe.FinalFluidOutput : recipe.FinalItemOutput).size())
             .orElse(true);
-        return isItemOutArray ? "" : var;
+        return isOutArray ? "" : var;
     }
 }

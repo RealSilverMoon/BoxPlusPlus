@@ -116,6 +116,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
 
     // The spotless made my structure a mess. Shit.
+
+    // spotless off
     static {
         StructureDefinition.Builder<GTMachineBox> A = IStructureDefinition.<GTMachineBox>builder()
             .addShape(
@@ -942,6 +944,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         STRUCTURE_DEFINITION = A.build();
     }
 
+    // spotless on
+
     public GTMachineBox(String name) {
         super(name);
     }
@@ -1476,37 +1480,42 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      *
      * @param player Who is making it
      */
-    private void makeAE2Pattern(EntityPlayer player, String ls) {
-        if (mProgresstime != 0) return;
-        for (ItemStack pattern : getStoredInputs()) {
-            if (Util.isPattern(pattern)) {
-                ItemStack outputPattern = pattern.copy();
-                if (recipe.FinalFluidOutput.isEmpty() && recipe.FinalFluidInput.isEmpty()) {
-                    for (final ItemStack encodedPatternStack : AEApi.instance()
-                        .definitions()
-                        .items()
-                        .encodedPattern()
-                        .maybeStack(1)
-                        .asSet()) {
-                        outputPattern = encodedPatternStack;
-                        NBTTagCompound encodedValue = recipe.RecipeToAE2ItemPattern(ls);
-                        outputPattern.setTagCompound(encodedValue);
+    private void makeAE2Pattern(EntityPlayer player, String item, String fluid) {
+        if (item.equals("0") && fluid.equals("0")) {
+            player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.6")));
+            return;
+        }
+        if (mProgresstime == 0) {
+            for (ItemStack pattern : getStoredInputs()) {
+                if (Util.isPattern(pattern)) {
+                    ItemStack outputPattern = pattern.copy();
+                    if (recipe.FinalFluidOutput.isEmpty() && recipe.FinalFluidInput.isEmpty()) {
+                        for (final ItemStack encodedPatternStack : AEApi.instance()
+                            .definitions()
+                            .items()
+                            .encodedPattern()
+                            .maybeStack(1)
+                            .asSet()) {
+                            outputPattern = encodedPatternStack;
+                            NBTTagCompound encodedValue = recipe.RecipeToAE2ItemPattern(item);
+                            outputPattern.setTagCompound(encodedValue);
+                        }
+                    } else {
+                        outputPattern = new ItemStack(ItemAndBlockHolder.PATTERN);
+                        FluidPatternDetails patternDetail = new FluidPatternDetails(outputPattern);
+                        patternDetail.setInputs(recipe.transInputsToAE2Stuff());
+                        patternDetail.setOutputs(recipe.transOutputsToAE2Stuff(item, fluid));
+                        patternDetail.setCanBeSubstitute(0);
+                        outputPattern = patternDetail.writeToStack();
                     }
-                } else {
-                    outputPattern = new ItemStack(ItemAndBlockHolder.PATTERN);
-                    FluidPatternDetails patternDetail = new FluidPatternDetails(outputPattern);
-                    patternDetail.setInputs(recipe.transInputsToAE2Stuff());
-                    patternDetail.setOutputs(recipe.transOutputsToAE2Stuff(ls));
-                    patternDetail.setCanBeSubstitute(0);
-                    outputPattern = patternDetail.writeToStack();
+                    outputPattern.stackTagCompound
+                        .setString("author", player.getDisplayName() + i18n("tile.boxplusplus.boxinfo.16"));
+                    pattern.stackSize -= 1;
+                    mOutputItems = new ItemStack[] { outputPattern };
+                    mMaxProgresstime = 100;
+                    updateSlots();
+                    return;
                 }
-                outputPattern.stackTagCompound
-                    .setString("author", player.getDisplayName() + i18n("tile.boxplusplus.boxinfo.16"));
-                pattern.stackSize -= 1;
-                mOutputItems = new ItemStack[] { outputPattern };
-                mMaxProgresstime = 100;
-                updateSlots();
-                return;
             }
         }
         player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.8")));
@@ -3009,23 +3018,34 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     protected ModularWindow createExportPatternWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(168, 100);
+        ModularWindow.Builder builder = ModularWindow.builder(168, 125);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
-        TextFieldWidget input = new TextFieldWidget().setValidator(var -> Util.validator(recipe, var));
-        return builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.48")).setPos(5, 25))
+        TextFieldWidget inputItem = new TextFieldWidget().setValidator(var -> Util.validator(recipe, var, false));
+        TextFieldWidget inputFluid = new TextFieldWidget().setValidator(var -> Util.validator(recipe, var, true));
+        return builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.48")).setPos(5, 45))
             .widget(
-                input.setTextAlignment(Alignment.CenterLeft)
+                inputItem.setTextAlignment(Alignment.CenterLeft)
                     .setTextColor(Color.WHITE.dark(1))
-                    .setFocusOnGuiOpen(true)
+                    .setFocusOnGuiOpen(false)
                     .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
-                    .setPos(5, 5)
-                    .setSize(140, 12))
+                    .setPos(12, 10)
+                    .addTooltip("Item")
+                    .setSize(60, 12))
+            .widget(
+                inputFluid.setTextAlignment(Alignment.CenterLeft)
+                    .setTextColor(Color.WHITE.dark(1))
+                    .setFocusOnGuiOpen(false)
+                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
+                    .setPos(96, 10)
+                    .addTooltip("Fluid")
+                    .setSize(60, 12))
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 if (!widget.isClient()) {
-                    String ls = input.getText();
-                    makeAE2Pattern(player, ls);
+                    String itemInput = inputItem.getText();
+                    String fluidInput = inputFluid.getText();
+                    makeAE2Pattern(player, itemInput, fluidInput);
                     player.closeScreen();
                 }
             })
@@ -3037,7 +3057,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.36"))
-                .setPos(145, 5))
+                .setPos(76, 25))
             .build();
     }
 
