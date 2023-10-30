@@ -190,10 +190,11 @@ public class BoxRecipe {
 
     public IAEItemStack[] transOutputsToAE2Stuff(String itemKey, String fluidKey) {
         List<IAEItemStack> stacks = new ArrayList<>();
-        if (itemKey.equals("")) for (FluidStack fluid : FinalFluidOutput) {
-            stacks.add(ItemFluidDrop.newAeStack(fluid));
-        }
-        else if (!itemKey.equals("0")) {
+        if (itemKey.equals("")) {
+            for (ItemStack item : FinalItemOutput) {
+                stacks.add(AEItemStack.create(item));
+            }
+        } else if (!itemKey.equals("0")) {
             String[] var1 = itemKey.split(",");
             for (String s : var1) {
                 if (s.contains("-")) {
@@ -207,8 +208,8 @@ public class BoxRecipe {
             }
         }
         if (fluidKey.equals("")) {
-            for (ItemStack item : FinalItemOutput) {
-                stacks.add(AEItemStack.create(item));
+            for (FluidStack fluid : FinalFluidOutput) {
+                stacks.add(ItemFluidDrop.newAeStack(fluid));
             }
         } else if (!fluidKey.equals("0")) {
             String[] var1 = fluidKey.split(",");

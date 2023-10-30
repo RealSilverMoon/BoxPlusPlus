@@ -217,7 +217,10 @@ public class Util {
     }
 
     public static String validator(BoxRecipe recipe, String var, boolean isFluid) {
+        // 0 means 0
         if (var.equals("0")) return var;
+        // No Duplicate Numbers
+        if (hasDuplicateNumbers(var)) return "";
         // wrong format?
         Matcher m = Pattern.compile("^[0-9-,]+$")
             .matcher(var);
@@ -248,5 +251,18 @@ public class Util {
             .map(max -> max > (isFluid ? recipe.FinalFluidOutput : recipe.FinalItemOutput).size())
             .orElse(true);
         return isOutArray ? "" : var;
+    }
+
+    public static boolean hasDuplicateNumbers(String input) {
+        Set<Character> seen = new HashSet<>();
+        for (char c : input.toCharArray()) {
+            if (Character.isDigit(c)) {
+                if (seen.contains(c)) {
+                    return true;
+                }
+                seen.add(c);
+            }
+        }
+        return false;
     }
 }

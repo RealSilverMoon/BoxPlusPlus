@@ -3031,7 +3031,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setFocusOnGuiOpen(false)
                     .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
                     .setPos(12, 10)
-                    .addTooltip("Item")
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.13"))
                     .setSize(60, 12))
             .widget(
                 inputFluid.setTextAlignment(Alignment.CenterLeft)
@@ -3039,7 +3039,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setFocusOnGuiOpen(false)
                     .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
                     .setPos(96, 10)
-                    .addTooltip("Fluid")
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.14"))
                     .setSize(60, 12))
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 if (!widget.isClient()) {
