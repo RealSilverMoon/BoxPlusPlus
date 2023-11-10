@@ -9,12 +9,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -26,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
 
 import appeng.api.AEApi;
 import appeng.api.definitions.IDefinitions;
@@ -33,6 +36,8 @@ import gregtech.api.util.GT_ModHandler;
 import gregtech.api.util.GT_Recipe;
 
 public class Util {
+
+    public static HashMap<EntityPlayer, GTMachineBox> boxMap = new HashMap<>();
 
     public static String i18n(String info) {
         return StatCollector.translateToLocal(info);
@@ -264,5 +269,18 @@ public class Util {
             }
         }
         return false;
+    }
+
+    public static EntityPlayer getPlayerFromUUID(String uuid) {
+        for (Object player : MinecraftServer.getServer()
+            .getConfigurationManager().playerEntityList) {
+            if (player instanceof EntityPlayer player1) {
+                if (uuid.equals(
+                    player1.getUniqueID()
+                        .toString()))
+                    return player1;
+            }
+        }
+        return null;
     }
 }

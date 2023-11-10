@@ -50,29 +50,30 @@ tile.boxplusplus_boxmoduleplus.14.name=[调试物品·隐藏的秘密]:告别
 tile.boxplusplus.boxinfo.02=一盒一世界, 一环一天堂
 tile.boxplusplus.boxinfo.03=掌中握无限, 刹那成永恒
 tile.boxplusplus.boxinfo.04=盒系统中央控制器
-tile.boxplusplus.boxinfo.05=在一台机器中封装任何你想要的工序！
-tile.boxplusplus.boxinfo.06=将工序机器、工序原料放入输入总线与输入仓， 然后打开GUI导入工序
-tile.boxplusplus.boxinfo.07=请使用工序对应的多方块机器主机， 而不是单方块机器
-tile.boxplusplus.boxinfo.08=输入全部工序后即可确认最终配方， 循环产物将被消去
+tile.boxplusplus.boxinfo.05=在一台机器中封装任何你想要的工序!
+tile.boxplusplus.boxinfo.06=将工序对应多方块主机、工序原料放入输入总线与输入仓, 然后打开GUI导入工序;
+tile.boxplusplus.boxinfo.07=已支持在工序界面点击NEI按钮直接转移工序!
+tile.boxplusplus.boxinfo.08=输入全部工序后即可确认最终配方, 循环产物将被消去
 tile.boxplusplus.boxinfo.09=在GUI中调整单工序并行系数来获取最佳配方(或使用内置矩阵求解器)
-tile.boxplusplus.boxinfo.10=所有工序需要对应模块支持才会运行! 
-tile.boxplusplus.boxinfo.11=在GUI的模块配置中查看并启用12种模块,部分模块具有特殊结构与效果。
-tile.boxplusplus.boxinfo.12=仅当启用模块后， 多方块投影仪才会指示模块结构
-tile.boxplusplus.boxinfo.13=结构环数R将影响最大工序数量，单工序并行，超频
+tile.boxplusplus.boxinfo.10=所有工序需要对应模块支持才会运行! 在环的特定位置放置模块,然后在GUI中启用.
+tile.boxplusplus.boxinfo.11=模块可以被替换升级为T2, 解锁更多机器.
+tile.boxplusplus.boxinfo.12=仅当GUI中启用模块后, 多方块投影仪才会指示模块结构
+tile.boxplusplus.boxinfo.13=结构环数R将影响最大工序数量，单工序并行与超频
 tile.boxplusplus.boxinfo.14=升级3环将突破虚境的高维壁垒，可在GUI中关闭来保护FPS
 tile.boxplusplus.boxinfo.15=更多信息(最终配方耗时、最终功率等)与教程请参阅GUI中内置WIKI
+
 tile.boxplusplus.boxinfo.16=通过一台BOX
 
 tile.boxplusplus.boxStructure.01=盒系统由核心、三重星环和14个模块组成, 结构太复杂了！
 tile.boxplusplus.boxStructure.02=核心外侧中央
-tile.boxplusplus.boxStructure.03=输入/输出类舱室没有数量限制
+tile.boxplusplus.boxStructure.03=输入/输出类舱室没有数量限制, 支持合成输入总线.
 tile.boxplusplus.boxStructure.04=安装激光聚焦器模块后可使用激光仓， 升级此模块开启无线网络接入点
 tile.boxplusplus.boxStructure.05=所有舱室需安装于核心上并替换任意空间延展机械方块
 
 tile.boxplusplus.boxUI.01=模块
 tile.boxplusplus.boxUI.02=外约束星环渲染开关
 tile.boxplusplus.boxUI.03=原料及工序
-tile.boxplusplus.boxUI.04=在框中填入你需要设定的工序数量，然后重新打开GUI。生成最终配方后，本参数不可更改
+tile.boxplusplus.boxUI.04=
 tile.boxplusplus.boxUI.05=盒系统初始化中   
 tile.boxplusplus.boxUI.06=最大工序数目 
 tile.boxplusplus.boxUI.07=工序：
@@ -260,17 +261,17 @@ tile.boxplusplus.boxwiki.8=Box.System(正式名称-§l空间延展-压缩-约束
 tile.boxplusplus.boxwiki.9=盒的结构形如同§l恒星系。
 tile.boxplusplus.boxwiki.10=初始的盒核仅为一个球体，此时盒无法执行任何功能。你需要从内向外依此搭建3条星环，在星环上插入模块以启用盒功能。星环的数量将影响盒的多个参数(参阅-盒数据章节),并且升级到3环后将开启盒动画。要搭建盒系统，请打开主机GUI，执行: 
 tile.boxplusplus.boxwiki.11=1.点击§l模块§r按钮; 2.在左上角选择环数; 3.启用/关闭对应模块; 4.使用多方块投影仪右键主机,对照投影搭建。
-tile.boxplusplus.boxwiki.12=本章介绍如何运行盒系统。盒系统的核心概念是”工序“,每个工序就是一条NEI配方。初始化盒的过程就是输入产线工序列表，直到生成最终配方。步骤如下：  
-tile.boxplusplus.boxwiki.13=1.打开主机GUI，点击§l原料及工序§r按钮; 2.在上方§l工序数目§r中输入你期望封装是配方数量; 3.关闭界面，然后重新打开§l原料及工序§r,确认工序数量是否正确; 
-tile.boxplusplus.boxwiki.14=4.将你想要封装的§l第一个配方§r，其对应§4多方块机器主机§r以及§4一份§r原料放入输入总线、输入仓; 5.回到原料及工序，点击§l检测工序§r, 如果原料正确，第一条工序会被读取；有误则会提示对应错误;  
-tile.boxplusplus.boxwiki.15=7.点击§l工序细节§r，打开第一条工序，修改这条工序的并行系数; 8.重复5-8，直到所有工序均写入，原料及工序的右方将出现§l计算最终配方§r按钮; 9.确认计算后的最终配方，查看模块要求，确认无误即可点击下方√，配方将锁定。Box将按本配方运行。
+tile.boxplusplus.boxwiki.12=本章介绍如何运行盒系统。盒系统的核心概念是”工序“,每个工序就是一条NEI配方。初始化盒的过程就是输入产线工序列表，直到生成最终配方. 导入有两种办法:
+tile.boxplusplus.boxwiki.13=自动导入-打开NEI配方页面, 点击右下角的B按钮,配方即会导入;  手动导入: 1.打开主机GUI，点击§l原料及工序§r按钮; 
+tile.boxplusplus.boxwiki.14=2.将你想要封装的§l第一个配方§r，其对应§4多方块机器主机§r以及§4一份§r原料放入输入总线、输入仓; 3.回到原料及工序，点击§l检测工序§r, 如果原料正确，第一条工序会被读取；有误则会提示对应错误;  
+tile.boxplusplus.boxwiki.15=4.点击§l工序细节§r，打开第一条工序，修改这条工序的并行系数; 5.重复2-4，直到所有工序均写入，然后点击§l计算最终配方§r按钮; 6.确认计算后的最终配方，查看模块要求，确认无误即可点击下方√，配方将锁定。Box将按本配方运行。
 tile.boxplusplus.boxwiki.16=本页包含盒系统的详细参数。§l若记环数为R，总工序上限为M§r，全部工序总并行上限为N，则有：
 tile.boxplusplus.boxwiki.17=R=1，M=16，N=160，不允许超频
 tile.boxplusplus.boxwiki.18=R=2，M=64，N=6400，有损超频，(R2开始)支持高电流能源仓
 tile.boxplusplus.boxwiki.19=R=3，M=128，N=128000，无损超频
 tile.boxplusplus.boxwiki.20=R=3，安装深蓝之树，M=128，N=1280000，无损超频
 tile.boxplusplus.boxwiki.21=R=3，安装伊祖米克，M=999，N=99900000，无损超频
-tile.boxplusplus.boxwiki.22=最终配方的时间计算：
+tile.boxplusplus.boxwiki.22=最终配方的时间计算(已更改,不准确)：
 tile.boxplusplus.boxwiki.23=最终配方的功率计算：
 tile.boxplusplus.boxwiki.24=本页包含了所有盒模块及升级信息。他们是：
 tile.boxplusplus.boxwiki.25=模块： 

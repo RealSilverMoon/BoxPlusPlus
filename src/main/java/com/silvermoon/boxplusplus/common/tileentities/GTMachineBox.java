@@ -9,30 +9,23 @@ import static com.silvermoon.boxplusplus.util.Util.*;
 import static gregtech.api.enums.GT_HatchElement.*;
 import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
 import static gregtech.api.util.GT_StructureUtility.buildHatchAdder;
-import static gregtech.common.blocks.GT_Item_Machines.getMetaTileEntity;
 
 import java.io.IOException;
 import java.util.*;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.github.bartimaeusnek.bartworks.util.BWRecipes;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyMulti;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyTunnel;
 import com.glodblock.github.loader.ItemAndBlockHolder;
@@ -41,7 +34,6 @@ import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructa
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
-import com.gtnewhorizons.gtnhintergalactic.recipe.IG_RecipeAdder;
 import com.gtnewhorizons.modularui.api.KeyboardUtil;
 import com.gtnewhorizons.modularui.api.drawable.AdaptableUITexture;
 import com.gtnewhorizons.modularui.api.drawable.IDrawable;
@@ -60,9 +52,6 @@ import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
 
 import appeng.api.AEApi;
-import appeng.container.ContainerNull;
-import fox.spiteful.avaritia.crafting.ExtremeShapedOreRecipe;
-import fox.spiteful.avaritia.crafting.ExtremeShapedRecipe;
 import gregtech.api.enums.*;
 import gregtech.api.gui.modularui.GT_UIInfos;
 import gregtech.api.gui.modularui.GT_UITextures;
@@ -73,17 +62,13 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_ExtendedPowerMultiBlockBase;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch;
-import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_InputBus;
-import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.*;
-import gregtech.common.items.behaviors.Behaviour_DataOrb;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
-import gtPlusPlus.core.util.minecraft.ItemUtils;
 
 public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox>
     implements ISurvivalConstructable, IGlobalWirelessEnergy {
@@ -98,20 +83,20 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private final boolean[] moduleSwitch = new boolean[15];
     private boolean[] moduleActive = new boolean[15];
     private final int[] moduleTier = new int[15];
-    private final ArrayList<BoxRoutings> routingMap = new ArrayList<>();
+    public final ArrayList<BoxRoutings> routingMap = new ArrayList<>();
     public int moduleSN = 1;
     public List<Integer> randomSN = new ArrayList<>(Arrays.asList(1));
     public int ringCount = 1;
     public int wikiPageCode = 1;
     public int routingPageCode = 1;
     public int ringCountSet = 1;
-    private int routingStatus = 0;
+    public int routingStatus = 0;
     private int[] machineError = new int[2];
     private int maxParallel = 160;
     private int maxRouting = 16;
     // What's that?
     private static final char[] coreElement = { 'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M' };
-    private BoxRecipe recipe = new BoxRecipe();
+    public BoxRecipe recipe = new BoxRecipe();
     protected TeBoxRing teBoxRing;
     public String userUUID;
     public boolean debug = false;
@@ -1524,451 +1509,6 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     /**
-     * Check each routing. Don't open it, it's too fxxking long.
-     */
-    public void checkRouting(EntityPlayer player) {
-        if (mInputBusses.isEmpty()) {
-            routingStatus = 1;
-            return;
-        }
-        GT_Recipe.GT_Recipe_Map RecipeMap = null;
-        GT_Recipe RoutingRecipe = null;
-        for (GT_MetaTileEntity_Hatch_InputBus inputBus : mInputBusses) {
-            for (int i = inputBus.getSizeInventory() - 1; i >= 0; i--) {
-                if (inputBus.getStackInSlot(i) != null) {
-                    // That sucks.
-                    if (inputBus.getStackInSlot(i)
-                        .getUnlocalizedName()
-                        .equals("gt.blockmachines.basicmachine.electromagneticseparator.tier.06")) {
-                        RecipeMap = GT_Recipe.GT_Recipe_Map.sElectroMagneticSeparatorRecipes;
-                        RoutingRecipe = RecipeMap.findRecipe(
-                            getBaseMetaTileEntity(),
-                            true,
-                            true,
-                            Long.MAX_VALUE / 10,
-                            getStoredFluids().toArray(new FluidStack[0]),
-                            getStoredInputs().toArray(new ItemStack[0]));
-                        if (RoutingRecipe != null) {
-                            routingMap.add(new BoxRoutings(RoutingRecipe.copy(), inputBus.getStackInSlot(i)));
-                            routingStatus = 0;
-                        } else {
-                            routingStatus = 3;
-                        }
-                        return;
-                    }
-                    if (inputBus.getStackInSlot(i)
-                        .getUnlocalizedName()
-                        .equals("tile.neutronium_compressor")) {
-                        for (ItemStack item : getStoredInputs()) {
-                            ItemStack out = fox.spiteful.avaritia.crafting.CompressorManager.getOutput(item);
-                            if (out != null) {
-                                ItemStack in = item.copy();
-                                in.stackSize = fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
-                                ItemStack machine = inputBus.getStackInSlot(i)
-                                    .copy();
-                                machine.stackSize = 1;
-                                routingMap.add(new BoxRoutings(in, out, machine, TierEU.RECIPE_ZPM, TickTime.MINUTE));
-                                routingStatus = 0;
-                                return;
-                            }
-                        }
-                        routingStatus = 3;
-                        return;
-                    }
-                    if (inputBus.getStackInSlot(i)
-                        .getUnlocalizedName()
-                        .equals("tile.dire_crafting")) {
-                        for (ItemStack item : getStoredInputs()) {
-                            List recipeList = fox.spiteful.avaritia.crafting.ExtremeCraftingManager.getInstance()
-                                .getRecipeList();
-                            for (Object recipe : recipeList) {
-                                if (recipe instanceof ExtremeShapedRecipe exRecipe) {
-                                    if (GT_OreDictUnificator.isInputStackEqual(
-                                        item,
-                                        GT_OreDictUnificator.get(exRecipe.getRecipeOutput()))) {
-                                        ItemStack[] in = exRecipe.recipeItems;
-                                        ItemContainer var = new ItemContainer();
-                                        for (ItemStack itemIn : in) {
-                                            if (itemIn == null) continue;
-                                            var.addItemStack(itemIn, 1, 10000);
-                                        }
-                                        ItemStack machine = inputBus.getStackInSlot(i)
-                                            .copy();
-                                        machine.stackSize = 1;
-                                        routingMap.add(
-                                            new BoxRoutings(
-                                                var.getItemStack()
-                                                    .toArray(new ItemStack[0]),
-                                                exRecipe.getRecipeOutput(),
-                                                new FluidStack[] {},
-                                                machine,
-                                                TierEU.RECIPE_UV,
-                                                TickTime.MINUTE));
-                                        routingStatus = 0;
-                                        return;
-                                    }
-                                } else if (recipe instanceof ExtremeShapedOreRecipe exRecipe) {
-                                    if (GT_OreDictUnificator.isInputStackEqual(item, exRecipe.getRecipeOutput())) {
-                                        Object[] in = exRecipe.getInput();
-                                        ItemContainer var = new ItemContainer();
-                                        for (Object ObjtecIn : in) {
-                                            if (ObjtecIn == null) continue;
-                                            if (ObjtecIn instanceof ItemStack itemIn)
-                                                var.addItemStack(GT_OreDictUnificator.get(itemIn), 1, 10000);
-                                            if (ObjtecIn instanceof ArrayList listIn) var.addItemStack(
-                                                GT_OreDictUnificator.get((ItemStack) listIn.get(0)),
-                                                1,
-                                                10000);
-                                        }
-                                        ItemStack machine = inputBus.getStackInSlot(i)
-                                            .copy();
-                                        machine.stackSize = 1;
-                                        routingMap.add(
-                                            new BoxRoutings(
-                                                var.getItemStack()
-                                                    .toArray(new ItemStack[0]),
-                                                exRecipe.getRecipeOutput(),
-                                                new FluidStack[] {},
-                                                machine,
-                                                TierEU.RECIPE_UV,
-                                                TickTime.MINUTE));
-                                        routingStatus = 0;
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                        routingStatus = 3;
-                        return;
-                    }
-                    if (getMetaTileEntity(
-                        inputBus.getStackInSlot(i)) instanceof GT_MetaTileEntity_MultiBlockBase RoutingMachine) {
-                        System.out.println(RoutingMachine.mName);
-                        List<ItemStack> ItemInputs = deepCopyItemList(getStoredInputs());
-                        List<FluidStack> FluidInputs = deepCopyFluidList(getStoredFluids());
-                        switch (RoutingMachine.mName) {
-                            case "industrialmultimachine.controller.tier.single" -> {
-                                ItemStack Circuit = findfirstCircuit(ItemInputs);
-                                if (Circuit == null) {
-                                    routingStatus = 4;
-                                    return;
-                                }
-                                RecipeMap = getMMRecipeMap(Circuit.getItemDamage());
-                                ItemInputs.remove(Circuit);
-                            }
-                            case "multimachine.multifurnace" -> {
-                                for (ItemStack input : ItemInputs) {
-                                    ItemStack output = GT_OreDictUnificator.get(
-                                        FurnaceRecipes.smelting()
-                                            .getSmeltingResult(input));
-                                    if (output != null) {
-                                        ItemStack var1 = input.copy();
-                                        var1.stackSize = 1;
-                                        ItemStack var2 = output.copy();
-                                        var2.stackSize = 1;
-                                        routingMap
-                                            .add(new BoxRoutings(var1, var2, RoutingMachine.getStackForm(1), 30L, 100));
-                                        routingStatus = 0;
-                                        return;
-                                    }
-                                }
-                                routingStatus = 3;
-                                return;
-                            }
-                            case "mxrandomlargemolecularassembler" -> {
-                                InventoryCrafting fakeCraft = new InventoryCrafting(new ContainerNull(), 3, 3);
-                                if (i == 1) {
-                                    fakeCraft.setInventorySlotContents(0, ItemInputs.get(0));
-                                } else {
-                                    for (int j = 0; j < 9; j++) {
-                                        fakeCraft.setInventorySlotContents(j, inputBus.getStackInSlot(j));
-                                    }
-                                }
-                                ItemStack out = CraftingManager.getInstance()
-                                    .findMatchingRecipe(fakeCraft, getBaseMetaTileEntity().getWorld());
-                                if (out != null) {
-                                    routingMap.add(new BoxRoutings(fakeCraft, out, RoutingMachine.getStackForm(1)));
-                                    routingStatus = 0;
-                                    return;
-                                }
-                                routingStatus = 3;
-                                return;
-                            }
-                            case "industrialrockcrusher.controller.tier.single" -> {
-                                ItemStack Circuit = findfirstCircuit(ItemInputs);
-                                if (Circuit == null) {
-                                    routingStatus = 4;
-                                    return;
-                                }
-                                ItemStack output;
-                                switch (Circuit.getItemDamage()) {
-                                    case 1 -> output = new ItemStack(Blocks.cobblestone, (int) Math.pow(16, ringCount));
-                                    case 2 -> output = new ItemStack(Blocks.stone, (int) Math.pow(16, ringCount));
-                                    case 3 -> output = new ItemStack(Blocks.obsidian, (int) Math.pow(16, ringCount));
-                                    default -> {
-                                        routingStatus = 3;
-                                        return;
-                                    }
-                                }
-                                ItemStack input = Circuit.copy();
-                                input.stackSize = 0;
-                                routingMap.add(new BoxRoutings(input, output, RoutingMachine.getStackForm(1), 30L, 20));
-                                routingStatus = 0;
-                                return;
-                            }
-                            case "industrialbender.controller.tier.single" -> {
-                                ItemStack Circuit = findfirstCircuit(ItemInputs);
-                                if (Circuit == null) {
-                                    routingStatus = 4;
-                                    return;
-                                }
-                                switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sBenderRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPressRecipes;
-                                    default -> {
-                                        routingStatus = 4;
-                                        return;
-                                    }
-                                }
-                                ItemInputs.remove(Circuit);
-                            }
-                            case "industrialwashplant.controller.tier.single" -> {
-                                ItemStack Circuit = findfirstCircuit(ItemInputs);
-                                if (Circuit == null) {
-                                    routingStatus = 4;
-                                    return;
-                                }
-                                switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sOreWasherRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes;
-                                    default -> {
-                                        routingStatus = 4;
-                                        return;
-                                    }
-                                }
-                                ItemInputs.remove(Circuit);
-                            }
-                            case "multimachine.assemblyline" -> {
-                                ItemStack data = null;
-                                for (ItemStack item : ItemInputs) {
-                                    if (ItemList.Tool_DataStick.isStackEqual(item, false, true)) data = item.copy();
-                                }
-                                if (data == null) {
-                                    routingStatus = 5;
-                                    return;
-                                }
-                                // We can find assemblyline recipe using the original method, but no need to update it,
-                                // nor check it
-                                GT_AssemblyLineUtils.LookupResult tLookupResult = GT_AssemblyLineUtils
-                                    .findAssemblyLineRecipeFromDataStick(data, false);
-                                if (tLookupResult.getType() == GT_AssemblyLineUtils.LookupResultType.INVALID_STICK) {
-                                    routingStatus = 5;
-                                    return;
-                                }
-                                GT_Recipe.GT_Recipe_AssemblyLine tRecipe = tLookupResult.getRecipe();
-                                ItemStack[] in = Arrays.copyOf(tRecipe.mInputs, tRecipe.mInputs.length);
-                                for (int j = 0; j < tRecipe.mOreDictAlt.length; j++) {
-                                    if (tRecipe.mOreDictAlt[j] == null) continue;
-                                    in[j] = GT_OreDictUnificator.get(false, in[j]);
-                                    for (ItemStack replace : ItemInputs) {
-                                        if (GT_OreDictUnificator.getAssociation(replace) != null
-                                            && GT_OreDictUnificator.isInputStackEqual(replace, in[j])) {
-                                            in[j] = new ItemStack(
-                                                replace.getItem(),
-                                                in[j].stackSize,
-                                                replace.getItemDamage());
-                                        }
-                                    }
-                                }
-                                routingMap.add(
-                                    new BoxRoutings(
-                                        in,
-                                        tRecipe.mOutput,
-                                        tRecipe.mFluidInputs,
-                                        RoutingMachine.getStackForm(1),
-                                        (long) tRecipe.mEUt,
-                                        tRecipe.mDuration));
-                                routingStatus = 0;
-                                player.addChatMessage(new ChatComponentText(i18n("tile.boxplusplus.chatmessage.1")));
-                                return;
-                            }
-                            case "chemicalplant.controller.tier.single" -> {
-                                RecipeMap = RoutingMachine.getRecipeMap();
-                                if (RecipeMap == null) {
-                                    routingStatus = 3;
-                                    return;
-                                }
-                                // The chemicalplant use tier-based recipe check method, it will be better not to change
-                                // it.
-                                // But not anymore.
-                                RoutingRecipe = RoutingMachine.getRecipeMap()
-                                    .findRecipe(
-                                        getBaseMetaTileEntity(),
-                                        true,
-                                        Long.MAX_VALUE / 10,
-                                        FluidInputs.toArray(new FluidStack[0]),
-                                        ItemInputs.toArray(new ItemStack[0]));
-                                if (RoutingRecipe == null) {
-                                    routingStatus = 3;
-                                    return;
-                                }
-                                RoutingRecipe = RoutingRecipe.copy();
-                                for (ItemStack item : RoutingRecipe.mInputs) {
-                                    if (ItemUtils.isCatalyst(item)) {
-                                        item.stackSize = 0;
-                                        break;
-                                    }
-                                }
-                            }
-                            case "largefusioncomputer5" -> {
-                                // Why there are two fusionRecipeMaps?! FK!
-                                RoutingRecipe = GT_Recipe.GT_Recipe_Map.sFusionRecipes.findRecipe(
-                                    getBaseMetaTileEntity(),
-                                    null,
-                                    false,
-                                    Long.MAX_VALUE / 10,
-                                    FluidInputs.toArray(new FluidStack[0]));
-                                if (RoutingRecipe == null) RecipeMap = GT_Recipe.GT_Recipe_Map.sComplexFusionRecipes;
-                            }
-                            case "circuitassemblyline" -> {
-                                // Circuitassemblyline will check imprint first. Let us do the same thing here.
-                                RecipeMap = BWRecipes.instance.getMappingsFor((byte) 3);
-                                if (inputBus.getStackInSlot(i)
-                                    .getTagCompound() == null
-                                    || !inputBus.getStackInSlot(i)
-                                        .getTagCompound()
-                                        .hasKey("Type")) {
-                                    routingStatus = 6;
-                                    return;
-                                }
-                                for (GT_Recipe recipe : RecipeMap.mRecipeList) {
-                                    if (GT_Utility.areStacksEqual(
-                                        recipe.mOutputs[0],
-                                        ItemStack.loadItemStackFromNBT(
-                                            inputBus.getStackInSlot(i)
-                                                .getTagCompound()
-                                                .getCompoundTag("Type")),
-                                        true)) {
-                                        if (recipe.isRecipeInputEqual(
-                                            false,
-                                            true,
-                                            FluidInputs.toArray(new FluidStack[0]),
-                                            ItemInputs.toArray(new ItemStack[0]))) {
-                                            RoutingRecipe = recipe;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            case "industrialarcfurnace.controller.tier.single" -> {
-                                ItemStack Circuit = findfirstCircuit(ItemInputs);
-                                if (Circuit == null) {
-                                    routingStatus = 4;
-                                    return;
-                                }
-                                switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sArcFurnaceRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPlasmaArcFurnaceRecipes;
-                                    default -> {
-                                        routingStatus = 4;
-                                        return;
-                                    }
-                                }
-                                ItemInputs.remove(Circuit);
-                            }
-                            case "gtpp.multimachine.replicator" -> {
-                                RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sElementalDuplicatorRecipes;
-                                Materials replicatorItem = null;
-                                for (ItemStack item : ItemInputs) {
-                                    if (Behaviour_DataOrb.getDataName(item) == null) continue;
-                                    replicatorItem = Element.get(Behaviour_DataOrb.getDataName(item)).mLinkedMaterials
-                                        .get(0);
-                                    break;
-                                }
-                                if (replicatorItem == Materials._NULL) {
-                                    routingStatus = 7;
-                                    return;
-                                }
-                                for (GT_Recipe recipe : RecipeMap.mRecipeList) {
-                                    if (!(recipe.mSpecialItems instanceof ItemStack[]var1)) {
-                                        continue;
-                                    }
-                                    if (replicatorItem.equals(
-                                        Element.get(Behaviour_DataOrb.getDataName(var1[0])).mLinkedMaterials.get(0))) {
-                                        routingMap.add(new BoxRoutings(recipe, RoutingMachine.getStackForm(1)));
-                                        routingStatus = 0;
-                                        return;
-                                    }
-                                }
-                                routingStatus = 3;
-                                return;
-                            }
-                            // case "electricimplosioncompressor" -> RecipeMap =
-                            // GT_TileEntity_ElectricImplosionCompressor.eicMap;
-                            case "preciseassembler" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.PA;
-                            case "frf" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.FRF;
-                            case "digester" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
-                            case "dissolution_tank" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
-                            case "cyclotron.tier.single" -> RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
-                            case "multimachine.transcendentplasmamixer" -> RecipeMap = GT_Recipe.GT_Recipe_Map.sTranscendentPlasmaMixerRecipes;
-                            case "projectmoduleassemblert3" -> RecipeMap = IG_RecipeAdder.instance.sSpaceAssemblerRecipes;
-                            case "industrialmassfab.controller.tier.single" -> {
-                                routingMap.add(
-                                    new BoxRoutings(
-                                        FluidRegistry.getFluidStack("ic2uumatter", 1000),
-                                        RoutingMachine.getStackForm(1),
-                                        TierEU.RECIPE_UEV,
-                                        20));
-                                routingStatus = 0;
-                                return;
-                            }
-                            default -> {
-                                RecipeMap = RoutingMachine.getRecipeMap();
-                                if (RecipeMap == null) {
-                                    routingStatus = 3;
-                                    return;
-                                }
-                            }
-                        }
-                        ItemInputs.remove(inputBus.getStackInSlot(i));
-                        if (RoutingRecipe == null) RoutingRecipe = RecipeMap.findRecipe(
-                            getBaseMetaTileEntity(),
-                            true,
-                            true,
-                            Long.MAX_VALUE / 10,
-                            FluidInputs.toArray(new FluidStack[0]),
-                            ItemInputs.toArray(new ItemStack[0]));
-                        if (RoutingRecipe != null) {
-                            GT_Recipe tempRecipe = RoutingRecipe.copy();
-                            for (int j = 0; j < tempRecipe.mInputs.length; j++) {
-                                if (tempRecipe.mInputs[j] == null) continue;
-                                if (GT_OreDictUnificator.getAssociation(tempRecipe.mInputs[j]) != null) {
-                                    for (ItemStack si : getStoredInputs()) {
-                                        if (GT_OreDictUnificator.isInputStackEqual(
-                                            tempRecipe.mInputs[j],
-                                            GT_OreDictUnificator.get(false, si))) {
-                                            tempRecipe.mInputs[j] = new ItemStack(
-                                                si.getItem(),
-                                                tempRecipe.mInputs[j].stackSize,
-                                                si.getItemDamage());
-                                        }
-                                    }
-                                }
-                            }
-                            routingMap.add(new BoxRoutings(tempRecipe, RoutingMachine.getStackForm(1)));
-                            routingStatus = 0;
-                        } else {
-                            routingStatus = 3;
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-        routingStatus = 2;
-    }
-
-    /**
      * Build final recipe, but not write it.
      */
     public void buildRecipe() {
@@ -2134,11 +1674,16 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .addTooltip(i18n("tile.boxplusplus.boxUI.02"))
                     .setPos(146, 91))
             .widget(// Routing
-                new ButtonWidget().setOnClick(
-                    (clickData, widget) -> {
-                        if (!widget.isClient()) widget.getContext()
+                new ButtonWidget().setOnClick((clickData, widget) -> {
+                    if (!widget.isClient()) {
+                        Util.boxMap.put(
+                            widget.getContext()
+                                .getPlayer(),
+                            this);
+                        widget.getContext()
                             .openSyncedWindow(10);
-                    })
+                    }
+                })
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
@@ -2673,7 +2218,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             int posY = 18 * (i % 10 == 0 ? 10 : i % 10);
             builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + i).setPos(43, 9 + posY))
                 .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                    checkRouting(player);
+                    BoxRoutings.checkRouting(this);
                     if (!widget.isClient()) {
                         player.closeScreen();
                         GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
