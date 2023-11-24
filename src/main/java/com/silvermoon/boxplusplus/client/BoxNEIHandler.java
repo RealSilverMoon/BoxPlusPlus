@@ -36,7 +36,8 @@ public class BoxNEIHandler {
             EntityPlayer player = ((ModularGui) gui.firstGui).getContext()
                 .getPlayer();
             GTMachineBox box = Util.boxMap.get(player);
-            if (box == null || box.recipe.islocked) return;
+            if (box == null || box.getBaseMetaTileEntity()
+                .isDead() || box.recipe.islocked) return;
             List buttonList = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, gui, "buttonList");
             if (buttons != null) {
                 buttonList.removeIf(Arrays.asList(buttons)::contains);

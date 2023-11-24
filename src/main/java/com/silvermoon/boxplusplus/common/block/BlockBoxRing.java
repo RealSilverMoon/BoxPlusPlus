@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.silvermoon.boxplusplus.Tags;
-import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
+import com.silvermoon.boxplusplus.common.tileentities.TEBoxRing;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -24,7 +24,7 @@ public class BlockBoxRing extends Block implements ITileEntityProvider {
 
     @Override
     public TileEntity createNewTileEntity(World world, int meta) {
-        return new TeBoxRing();
+        return new TEBoxRing();
     }
 
     public void registerBlock() {
