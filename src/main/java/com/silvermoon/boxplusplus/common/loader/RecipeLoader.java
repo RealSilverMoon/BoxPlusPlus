@@ -683,12 +683,12 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 14001),
                 'C',
                 GT_ModHandler.getModItem(GalacticraftMars.ID, "tile.marsMachine", 1, 4),
-                'D',
-                GT_ModHandler.getModItem(GalacticraftAmunRa.ID, "tile.machines2", 1, 1),
+                'F',
+                GT_ModHandler.getModItem(NewHorizonsCoreMod.ID, "item.StargateShieldingFoil", 1),
                 'E',
                 new ItemStack(BlockRegister.BoxModule, 1, 10),
-                'F',
-                GT_ModHandler.getModItem(TecTech.ID, "gt.stabilisation_field_generator", 1, 8));
+                'D',
+                GT_ModHandler.getModItem(NewHorizonsCoreMod.ID, "item.HeavyDutyRocketEngineTier4", 1));
         TT_recipeAdder.addResearchableAssemblylineRecipe(
             new ItemStack(BlockRegister.BoxModule, 1, 13),
             (int) TierEU.UXV,
