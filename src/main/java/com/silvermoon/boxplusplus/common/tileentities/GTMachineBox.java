@@ -48,7 +48,6 @@ import com.gtnewhorizons.modularui.common.internal.network.NetworkUtils;
 import com.gtnewhorizons.modularui.common.widget.*;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
-import com.silvermoon.boxplusplus.api.IBoxable;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
 
@@ -72,7 +71,7 @@ import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 
 public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox>
-    implements ISurvivalConstructable, IGlobalWirelessEnergy, IBoxable {
+    implements ISurvivalConstructable, IGlobalWirelessEnergy {
 
     private static final String STRUCTURE_PIECE_MainFrames = "Mainframes";
     private static final String STRUCTURE_PIECE_FirstRing = "FirstRing";
@@ -3225,15 +3224,5 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     new FakeSyncWidget.BooleanSyncer(() -> moduleActive[finalI], var1 -> moduleActive[finalI] = var1))
                 .widget(new FakeSyncWidget.IntegerSyncer(() -> moduleTier[finalI], var1 -> moduleTier[finalI] = var1));
         }
-    }
-
-    @Override
-    public int getModuleID() {
-        return 0;
-    }
-
-    @Override
-    public boolean isUpdateModule() {
-        return false;
     }
 }
