@@ -38,7 +38,7 @@ public class BoxNEIHandler {
             GTMachineBox box = Util.boxMap.get(player);
             if (box == null || box.getBaseMetaTileEntity()
                 .isDead() || box.recipe.islocked) return;
-            List buttonList = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, gui, "buttonList");
+            List buttonList = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, gui, "field_146292_n");
             if (buttons != null) {
                 buttonList.removeIf(Arrays.asList(buttons)::contains);
             }
@@ -51,7 +51,7 @@ public class BoxNEIHandler {
             buttons = new GuiButton[recipesPerPage];
             int OVERLAY_BUTTON_ID_START = ObfuscationReflectionHelper
                 .getPrivateValue(GuiRecipe.class, gui, "OVERLAY_BUTTON_ID_START");
-            int guiTop = ObfuscationReflectionHelper.getPrivateValue(GuiContainer.class, gui, "guiTop");
+            int guiTop = ObfuscationReflectionHelper.getPrivateValue(GuiContainer.class, gui, "field_147009_r");
             int buttonWidth = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "buttonWidth");
             int buttonHeight = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "buttonHeight");
             HandlerInfo handlerInfo = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "handlerInfo");
