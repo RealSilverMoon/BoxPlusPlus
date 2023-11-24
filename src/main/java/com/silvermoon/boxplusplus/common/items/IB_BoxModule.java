@@ -1,5 +1,7 @@
 package com.silvermoon.boxplusplus.common.items;
 
+import static com.silvermoon.boxplusplus.api.boxRegister.customModuleList;
+import static com.silvermoon.boxplusplus.api.boxRegister.customUpdatedModuleList;
 import static com.silvermoon.boxplusplus.util.Util.i18n;
 
 import java.util.List;
@@ -40,6 +42,9 @@ public class IB_BoxModule extends ItemBlock {
                     + " (T2)");
         }
         list.add(i18n("tile.boxplusplus.boxUI.module.context." + (stack.getItemDamage() + 1) + (update ? "d" : "b")));
+        if (customUpdatedModuleList.containsKey(stack.getItemDamage())
+            || customModuleList.containsKey(stack.getItemDamage()))
+            list.addAll((update ? customUpdatedModuleList : customModuleList).get(stack.getItemDamage()));
     }
 
     @Override

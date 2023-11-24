@@ -1,6 +1,6 @@
 package com.silvermoon.boxplusplus.common;
 
-import static com.silvermoon.boxplusplus.api.boxRegister.machineList;
+import static com.silvermoon.boxplusplus.api.boxRegister.customerMachineList;
 
 import com.silvermoon.boxplusplus.api.IBoxable;
 import com.silvermoon.boxplusplus.util.BoxRoutings;
@@ -142,7 +142,7 @@ public class BoxModule {
             case "quantumforcetransformer.controller.tier.single", "frf", "industrialmassfab.controller.tier.single" -> new int[] {
                 10, 1 };
             default -> {
-                for (GT_MetaTileEntity_MultiBlockBase machine : machineList) {
+                for (GT_MetaTileEntity_MultiBlockBase machine : customerMachineList) {
                     if (GT_Utility.areStacksEqual(machine.getStackForm(1), routing.RoutingMachine, true)) {
                         yield new int[] { ((IBoxable) machine).getModuleIDSafely(),
                             ((IBoxable) machine).isUpdateModule() ? 1 : 0 };

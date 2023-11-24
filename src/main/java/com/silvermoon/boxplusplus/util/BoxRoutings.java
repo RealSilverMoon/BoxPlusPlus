@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.silvermoon.boxplusplus.api.IBoxable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
@@ -21,6 +22,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import com.github.bartimaeusnek.bartworks.util.BWRecipes;
 import com.gtnewhorizons.gtnhintergalactic.recipe.IG_RecipeAdder;
+import com.silvermoon.boxplusplus.boxplusplus;
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
 import com.silvermoon.boxplusplus.network.MessageRouting;
 import com.silvermoon.boxplusplus.network.NetworkLoader;
@@ -354,7 +356,7 @@ public class BoxRoutings {
                     }
                     if (getMetaTileEntity(
                         inputBus.getStackInSlot(i)) instanceof GT_MetaTileEntity_MultiBlockBase RoutingMachine) {
-                        System.out.println(RoutingMachine.mName);
+                        boxplusplus.LOG.debug(RoutingMachine.mName);
                         List<ItemStack> ItemInputs = deepCopyItemList(box.getStoredInputs());
                         List<FluidStack> FluidInputs = deepCopyFluidList(box.getStoredFluids());
                         switch (RoutingMachine.mName) {
@@ -639,7 +641,8 @@ public class BoxRoutings {
                             case "multimachine.transcendentplasmamixer" -> RecipeMap = GT_Recipe.GT_Recipe_Map.sTranscendentPlasmaMixerRecipes;
                             case "projectmoduleassemblert3" -> RecipeMap = IG_RecipeAdder.instance.sSpaceAssemblerRecipes;
                             default -> {
-                                RecipeMap = RoutingMachine.getRecipeMap();
+                                RecipeMap = (RoutingMachine instanceof IBoxable boxable) ?
+                                    boxable.getRealRecipeMap(RoutingMachine):RoutingMachine.getRecipeMap();
                                 if (RecipeMap == null) {
                                     box.routingStatus = 3;
                                     return;
