@@ -1,6 +1,12 @@
 package com.silvermoon.boxplusplus.common;
 
+import static com.silvermoon.boxplusplus.api.boxRegister.machineList;
+
+import com.silvermoon.boxplusplus.api.IBoxable;
 import com.silvermoon.boxplusplus.util.BoxRoutings;
+
+import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
+import gregtech.api.util.GT_Utility;
 
 public class BoxModule {
 
@@ -135,7 +141,15 @@ public class BoxModule {
                 8, 1 };
             case "quantumforcetransformer.controller.tier.single", "frf", "industrialmassfab.controller.tier.single" -> new int[] {
                 10, 1 };
-            default -> new int[] { 14, 0 };
+            default -> {
+                for (GT_MetaTileEntity_MultiBlockBase machine : machineList) {
+                    if (GT_Utility.areStacksEqual(machine.getStackForm(1), routing.RoutingMachine, true)) {
+                        yield new int[] { ((IBoxable) machine).getModuleIDSafely(),
+                            ((IBoxable) machine).isUpdateModule() ? 1 : 0 };
+                    }
+                }
+                yield new int[] { 14, 0 };
+            }
         };
     }
 }

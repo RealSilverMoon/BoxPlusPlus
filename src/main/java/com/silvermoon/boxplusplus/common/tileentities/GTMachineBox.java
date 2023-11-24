@@ -48,6 +48,7 @@ import com.gtnewhorizons.modularui.common.internal.network.NetworkUtils;
 import com.gtnewhorizons.modularui.common.widget.*;
 import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
+import com.silvermoon.boxplusplus.api.IBoxable;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
 
@@ -71,7 +72,7 @@ import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 
 public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox>
-    implements ISurvivalConstructable, IGlobalWirelessEnergy {
+    implements ISurvivalConstructable, IGlobalWirelessEnergy, IBoxable {
 
     private static final String STRUCTURE_PIECE_MainFrames = "Mainframes";
     private static final String STRUCTURE_PIECE_FirstRing = "FirstRing";
@@ -97,7 +98,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     // What's that?
     private static final char[] coreElement = { 'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M' };
     public BoxRecipe recipe = new BoxRecipe();
-    protected TeBoxRing teBoxRing;
+    protected TEBoxRing teBoxRing;
     public String userUUID;
     public boolean debug = false;
     public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
@@ -892,7 +893,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 v.teBoxRing = t;
                 return true;
             },
-                TeBoxRing.class,
+                TEBoxRing.class,
                 BlockRegister.BoxRing,
                 0,
                 v -> v.ringCountSet == 1 ? BlockRegister.BoxRing
@@ -1453,6 +1454,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         return new ITexture[] { casingTexturePages[114][0] };
     }
 
+    @Override
     public void onPreTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPreTick(aBaseMetaTileEntity, aTick);
         if (aTick == 1) {
@@ -1560,6 +1562,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             r.Parallel /= 2;
         }
         return true;
+    }
+
+    @Override
+    public void onRemoval() {
+        if (boxMap.containsValue(this)) boxMap.entrySet()
+            .removeIf(
+                t -> t.getValue()
+                    .equals(this));
     }
 
     /**
@@ -3199,6 +3209,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 }
             }))
             .widget(new FakeSyncWidget.IntegerSyncer(() -> routingStatus, var1 -> routingStatus = var1))
+            .widget(new FakeSyncWidget.IntegerSyncer(() -> routingPageCode, var1 -> routingPageCode = var1))
             .widget(new FakeSyncWidget.IntegerSyncer(() -> machineError[0], var1 -> machineError[0] = var1))
             .widget(new FakeSyncWidget.IntegerSyncer(() -> machineError[1], var1 -> machineError[1] = var1))
             .widget(new FakeSyncWidget.IntegerSyncer(() -> ringCountSet, var1 -> ringCountSet = var1))
@@ -3214,5 +3225,15 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     new FakeSyncWidget.BooleanSyncer(() -> moduleActive[finalI], var1 -> moduleActive[finalI] = var1))
                 .widget(new FakeSyncWidget.IntegerSyncer(() -> moduleTier[finalI], var1 -> moduleTier[finalI] = var1));
         }
+    }
+
+    @Override
+    public int getModuleID() {
+        return 0;
+    }
+
+    @Override
+    public boolean isUpdateModule() {
+        return false;
     }
 }
