@@ -7,7 +7,7 @@ import cpw.mods.fml.relauncher.Side;
 import micdoodle8.mods.galacticraft.core.tile.TileEntityAdvanced;
 import micdoodle8.mods.galacticraft.core.util.Annotations;
 
-public class TeBoxRing extends TileEntityAdvanced {
+public class TEBoxRing extends TileEntityAdvanced {
 
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
     public double Rotation = 0;

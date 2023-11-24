@@ -2,6 +2,7 @@ package com.silvermoon.boxplusplus.common;
 
 import com.silvermoon.boxplusplus.common.config.Config;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import com.silvermoon.boxplusplus.common.loader.ItemRegister;
 import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
 import com.silvermoon.boxplusplus.common.loader.TileEntitiesLoader;
 import com.silvermoon.boxplusplus.network.NetworkLoader;
@@ -17,7 +18,7 @@ public class CommonProxy {
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
-        // ItemRegister.Register();
+        ItemRegister.Register();
         BlockRegister.register();
         NetworkLoader.init();
     }

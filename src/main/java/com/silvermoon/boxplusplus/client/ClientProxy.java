@@ -1,10 +1,13 @@
 package com.silvermoon.boxplusplus.client;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.silvermoon.boxplusplus.common.CommonProxy;
+import com.silvermoon.boxplusplus.common.loader.TileEntitiesLoader;
 import com.silvermoon.boxplusplus.common.render.RenderBoxRing;
-import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
+import com.silvermoon.boxplusplus.common.render.RenderDrone;
+import com.silvermoon.boxplusplus.common.tileentities.TEBoxRing;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -14,7 +17,11 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void init(FMLInitializationEvent e) {
         super.init(e);
-        ClientRegistry.bindTileEntitySpecialRenderer(TeBoxRing.class, new RenderBoxRing());
+        ClientRegistry.bindTileEntitySpecialRenderer(TEBoxRing.class, new RenderBoxRing());
+        ClientRegistry.bindTileEntitySpecialRenderer(
+            (Class<? extends TileEntity>) TileEntitiesLoader.DroneMaintainingCentre.getBaseMetaTileEntity()
+                .getClass(),
+            new RenderDrone());
         MinecraftForge.EVENT_BUS.register(BoxNEIHandler.instance);
     }
 }

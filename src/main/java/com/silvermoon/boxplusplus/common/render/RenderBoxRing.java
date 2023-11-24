@@ -10,7 +10,7 @@ import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
 import com.silvermoon.boxplusplus.Tags;
-import com.silvermoon.boxplusplus.common.tileentities.TeBoxRing;
+import com.silvermoon.boxplusplus.common.tileentities.TEBoxRing;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -23,7 +23,7 @@ public class RenderBoxRing extends TileEntitySpecialRenderer {
         .loadModel(new ResourceLocation(Tags.MODID, "models/Ring.obj"));
 
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
-        if (!(tile instanceof TeBoxRing ring)) return;
+        if (!(tile instanceof TEBoxRing ring)) return;
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
         // Render the outside ring. Keep internal ring visible!
