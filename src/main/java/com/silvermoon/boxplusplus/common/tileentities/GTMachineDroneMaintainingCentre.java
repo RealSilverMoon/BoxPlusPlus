@@ -3,7 +3,6 @@ package com.silvermoon.boxplusplus.common.tileentities;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
 import static com.silvermoon.boxplusplus.common.loader.ItemRegister.drone;
 import static com.silvermoon.boxplusplus.util.Util.*;
-import static goodgenerator.util.DescTextLocalization.BLUE_PRINT_INFO;
 import static gregtech.api.enums.GT_HatchElement.*;
 import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
 import static gregtech.api.util.GT_StructureUtility.buildHatchAdder;
@@ -124,9 +123,8 @@ public class GTMachineDroneMaintainingCentre extends
             .addInfo(i18n("tile.boxplusplus.DMCinfo.07"))
             .addInfo(i18n("tile.boxplusplus.DMCinfo.08"))
             .addInfo(i18n("tile.boxplusplus.DMCinfo.09"))
-            .addInfo(BLUE_PRINT_INFO)
             .addSeparator()
-            .beginStructureBlock(3, 3, 3, false)
+            .beginStructureBlock(5, 6, 9, false)
             .addStructureInfo(i18n("tile.boxplusplus.DMCinfo.10"))
             .addSeparator()
             .toolTipFinisher("BoxPlusPlus");
