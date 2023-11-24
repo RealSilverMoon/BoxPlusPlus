@@ -17,6 +17,7 @@ public interface IBoxable {
      * Set which module your machine will be.
      * <p>
      * 设定模块ID。模块ID可以从模块核心的meta值获取，范围：0-11
+     * 
      * @return Module ID, refers to the meta of the module core block. Range: 0-11
      */
 
@@ -26,6 +27,7 @@ public interface IBoxable {
      * Should use update module
      * <p>
      * 是否使用升级模块
+     * 
      * @return true - updated
      */
     boolean isUpdateModule();

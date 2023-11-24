@@ -18,6 +18,7 @@ public class boxRegister {
      * Use this to register your boxable machine. **Should be called on CommonProxy.postInit().**
      * <p>
      * 在CommonProxy.postInit()阶段调用本方法。确保传入的GT_MetaTileEntity_MultiBlockBase已经实现了IBoxable。
+     * 
      * @param machineList You can put multi-GTMultiMachines in this parameter.
      *                    <p>
      *                    可以接受多个参数
