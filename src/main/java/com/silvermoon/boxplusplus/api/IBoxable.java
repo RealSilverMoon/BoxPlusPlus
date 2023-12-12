@@ -1,7 +1,7 @@
 package com.silvermoon.boxplusplus.api;
 
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
-import gregtech.api.util.GT_Recipe;
+import gregtech.api.recipe.RecipeMap;
 
 /**
  * Implements this on GT_MetaTileEntity_MultiBlockBase to allow your machine encapsulating in Box System.
@@ -17,7 +17,7 @@ public interface IBoxable {
      * Set which module your machine will be.
      * <p>
      * 设定模块ID。模块ID可以从模块核心的meta值获取，范围：0-11
-     * 
+     *
      * @return Module ID, refers to the meta of the module core block. Range: 0-11
      */
 
@@ -27,7 +27,7 @@ public interface IBoxable {
      * Should use update module
      * <p>
      * 是否使用升级模块
-     * 
+     *
      * @return true - updated
      */
     boolean isUpdateModule();
@@ -38,7 +38,7 @@ public interface IBoxable {
      * @param machine normally "this"
      * @return GT_Recipe_Map - the real recipeMap
      */
-    default GT_Recipe.GT_Recipe_Map getRealRecipeMap(GT_MetaTileEntity_MultiBlockBase machine) {
+    default RecipeMap<?> getRealRecipeMap(GT_MetaTileEntity_MultiBlockBase machine) {
         return machine.getRecipeMap();
     }
 

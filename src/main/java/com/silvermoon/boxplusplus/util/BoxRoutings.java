@@ -19,8 +19,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.github.bartimaeusnek.bartworks.util.BWRecipes;
-import com.gtnewhorizons.gtnhintergalactic.recipe.IG_RecipeAdder;
+import com.elisis.gtnhlanth.api.recipe.LanthanidesRecipeMaps;
+import com.github.bartimaeusnek.bartworks.API.recipe.BartWorksRecipeMaps;
+import com.gtnewhorizons.gtnhintergalactic.recipe.IGRecipeMaps;
 import com.silvermoon.boxplusplus.api.IBoxable;
 import com.silvermoon.boxplusplus.boxplusplus;
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
@@ -32,12 +33,17 @@ import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.RecipeCatalysts;
 import fox.spiteful.avaritia.crafting.ExtremeShapedOreRecipe;
 import fox.spiteful.avaritia.crafting.ExtremeShapedRecipe;
+import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import gregtech.api.enums.*;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_InputBus;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
+import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMapBackend;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.*;
 import gregtech.common.items.behaviors.Behaviour_DataOrb;
 import gregtech.nei.GT_NEI_DefaultHandler;
+import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.util.minecraft.ItemUtils;
 
 public class BoxRoutings {
@@ -237,7 +243,7 @@ public class BoxRoutings {
             box.routingStatus = 1;
             return;
         }
-        GT_Recipe.GT_Recipe_Map RecipeMap = null;
+        RecipeMap<? extends RecipeMapBackend> RecipeMap = null;
         GT_Recipe RoutingRecipe = null;
         List<ItemStack> allInputItems = box.getStoredInputs();
         for (GT_MetaTileEntity_Hatch_InputBus inputBus : box.mInputBusses) {
@@ -248,7 +254,7 @@ public class BoxRoutings {
                         if (inputBus.getStackInSlot(i)
                             .getUnlocalizedName()
                             .equals("gt.blockmachines.basicmachine.electromagneticseparator.tier.06")) {
-                            RecipeMap = GT_Recipe.GT_Recipe_Map.sElectroMagneticSeparatorRecipes;
+                            RecipeMap = RecipeMaps.electroMagneticSeparatorRecipes;
                             RoutingRecipe = RecipeMap.findRecipe(
                                 box.getBaseMetaTileEntity(),
                                 true,
@@ -444,8 +450,8 @@ public class BoxRoutings {
                                     return;
                                 }
                                 switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sBenderRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPressRecipes;
+                                    case 1 -> RecipeMap = RecipeMaps.benderRecipes;
+                                    case 2 -> RecipeMap = RecipeMaps.formingPressRecipes;
                                     default -> {
                                         box.routingStatus = 4;
                                         return;
@@ -460,8 +466,8 @@ public class BoxRoutings {
                                     return;
                                 }
                                 switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sOreWasherRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes;
+                                    case 1 -> RecipeMap = RecipeMaps.oreWasherRecipes;
+                                    case 2 -> RecipeMap = RecipeMaps.chemicalBathRecipes;
                                     default -> {
                                         box.routingStatus = 4;
                                         return;
@@ -542,17 +548,17 @@ public class BoxRoutings {
                             }
                             case "largefusioncomputer5" -> {
                                 // Why there are two fusionRecipeMaps?! FK!
-                                RoutingRecipe = GT_Recipe.GT_Recipe_Map.sFusionRecipes.findRecipe(
+                                RoutingRecipe = RecipeMaps.fusionRecipes.findRecipe(
                                     box.getBaseMetaTileEntity(),
-                                    null,
                                     false,
                                     Long.MAX_VALUE / 10,
-                                    FluidInputs.toArray(new FluidStack[0]));
-                                if (RoutingRecipe == null) RecipeMap = GT_Recipe.GT_Recipe_Map.sComplexFusionRecipes;
+                                    FluidInputs.toArray(new FluidStack[0]),
+                                    ItemInputs.toArray(new ItemStack[0]));
+                                if (RoutingRecipe == null) RecipeMap = RecipeMaps.fusionRecipes;
                             }
                             case "circuitassemblyline" -> {
                                 // Circuitassemblyline will check imprint first. Let us do the same thing here.
-                                RecipeMap = BWRecipes.instance.getMappingsFor((byte) 3);
+                                RecipeMap = BartWorksRecipeMaps.bacterialVatRecipes;
                                 if (inputBus.getStackInSlot(i)
                                     .getTagCompound() == null
                                     || !inputBus.getStackInSlot(i)
@@ -561,7 +567,7 @@ public class BoxRoutings {
                                     box.routingStatus = 6;
                                     return;
                                 }
-                                for (GT_Recipe recipe : RecipeMap.mRecipeList) {
+                                for (GT_Recipe recipe : RecipeMap.getAllRecipes()) {
                                     if (GT_Utility.areStacksEqual(
                                         recipe.mOutputs[0],
                                         ItemStack.loadItemStackFromNBT(
@@ -587,8 +593,8 @@ public class BoxRoutings {
                                     return;
                                 }
                                 switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sArcFurnaceRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPlasmaArcFurnaceRecipes;
+                                    case 1 -> RecipeMap = RecipeMaps.arcFurnaceRecipes;
+                                    case 2 -> RecipeMap = RecipeMaps.plasmaArcFurnaceRecipes;
                                     default -> {
                                         box.routingStatus = 4;
                                         return;
@@ -597,7 +603,7 @@ public class BoxRoutings {
                                 ItemInputs.remove(Circuit);
                             }
                             case "gtpp.multimachine.replicator" -> {
-                                RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sElementalDuplicatorRecipes;
+                                RecipeMap = RecipeMaps.replicatorRecipes;
                                 Materials replicatorItem = null;
                                 for (ItemStack item : ItemInputs) {
                                     if (Behaviour_DataOrb.getDataName(item) == null) continue;
@@ -609,7 +615,7 @@ public class BoxRoutings {
                                     box.routingStatus = 7;
                                     return;
                                 }
-                                for (GT_Recipe recipe : RecipeMap.mRecipeList) {
+                                for (GT_Recipe recipe : RecipeMap.getAllRecipes()) {
                                     if (!(recipe.mSpecialItems instanceof ItemStack[]var1)) {
                                         continue;
                                     }
@@ -633,13 +639,13 @@ public class BoxRoutings {
                                 box.routingStatus = 0;
                                 return;
                             }
-                            case "preciseassembler" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.PA;
-                            case "frf" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.FRF;
-                            case "digester" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
-                            case "dissolution_tank" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
-                            case "cyclotron.tier.single" -> RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
-                            case "multimachine.transcendentplasmamixer" -> RecipeMap = GT_Recipe.GT_Recipe_Map.sTranscendentPlasmaMixerRecipes;
-                            case "projectmoduleassemblert3" -> RecipeMap = IG_RecipeAdder.instance.sSpaceAssemblerRecipes;
+                            case "preciseassembler" -> RecipeMap = GoodGeneratorRecipeMaps.preciseAssemblerRecipes;
+                            case "frf" -> RecipeMap = GoodGeneratorRecipeMaps.naquadahFuelRefineFactoryRecipes;
+                            case "digester" -> RecipeMap = LanthanidesRecipeMaps.digesterRecipes;
+                            case "dissolution_tank" -> RecipeMap = LanthanidesRecipeMaps.dissolutionTankRecipes;
+                            case "cyclotron.tier.single" -> RecipeMap = GTPPRecipeMaps.cyclotronRecipes;
+                            case "multimachine.transcendentplasmamixer" -> RecipeMap = RecipeMaps.transcendentPlasmaMixerRecipes;
+                            case "projectmoduleassemblert3" -> RecipeMap = IGRecipeMaps.spaceAssemblerRecipes;
                             default -> {
                                 RecipeMap = (RoutingMachine instanceof IBoxable boxable)
                                     ? boxable.getRealRecipeMap(RoutingMachine)
