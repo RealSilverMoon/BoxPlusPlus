@@ -562,8 +562,8 @@ public class BoxRoutings {
                                 if (inputBus.getStackInSlot(i)
                                     .getTagCompound() == null
                                     || !inputBus.getStackInSlot(i)
-                                    .getTagCompound()
-                                    .hasKey("Type")) {
+                                        .getTagCompound()
+                                        .hasKey("Type")) {
                                     box.routingStatus = 6;
                                     return;
                                 }
