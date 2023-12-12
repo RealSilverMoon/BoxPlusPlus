@@ -34,8 +34,10 @@ import com.silvermoon.boxplusplus.common.tileentities.GTMachineDroneMaintainingC
 
 import appeng.api.AEApi;
 import appeng.api.definitions.IDefinitions;
+import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMapBackend;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GT_ModHandler;
-import gregtech.api.util.GT_Recipe;
 
 public class Util {
 
@@ -47,17 +49,17 @@ public class Util {
             .replace("&", "§");
     }
 
-    public static GT_Recipe.GT_Recipe_Map getMMRecipeMap(int Mode) {
+    public static RecipeMap<RecipeMapBackend> getMMRecipeMap(int Mode) {
         return switch (Mode) {
-            case 1 -> GT_Recipe.GT_Recipe_Map.sCompressorRecipes;
-            case 2 -> GT_Recipe.GT_Recipe_Map.sLatheRecipes;
-            case 3 -> GT_Recipe.GT_Recipe_Map.sPolarizerRecipes;
-            case 4 -> GT_Recipe.GT_Recipe_Map.sFermentingRecipes;
-            case 5 -> GT_Recipe.GT_Recipe_Map.sFluidExtractionRecipes;
-            case 6 -> GT_Recipe.GT_Recipe_Map.sExtractorRecipes;
-            case 7 -> GT_Recipe.GT_Recipe_Map.sLaserEngraverRecipes;
-            case 8 -> GT_Recipe.GT_Recipe_Map.sAutoclaveRecipes;
-            case 9 -> GT_Recipe.GT_Recipe_Map.sFluidSolidficationRecipes;
+            case 1 -> RecipeMaps.compressorRecipes;
+            case 2 -> RecipeMaps.latheRecipes;
+            case 3 -> RecipeMaps.polarizerRecipes;
+            case 4 -> RecipeMaps.fermentingRecipes;
+            case 5 -> RecipeMaps.fluidExtractionRecipes;
+            case 6 -> RecipeMaps.extractorRecipes;
+            case 7 -> RecipeMaps.laserEngraverRecipes;
+            case 8 -> RecipeMaps.autoclaveRecipes;
+            case 9 -> RecipeMaps.fluidSolidifierRecipes;
             default -> null;
         };
     }
