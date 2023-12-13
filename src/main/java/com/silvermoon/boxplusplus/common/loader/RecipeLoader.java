@@ -152,8 +152,8 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("blockAdvancedNitinol", 16),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
+//                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
+//                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
                 ItemList.Field_Generator_UV.get(4),
                 ItemList.ZPM_Coil.get(48))
             .fluidInputs(
