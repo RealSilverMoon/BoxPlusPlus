@@ -134,8 +134,11 @@ public class Util {
         if (itemDamage < 0) {
             itemDamage = 0;
         }
-        ItemStack boxItem = GT_ModHandler
-            .getModItem(nbt.getString("modID"), nbt.getString("name"), stackSize, itemDamage);
+        ItemStack boxItem = GT_ModHandler.getModItem(
+            nbt.getString("modID"),
+            nbt.getString("name"),
+            stackSize,
+            itemDamage);
         if (nbt.hasKey("tag", 10)) {
             boxItem.stackTagCompound = nbt.getCompoundTag("tag");
         }
@@ -179,11 +182,11 @@ public class Util {
 
             @Override
             public boolean placeBlock(T t, World world, int x, int y, int z, ItemStack trigger) {
-                world.setBlock(
-                    x,
+                world.setBlock(x,
                     y,
                     z,
-                    trigger.stackSize == 1 ? RingAdder.apply(t)
+                    trigger.stackSize == 1
+                        ? RingAdder.apply(t)
                         : (trigger.stackSize == 2 ? BlockRegister.BoxRing2 : BlockRegister.BoxRing3),
                     hintMeta,
                     2);
@@ -195,7 +198,8 @@ public class Util {
     public static String serialize(NBTTagCompound nbt) {
         try {
             return org.apache.commons.codec.binary.Base64.encodeBase64String(CompressedStreamTools.compress(nbt));
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         return null;
     }
 
@@ -204,7 +208,8 @@ public class Util {
             byte[] b = org.apache.commons.codec.binary.Base64.decodeBase64(str);
             try {
                 return CompressedStreamTools.func_152457_a(b, new NBTSizeTracker(2097152L));
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
         return null;
     }
@@ -281,10 +286,8 @@ public class Util {
         for (Object player : MinecraftServer.getServer()
             .getConfigurationManager().playerEntityList) {
             if (player instanceof EntityPlayer player1) {
-                if (uuid.equals(
-                    player1.getUniqueID()
-                        .toString()))
-                    return player1;
+                if (uuid.equals(player1.getUniqueID()
+                    .toString())) return player1;
             }
         }
         return null;

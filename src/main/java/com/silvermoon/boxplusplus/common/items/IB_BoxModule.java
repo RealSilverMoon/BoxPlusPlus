@@ -33,13 +33,12 @@ public class IB_BoxModule extends ItemBlock {
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
         boolean update = ((BlockBoxModuleCore) field_150939_a).isUpdate;
-        list.add(
-            EnumChatFormatting.AQUA.toString() + EnumChatFormatting.BOLD
-                + i18n("tile.boxplusplus.boxUI.module.context." + (stack.getItemDamage() + 1) + (update ? "f" : "a")));
+        list.add(EnumChatFormatting.AQUA.toString() + EnumChatFormatting.BOLD + i18n(
+            "tile.boxplusplus.boxUI.module.context." + (stack.getItemDamage() + 1) + (update ? "f" : "a")));
         if (update) {
-            list.add(
-                EnumChatFormatting.GOLD + i18n("tile.boxplusplus.boxUI.module." + (stack.getItemDamage() + 1))
-                    + " (T2)");
+            list.add(EnumChatFormatting.GOLD
+                + i18n("tile.boxplusplus.boxUI.module." + (stack.getItemDamage() + 1))
+                + " (T2)");
         }
         list.add(i18n("tile.boxplusplus.boxUI.module.context." + (stack.getItemDamage() + 1) + (update ? "d" : "b")));
         if (customUpdatedModuleList.containsKey(stack.getItemDamage())

@@ -309,8 +309,7 @@ public class RecipeLoader implements Runnable {
             .eut(TierEU.RECIPE_UV)
             .duration(1200)
             .addTo(AssemblyLine);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(
-                GregTech.ID,
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
                 "gt.blockmachines",
                 1,
                 12730),
@@ -330,8 +329,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 8),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(
-                GregTech.ID,
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
                 "gt.blockmachines",
                 1,
                 17001),
@@ -354,8 +352,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 9),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(
-                GregTech.ID,
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
                 "gt.blockmachines",
                 1,
                 31150),
@@ -375,8 +372,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 10),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(
-                GregTech.ID,
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
                 "gt.blockmachines",
                 1,
                 15472),
@@ -398,8 +394,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 12),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(
-                AppliedEnergistics2.ID,
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(AppliedEnergistics2.ID,
                 "tile.BlockAdvancedCraftingUnit",
                 1,
                 3),

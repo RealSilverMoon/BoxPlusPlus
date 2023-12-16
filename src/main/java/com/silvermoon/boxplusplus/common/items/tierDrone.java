@@ -63,8 +63,8 @@ public class tierDrone extends Item {
 
     @Override
     public void addInformation(ItemStack item, EntityPlayer player, List list, boolean b) {
-        list.add(
-            Util.i18n(
-                ("tile.boxplusplus_maintainingDrone%.desc".replaceAll("%", String.valueOf(item.getItemDamage())))));
+        list.add(Util.i18n(("tile.boxplusplus_maintainingDrone%.desc".replaceAll(
+            "%",
+            String.valueOf(item.getItemDamage())))));
     }
 }

@@ -124,8 +124,7 @@ public class GTTileEntityDroneMaintananceModule extends GT_MetaTileEntity_Hatch_
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         if (aBaseMetaTileEntity.isServerSide()) {
             if (Util.droneMap.containsKey(aBaseMetaTileEntity.getWorld().provider.dimensionId)) {
-                List<GTMachineDroneMaintainingCentre> target = Util.droneMap
-                    .get(aBaseMetaTileEntity.getWorld().provider.dimensionId)
+                List<GTMachineDroneMaintainingCentre> target = Util.droneMap.get(aBaseMetaTileEntity.getWorld().provider.dimensionId)
                     .stream()
                     .collect(Collectors.toList());
                 for (GTMachineDroneMaintainingCentre DMC : target) {
@@ -162,9 +161,8 @@ public class GTTileEntityDroneMaintananceModule extends GT_MetaTileEntity_Hatch_
     }
 
     public boolean hasConnection() {
-        return mainframe != null && mainframe.getBaseMetaTileEntity() != null
-            && !mainframe.getBaseMetaTileEntity()
-                .isDead();
+        return mainframe != null && mainframe.getBaseMetaTileEntity() != null && !mainframe.getBaseMetaTileEntity()
+            .isDead();
     }
 
     private void setRandomFault(GT_MetaTileEntity_MultiBlockBase mte) {
@@ -185,9 +183,8 @@ public class GTTileEntityDroneMaintananceModule extends GT_MetaTileEntity_Hatch_
     public GT_MetaTileEntity_MultiBlockBase tryFindGTMultiBlock(GTTileEntityDroneMaintananceModule maintain) {
         Queue<ChunkCoordinates> tQueue = new LinkedList<>();
         Set<ChunkCoordinates> visited = new HashSet<>(80);
-        tQueue.add(
-            maintain.getBaseMetaTileEntity()
-                .getCoords());
+        tQueue.add(maintain.getBaseMetaTileEntity()
+            .getCoords());
         World world = maintain.getBaseMetaTileEntity()
             .getWorld();
         while (!tQueue.isEmpty()) {
@@ -208,10 +205,8 @@ public class GTTileEntityDroneMaintananceModule extends GT_MetaTileEntity_Hatch_
             // 1) If we've visited less than 5 blocks, then yes
             // 2) If the tile says we should recursively updated (pipes don't, machine blocks do)
             // 3) If the block at the coordinates is marked as a machine block
-            if (visited.size() < 5
-                || (tTileEntity instanceof IMachineBlockUpdateable
-                    && ((IMachineBlockUpdateable) tTileEntity).isMachineBlockUpdateRecursive())
-                || isMachineBlock) {
+            if (visited.size() < 5 || (tTileEntity instanceof IMachineBlockUpdateable
+                && ((IMachineBlockUpdateable) tTileEntity).isMachineBlockUpdateRecursive()) || isMachineBlock) {
                 ChunkCoordinates tCoords;
 
                 if (visited.add(tCoords = new ChunkCoordinates(aCoords.posX + 1, aCoords.posY, aCoords.posZ)))

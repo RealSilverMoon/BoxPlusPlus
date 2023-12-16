@@ -18,10 +18,8 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent e) {
         super.init(e);
         ClientRegistry.bindTileEntitySpecialRenderer(TEBoxRing.class, new RenderBoxRing());
-        ClientRegistry.bindTileEntitySpecialRenderer(
-            (Class<? extends TileEntity>) TileEntitiesLoader.DroneMaintainingCentre.getBaseMetaTileEntity()
-                .getClass(),
-            new RenderDrone());
+        ClientRegistry.bindTileEntitySpecialRenderer((Class<? extends TileEntity>) TileEntitiesLoader.DroneMaintainingCentre.getBaseMetaTileEntity()
+            .getClass(), new RenderDrone());
         MinecraftForge.EVENT_BUS.register(BoxNEIHandler.instance);
     }
 }

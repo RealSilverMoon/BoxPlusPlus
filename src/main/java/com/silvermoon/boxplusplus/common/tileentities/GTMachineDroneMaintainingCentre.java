@@ -42,8 +42,9 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GT_Multiblock_Tooltip_Builder;
 
-public class GTMachineDroneMaintainingCentre extends
-    GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineDroneMaintainingCentre> implements ISurvivalConstructable {
+public class GTMachineDroneMaintainingCentre
+    extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineDroneMaintainingCentre>
+    implements ISurvivalConstructable {
 
     private static final IIconContainer Active = new Textures.BlockIcons.CustomIcon("iconsets/droneCentre");
     private static final IIconContainer Inactive = new Textures.BlockIcons.CustomIcon("iconsets/droneCentre");
@@ -53,17 +54,16 @@ public class GTMachineDroneMaintainingCentre extends
     public int droneLevel = 0;
     private final Random random = new Random();
     // spotless off
-    private static final IStructureDefinition<GTMachineDroneMaintainingCentre> STRUCTURE_DEFINITION = StructureDefinition
-        .<GTMachineDroneMaintainingCentre>builder()
+    private static final IStructureDefinition<GTMachineDroneMaintainingCentre> STRUCTURE_DEFINITION = StructureDefinition.<GTMachineDroneMaintainingCentre>builder()
         .addShape(
             "main",
-            transpose(
-                new String[][] { { "     ", "     ", "     ", "     ", "CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC" },
-                    { "CE~EC", "C   C", "C   C", "C   C", "CAAAC", "CCCCC", "CAAAC", "C   C", "CCCCC" },
-                    { "CEEEC", "CBBBC", "CBDBC", "CBBBC", "CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC" },
-                    { "C   C", "     ", "     ", "     ", "     ", "     ", "     ", "     ", "C   C" },
-                    { "C   C", "     ", "     ", "     ", "     ", "     ", "     ", "     ", "C   C" },
-                    { "C   C", "     ", "     ", "     ", "     ", "     ", "     ", "     ", "C   C" } }))
+            transpose(new String[][] {
+                { "     ", "     ", "     ", "     ", "CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC" },
+                { "CE~EC", "C   C", "C   C", "C   C", "CAAAC", "CCCCC", "CAAAC", "C   C", "CCCCC" },
+                { "CEEEC", "CBBBC", "CBDBC", "CBBBC", "CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCCCC" },
+                { "C   C", "     ", "     ", "     ", "     ", "     ", "     ", "     ", "C   C" },
+                { "C   C", "     ", "     ", "     ", "     ", "     ", "     ", "     ", "C   C" },
+                { "C   C", "     ", "     ", "     ", "     ", "     ", "     ", "     ", "C   C" } }))
         .addElement(
             'E',
             buildHatchAdder(GTMachineDroneMaintainingCentre.class).atLeast(InputBus)
@@ -96,12 +96,10 @@ public class GTMachineDroneMaintainingCentre extends
         if (side == aFacing) {
             if (aActive) return new ITexture[] { casingTexturePages[8][67], TextureFactory.builder()
                 .addIcon(Active)
-                .extFacing()
-                .build() };
+                .extFacing().build() };
             return new ITexture[] { casingTexturePages[8][67], TextureFactory.builder()
                 .addIcon(Inactive)
-                .extFacing()
-                .build() };
+                .extFacing().build() };
         }
         return new ITexture[] { casingTexturePages[8][67] };
     }
@@ -171,7 +169,8 @@ public class GTMachineDroneMaintainingCentre extends
     public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         disableMaintenance = true;
         rotation = (rotation + 50) % 360d;
-        if (aTick % 200 == 0 && aBaseMetaTileEntity.isServerSide()
+        if (aTick % 200 == 0
+            && aBaseMetaTileEntity.isServerSide()
             && (droneLevel == 1 || droneLevel == 2)
             && random.nextInt(360 * (3 - droneLevel)) == 0) {
             droneLevel = 0;

@@ -30,8 +30,9 @@ public class ResultModuleRequirement implements CheckRecipeResult {
 
     @Override
     public String getDisplayString() {
-        return EnumChatFormatting.AQUA + i18n("tile.boxplusplus.boxUI.37")
-            + i18n("tile.boxplusplus_" + (isUpdated ? "boxmoduleplus." : "boxmodule." + required + ".name"));
+        return EnumChatFormatting.AQUA + i18n("tile.boxplusplus.boxUI.37") + i18n("tile.boxplusplus_" + (isUpdated
+            ? "boxmoduleplus."
+            : "boxmodule." + required + ".name"));
     }
 
     @Override
