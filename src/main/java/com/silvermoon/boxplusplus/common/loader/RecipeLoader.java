@@ -34,8 +34,7 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_ITEM, GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 13532))
             .metadata(RESEARCH_TIME, 64000)
             .itemOutputs(TileEntitiesLoader.Box.getStackForm(1))
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 1, 0),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 1, 0),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 59),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 8, 58),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 57),
@@ -50,8 +49,7 @@ public class RecipeLoader implements Runnable {
                 ItemList.Tool_DataOrb.get(16),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiPart", 1, 360),
                 ItemList.Casing_Pipe_Titanium.get(64))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("molten.titanium", 16416),
+            .fluidInputs(FluidRegistry.getFluidStack("molten.titanium", 16416),
                 FluidRegistry.getFluidStack("lubricant", 16000),
                 FluidRegistry.getFluidStack("ic2uumatter", 4000))
             .eut(TierEU.RECIPE_LuV)
@@ -62,8 +60,7 @@ public class RecipeLoader implements Runnable {
     public void addMachineBlockRecipe() {
         GT_Values.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.SpaceExtend, 32, 0))
-            .itemInputs(
-                ItemList.Casing_StableTitanium.get(64),
+            .itemInputs(ItemList.Casing_StableTitanium.get(64),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 2, 32),
                 ItemList.Electric_Motor_LuV.get(16),
                 ItemList.Electric_Piston_LuV.get(16),
@@ -75,15 +72,13 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_ITEM, new ItemStack(BlockRegister.SpaceExtend))
             .metadata(RESEARCH_TIME, 24000)
             .itemOutputs(new ItemStack(BlockRegister.SpaceCompress, 16, 0))
-            .itemInputs(
-                ItemList.Casing_StableTitanium.get(64),
+            .itemInputs(ItemList.Casing_StableTitanium.get(64),
                 ItemList.Casing_StableTitanium.get(64),
                 ItemList.Super_Tank_LV.get(1),
                 ItemList.Super_Chest_LV.get(1),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 4, 33),
                 GT_ModHandler.getModItem(NewHorizonsCoreMod.ID, "tile.TitaniumPlatedReinforcedStone", 64))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("ic2coolant", 10000),
+            .fluidInputs(FluidRegistry.getFluidStack("ic2coolant", 10000),
                 FluidRegistry.getFluidStack("molten.indalloy140", 1440))
             .eut(TierEU.RECIPE_LuV)
             .duration(1600)
@@ -92,8 +87,7 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_ITEM, new ItemStack(BlockRegister.SpaceCompress))
             .metadata(RESEARCH_TIME, 48000)
             .itemOutputs(new ItemStack(BlockRegister.SpaceConstraint, 2, 0))
-            .itemInputs(
-                ItemList.Casing_StableTitanium.get(64),
+            .itemInputs(ItemList.Casing_StableTitanium.get(64),
                 ItemList.Casing_StableTitanium.get(64),
                 ItemList.Casing_StableTitanium.get(64),
                 ItemList.Casing_StableTitanium.get(64),
@@ -101,14 +95,12 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 16, 34),
                 ItemList.Quantum_Tank_LV.get(1),
                 ItemList.Quantum_Chest_LV.get(1))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("supercoolant", 100000),
+            .fluidInputs(FluidRegistry.getFluidStack("supercoolant", 100000),
                 FluidRegistry.getFluidStack("molten.indalloy140", 14400))
             .eut(TierEU.RECIPE_UV)
             .duration(6400)
             .addTo(AssemblyLine);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.SpaceConstraint),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.SpaceConstraint),
             480000,
             128,
             2000000,
@@ -131,8 +123,7 @@ public class RecipeLoader implements Runnable {
     public void addRingRecipe() {
         GT_Values.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.BoxRing, 1, 0))
-            .itemInputs(
-                GT_OreDictUnificator.get(OrePrefixes.ring, Materials.Titanium, 64),
+            .itemInputs(GT_OreDictUnificator.get(OrePrefixes.ring, Materials.Titanium, 64),
                 GT_OreDictUnificator.get(OrePrefixes.ring, Materials.Titanium, 64),
                 GT_OreDictUnificator.get(OrePrefixes.pipeMedium, Materials.Titanium, 64),
                 GT_OreDictUnificator.get(OrePrefixes.rotor, Materials.Titanium, 64),
@@ -146,24 +137,22 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_ITEM, new ItemStack(BlockRegister.BoxRing))
             .metadata(RESEARCH_TIME, 48000)
             .itemOutputs(new ItemStack(BlockRegister.BoxRing2, 1, 0))
-            .itemInputs(
-                GT_OreDictUnificator.get("ringLaurenium", 64),
+            .itemInputs(GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("blockAdvancedNitinol", 16),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
+                // GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
+                // GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
+                GT_ModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 64, 12),
                 ItemList.Field_Generator_UV.get(4),
                 ItemList.ZPM_Coil.get(48))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("plasma.titanium", 16000),
+            .fluidInputs(FluidRegistry.getFluidStack("plasma.titanium", 16000),
                 FluidRegistry.getFluidStack("molten.advancednitinol", 14400))
             .eut(TierEU.RECIPE_UV)
             .duration(60000)
             .addTo(AssemblyLine);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxRing2),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxRing2),
             48000000,
             10240,
             8000000,
@@ -195,21 +184,18 @@ public class RecipeLoader implements Runnable {
     public void addModuleRecipe() {
         GT_Values.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 0))
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 1),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 1),
                 ItemList.Machine_Multi_LargeChemicalReactor.get(64),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 811),
                 GT_OreDictUnificator.get(OrePrefixes.rotor, Materials.Titanium, 16))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("glue", 8000),
+            .fluidInputs(FluidRegistry.getFluidStack("glue", 8000),
                 FluidRegistry.getFluidStack("tetrafluoroethylene", 128000))
             .eut(TierEU.RECIPE_LuV)
             .duration(1200)
             .addTo(multiblockChemicalReactorRecipes);
         GT_Values.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 1))
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 1),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 1),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 876),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 14101),
                 GT_ModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 64, 43),
@@ -220,12 +206,10 @@ public class RecipeLoader implements Runnable {
             .addTo(assemblerRecipes);
         GT_Values.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 2))
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 1),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 1),
                 ItemList.OilCracker.get(64),
                 ItemList.Distillation_Tower.get(64))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("glue", 32000),
+            .fluidInputs(FluidRegistry.getFluidStack("glue", 32000),
                 FluidRegistry.getFluidStack("highoctanegasoline", 128000))
             .specialValue(5)
             .eut(TierEU.RECIPE_LuV)
@@ -233,8 +217,7 @@ public class RecipeLoader implements Runnable {
             .addTo(GTPPRecipeMaps.chemicalPlantRecipes);
         GT_Values.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 3))
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 1),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 1),
                 ItemList.Machine_Multi_Furnace.get(64),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 849),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 862),
@@ -251,8 +234,7 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_ITEM, GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 860))
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 4))
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing2, 2),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing2, 2),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 860),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.metaitem.01", 64, 32764),
                 GT_ModHandler.getModItem(OpenComputers.ID, "item", 9, 103),
@@ -268,8 +250,7 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_ITEM, GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 31077))
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 5))
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing2, 2),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing2, 2),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31077),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31065),
                 GT_ModHandler.getModItem(Avaritia.ID, "Neutronium_Compressor", 4),
@@ -278,8 +259,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "dummyResearch", 1),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockcasings9", 4, 1),
                 GT_ModHandler.getModItem(Chisel.ID, "netherStarChisel", 1))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("refinedglue", 8000),
+            .fluidInputs(FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("ic2pahoehoelava", 128000),
                 FluidRegistry.getFluidStack("grade4purifiedwater", 128000))
             .eut(TierEU.RECIPE_UV)
@@ -290,8 +270,7 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 6))
 
-            .itemInputs(
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 792),
+            .itemInputs(GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 792),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 992),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 859),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 797),
@@ -313,8 +292,7 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 7))
 
-            .itemInputs(
-                GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 850),
+            .itemInputs(GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 850),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 796),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 790),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 840),
@@ -326,14 +304,15 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 10500),
                 GT_OreDictUnificator.get("dustCooledMonaziteRareEarthConcentrate", 64),
                 new ItemStack(BlockRegister.BoxRing2, 2))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("refinedglue", 8000),
+            .fluidInputs(FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("grade4purifiedwater", 128000))
             .eut(TierEU.RECIPE_UV)
             .duration(1200)
             .addTo(AssemblyLine);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 12730),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
+                "gt.blockmachines",
+                1,
+                12730),
             25600,
             64,
             8000000,
@@ -350,8 +329,10 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 8),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 17001),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
+                "gt.blockmachines",
+                1,
+                17001),
             102400,
             256,
             8000000,
@@ -371,8 +352,10 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 9),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 31150),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
+                "gt.blockmachines",
+                1,
+                31150),
             51200,
             128,
             8000000,
@@ -389,8 +372,10 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 10),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15472),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(GregTech.ID,
+                "gt.blockmachines",
+                1,
+                15472),
             100000,
             100,
             10000000,
@@ -409,8 +394,10 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModule, 1, 12),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            GT_ModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 1, 3),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(GT_ModHandler.getModItem(AppliedEnergistics2.ID,
+                "tile.BlockAdvancedCraftingUnit",
+                1,
+                3),
             (int) TierEU.RECIPE_UEV,
             512,
             (int) TierEU.RECIPE_UIV,
@@ -437,15 +424,13 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 0))
 
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 8),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31072),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31050),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 31051),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "miscutils.blockcasings", 48, 8),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockspecialcasings.1", 56, 13))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("refinedglue", 8000),
+            .fluidInputs(FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("ic2uumatter", 128000))
             .eut(TierEU.RECIPE_UV)
             .duration(1200)
@@ -455,8 +440,7 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 1))
 
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 8),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 32018),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "preciseUnitCasing", 64, 2),
                 GT_ModHandler.getModItem(Avaritia.ID, "Dire_Crafting", 64),
@@ -464,8 +448,7 @@ public class RecipeLoader implements Runnable {
                 GT_ModHandler.getModItem(GoodGenerator.ID, "huiCircuit", 32, 2),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "huiCircuit", 16, 3),
                 GT_ModHandler.getModItem(GoodGenerator.ID, "huiCircuit", 8, 4))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("refinedglue", 8000),
+            .fluidInputs(FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("naquadah based liquid fuel mkii (depleted)", 128000))
             .eut(TierEU.RECIPE_UHV)
             .duration(1200)
@@ -475,14 +458,12 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 2))
 
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 8),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 998),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockspecialcasings.2", 64, 3),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blocktieredcasings.1", 16, 9),
                 GT_ModHandler.getModItem(GalacticraftCore.ID, "item.buggy", 1))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("refinedglue", 8000),
+            .fluidInputs(FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("fluid.rocketfuelmixa", 128000))
             .eut(TierEU.RECIPE_UV)
             .duration(1200)
@@ -492,20 +473,17 @@ public class RecipeLoader implements Runnable {
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 3))
 
-            .itemInputs(
-                new ItemStack(BlockRegister.BoxRing, 8),
+            .itemInputs(new ItemStack(BlockRegister.BoxRing, 8),
                 GT_ModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 828),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "gtplusplus.blockcasings.2", 32, 9),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "MU-metaitem.01", 4, 32105),
                 GT_ModHandler.getModItem(GTPlusPlus.ID, "itemDustRadioactiveMineralMix", 1))
-            .fluidInputs(
-                FluidRegistry.getFluidStack("refinedglue", 8000),
+            .fluidInputs(FluidRegistry.getFluidStack("refinedglue", 8000),
                 FluidRegistry.getFluidStack("plasma.hydrogen", 12800))
             .eut(TierEU.RECIPE_UV)
             .duration(1200)
             .addTo(AssemblyLine);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 4),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 4),
             256000,
             512,
             8000000,
@@ -529,8 +507,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 4),
             2000,
             (int) TierEU.RECIPE_UIV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 5),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 5),
             128000,
             256,
             8000000,
@@ -550,8 +527,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 5),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 6),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 6),
             64000,
             128,
             8000000,
@@ -568,8 +544,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 6),
             2000,
             (int) TierEU.RECIPE_UEV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 7),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 7),
             10240,
             16,
             2000000,
@@ -587,8 +562,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 7),
             2000,
             (int) TierEU.RECIPE_UHV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 8),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 8),
             81920000,
             32768,
             (int) TierEU.RECIPE_UMV,
@@ -611,8 +585,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 8),
             2000,
             (int) TierEU.RECIPE_UXV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 9),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 9),
             10240000,
             6144,
             (int) TierEU.RECIPE_UIV,
@@ -635,8 +608,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 9),
             2000,
             (int) TierEU.RECIPE_UIV);
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 10),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 10),
             20480000,
             10240,
             (int) TierEU.RECIPE_UMV,
@@ -660,8 +632,7 @@ public class RecipeLoader implements Runnable {
             2000,
             (int) TierEU.RECIPE_UXV);
         CraftingManager.getInstance()
-            .addRecipe(
-                new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 12),
+            .addRecipe(new ItemStack(BlockRegister.BoxModuleUpgrad, 1, 12),
                 "ABA",
                 "FCF",
                 "DED",
@@ -677,8 +648,7 @@ public class RecipeLoader implements Runnable {
                 new ItemStack(BlockRegister.BoxModule, 1, 10),
                 'D',
                 GT_ModHandler.getModItem(NewHorizonsCoreMod.ID, "item.HeavyDutyRocketEngineTier4", 1));
-        TT_recipeAdder.addResearchableAssemblylineRecipe(
-            new ItemStack(BlockRegister.BoxModule, 1, 13),
+        TT_recipeAdder.addResearchableAssemblylineRecipe(new ItemStack(BlockRegister.BoxModule, 1, 13),
             (int) TierEU.UXV,
             32767,
             (int) TierEU.UXV,
@@ -725,7 +695,8 @@ public class RecipeLoader implements Runnable {
          * GT_OreDictUnificator.get("ingotSilver", 1)
          * },
          * new FluidStack[]{
-         * FluidRegistry.getFluidStack("molten.magnetohydrodynamicallyconstrainedstarmatter", 2000000000),
+         * FluidRegistry.getFluidStack(
+         * "molten.magnetohydrodynamicallyconstrainedstarmatter", 2000000000),
          * FluidRegistry.getFluidStack("molten.shirabon", 2000000000),
          * FluidRegistry.getFluidStack("molten.titanium", 2000000000),
          * FluidRegistry.getFluidStack("molten.silver", 2000000000)},

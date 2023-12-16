@@ -17,12 +17,10 @@ public class TileEntitiesLoader {
 
     public static void register() {
         Box = new GTMachineBox(17001, "multimachine_Box", i18n("tile.boxplusplus.box"));
-        DroneMaintainingCentre = new GTMachineDroneMaintainingCentre(
-            18001,
+        DroneMaintainingCentre = new GTMachineDroneMaintainingCentre(18001,
             "multimachine_DroneMaintainingCentre",
             i18n("tile.boxplusplus.DroneMaintainingCentre"));
-        DroneMaintananceModule = new GTTileEntityDroneMaintananceModule(
-            18002,
+        DroneMaintananceModule = new GTTileEntityDroneMaintananceModule(18002,
             "DroneMaintananceModule",
             "无人机维护中心下行模块",
             5);

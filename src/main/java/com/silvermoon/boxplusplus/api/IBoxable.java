@@ -4,9 +4,9 @@ import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockB
 import gregtech.api.recipe.RecipeMap;
 
 /**
- * Implements this on GT_MetaTileEntity_MultiBlockBase to allow your machine encapsulating in Box System.
- * If you don't have a standard getRecipeMap(), override getRealRecipeMap().
- * Do remember to call boxRegister.registerMachineToBox() on postInit!
+ * Implements this on GT_MetaTileEntity_MultiBlockBase to allow your machine encapsulating in Box System. If you don't
+ * have a standard getRecipeMap(), override getRealRecipeMap(). Do remember to call boxRegister.registerMachineToBox()
+ * on postInit!
  * <p>
  * 为GT_MetaTileEntity_MultiBlockBase实现此接口,将允许Box封装你的机器。如果你的机器有多种模式，重写getRealRecipeMap()来返回你期望封装的那个。
  * 记得在postInit调用一次boxRegister.registerMachineToBox()！

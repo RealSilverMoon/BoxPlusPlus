@@ -20,7 +20,8 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
     modid = Tags.MODID,
     version = Tags.VERSION,
     name = Tags.MODNAME,
-    dependencies = "required-after:IC2;" + "required-after:structurelib;"
+    dependencies = "required-after:IC2;"
+        + "required-after:structurelib;"
         + "required-after:modularui;"
         + "after:GalacticraftCore;"
         + "required-after:bartworks;"

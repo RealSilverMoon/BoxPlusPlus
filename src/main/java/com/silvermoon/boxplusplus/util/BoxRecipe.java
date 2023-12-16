@@ -70,8 +70,9 @@ public class BoxRecipe {
         for (ItemStack iItem : input) {
             for (ItemStack oItem : output) {
                 if (GT_Utility.areStacksEqual(oItem, iItem, true) || (oItem.getUnlocalizedName()
-                    .startsWith("item.Circuit")
-                    && GT_OreDictUnificator.isInputStackEqual(iItem, GT_OreDictUnificator.get(oItem)))) {
+                    .startsWith("item.Circuit") && GT_OreDictUnificator.isInputStackEqual(
+                    iItem,
+                    GT_OreDictUnificator.get(oItem)))) {
                     if (iItem.stackSize == oItem.stackSize) {
                         iItem.stackSize = 0;
                         oItem.stackSize = 0;
@@ -120,14 +121,14 @@ public class BoxRecipe {
             recipe.setTag("InputItem" + (i + 1), writeBoxItemToNBT(FinalItemInput.get(i), new NBTTagCompound()));
         for (int i = 0; i < FinalItemOutput.size(); i++)
             recipe.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(FinalItemOutput.get(i), new NBTTagCompound()));
-        for (int i = 0; i < FinalFluidInput.size(); i++) recipe.setTag(
-            "InputFluid" + (i + 1),
-            FinalFluidInput.get(i)
-                .writeToNBT(new NBTTagCompound()));
-        for (int i = 0; i < FinalFluidOutput.size(); i++) recipe.setTag(
-            "OutputFluid" + (i + 1),
-            FinalFluidOutput.get(i)
-                .writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < FinalFluidInput.size(); i++)
+            recipe.setTag("InputFluid" + (i + 1),
+                FinalFluidInput.get(i)
+                    .writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < FinalFluidOutput.size(); i++)
+            recipe.setTag("OutputFluid" + (i + 1),
+                FinalFluidOutput.get(i)
+                    .writeToNBT(new NBTTagCompound()));
         NBTTagCompound requireModule = new NBTTagCompound();
         requireModules.forEach((k, v) -> requireModule.setInteger(String.valueOf(k), v));
         recipe.setLong("Voteage", FinalVoteage);

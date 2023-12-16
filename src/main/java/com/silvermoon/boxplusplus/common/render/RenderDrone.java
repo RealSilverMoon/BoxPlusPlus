@@ -20,8 +20,9 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 public class RenderDrone extends TileEntitySpecialRenderer {
 
     private static final ResourceLocation DroneTexture = new ResourceLocation(Tags.MODID, "textures/models/drone.png");
-    private static final IModelCustom Drone = AdvancedModelLoader
-        .loadModel(new ResourceLocation(Tags.MODID, "models/drone1.obj"));
+    private static final IModelCustom Drone = AdvancedModelLoader.loadModel(new ResourceLocation(
+        Tags.MODID,
+        "models/drone1.obj"));
 
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
         if (!(tile instanceof IGregTechTileEntity te
