@@ -151,15 +151,15 @@ public class RecipeLoader implements Runnable {
                 GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("ringLaurenium", 64),
                 GT_OreDictUnificator.get("blockAdvancedNitinol", 16),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
-                GT_ModHandler.getModItem(GTPlusPlus.ID, "particleIon", 64, 21),
+                GT_OreDictUnificator.get(OrePrefixes.plateDense, Materials.Tritanium, 64),
+                GT_OreDictUnificator.get(OrePrefixes.plateDense, Materials.Tritanium, 64),
                 ItemList.Field_Generator_UV.get(4),
                 ItemList.ZPM_Coil.get(48))
             .fluidInputs(
                 FluidRegistry.getFluidStack("plasma.titanium", 16000),
                 FluidRegistry.getFluidStack("molten.advancednitinol", 14400))
             .eut(TierEU.RECIPE_UV)
-            .duration(60000)
+            .duration(2000)
             .addTo(AssemblyLine);
         TT_recipeAdder.addResearchableAssemblylineRecipe(
             new ItemStack(BlockRegister.BoxRing2),
@@ -186,7 +186,7 @@ public class RecipeLoader implements Runnable {
                 FluidRegistry.getFluidStack("molten.metastable oganesson", 32000),
                 FluidRegistry.getFluidStack("molten.titanium", 144) },
             new ItemStack(BlockRegister.BoxRing3, 1, 0),
-            240000,
+            800,
             (int) TierEU.RECIPE_UEV);
     }
 
