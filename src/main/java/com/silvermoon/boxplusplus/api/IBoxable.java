@@ -1,7 +1,7 @@
 package com.silvermoon.boxplusplus.api;
 
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
-import gregtech.api.util.GT_Recipe;
+import gregtech.api.recipe.RecipeMap;
 
 /**
  * Implements this on GT_MetaTileEntity_MultiBlockBase to allow your machine encapsulating in Box System.
@@ -38,7 +38,7 @@ public interface IBoxable {
      * @param machine normally "this"
      * @return GT_Recipe_Map - the real recipeMap
      */
-    default GT_Recipe.GT_Recipe_Map getRealRecipeMap(GT_MetaTileEntity_MultiBlockBase machine) {
+    default RecipeMap<?> getRealRecipeMap(GT_MetaTileEntity_MultiBlockBase machine) {
         return machine.getRecipeMap();
     }
 

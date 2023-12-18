@@ -19,8 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.github.bartimaeusnek.bartworks.util.BWRecipes;
-import com.gtnewhorizons.gtnhintergalactic.recipe.IG_RecipeAdder;
+import com.github.bartimaeusnek.bartworks.API.recipe.BartWorksRecipeMaps;
 import com.silvermoon.boxplusplus.api.IBoxable;
 import com.silvermoon.boxplusplus.boxplusplus;
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
@@ -32,9 +31,12 @@ import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.RecipeCatalysts;
 import fox.spiteful.avaritia.crafting.ExtremeShapedOreRecipe;
 import fox.spiteful.avaritia.crafting.ExtremeShapedRecipe;
+import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import gregtech.api.enums.*;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_InputBus;
 import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
+import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.*;
 import gregtech.common.items.behaviors.Behaviour_DataOrb;
 import gregtech.nei.GT_NEI_DefaultHandler;
@@ -237,8 +239,8 @@ public class BoxRoutings {
             box.routingStatus = 1;
             return;
         }
-        GT_Recipe.GT_Recipe_Map RecipeMap = null;
-        GT_Recipe RoutingRecipe = null;
+        RecipeMap<?> recipeMap;
+        GT_Recipe routingRecipe = null;
         List<ItemStack> allInputItems = box.getStoredInputs();
         for (GT_MetaTileEntity_Hatch_InputBus inputBus : box.mInputBusses) {
             for (int i = inputBus.getSizeInventory() - 1; i >= 0; i--) {
@@ -248,8 +250,8 @@ public class BoxRoutings {
                         if (inputBus.getStackInSlot(i)
                             .getUnlocalizedName()
                             .equals("gt.blockmachines.basicmachine.electromagneticseparator.tier.06")) {
-                            RecipeMap = GT_Recipe.GT_Recipe_Map.sElectroMagneticSeparatorRecipes;
-                            RoutingRecipe = RecipeMap.findRecipe(
+                            recipeMap = RecipeMaps.electroMagneticSeparatorRecipes;
+                            routingRecipe = recipeMap.findRecipe(
                                 box.getBaseMetaTileEntity(),
                                 true,
                                 true,
@@ -257,8 +259,8 @@ public class BoxRoutings {
                                 box.getStoredFluids()
                                     .toArray(new FluidStack[0]),
                                 allInputItems.toArray(new ItemStack[0]));
-                            if (RoutingRecipe != null) {
-                                box.routingMap.add(new BoxRoutings(RoutingRecipe.copy(), inputBus.getStackInSlot(i)));
+                            if (routingRecipe != null) {
+                                box.routingMap.add(new BoxRoutings(routingRecipe.copy(), inputBus.getStackInSlot(i)));
                                 box.routingStatus = 0;
                             } else {
                                 box.routingStatus = 3;
@@ -366,7 +368,7 @@ public class BoxRoutings {
                                     box.routingStatus = 4;
                                     return;
                                 }
-                                RecipeMap = getMMRecipeMap(Circuit.getItemDamage());
+                                recipeMap = getMMRecipeMap(Circuit.getItemDamage());
                                 ItemInputs.remove(Circuit);
                             }
                             case "multimachine.multifurnace" -> {
@@ -444,8 +446,8 @@ public class BoxRoutings {
                                     return;
                                 }
                                 switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sBenderRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPressRecipes;
+                                    case 1 -> recipeMap = RecipeMaps.benderRecipes;
+                                    case 2 -> recipeMap = RecipeMaps.formingPressRecipes;
                                     default -> {
                                         box.routingStatus = 4;
                                         return;
@@ -460,8 +462,8 @@ public class BoxRoutings {
                                     return;
                                 }
                                 switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sOreWasherRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes;
+                                    case 1 -> recipeMap = RecipeMaps.oreWasherRecipes;
+                                    case 2 -> recipeMap = RecipeMaps.chemicalBathRecipes;
                                     default -> {
                                         box.routingStatus = 4;
                                         return;
@@ -513,46 +515,36 @@ public class BoxRoutings {
                                 return;
                             }
                             case "chemicalplant.controller.tier.single" -> {
-                                RecipeMap = RoutingMachine.getRecipeMap();
-                                if (RecipeMap == null) {
+                                recipeMap = RoutingMachine.getRecipeMap();
+                                if (recipeMap == null) {
                                     box.routingStatus = 3;
                                     return;
                                 }
                                 // The chemicalplant use tier-based recipe check method, it will be better not to change
                                 // it.
                                 // But not anymore.
-                                RoutingRecipe = RoutingMachine.getRecipeMap()
+                                routingRecipe = RoutingMachine.getRecipeMap()
                                     .findRecipe(
                                         box.getBaseMetaTileEntity(),
                                         true,
                                         Long.MAX_VALUE / 10,
                                         FluidInputs.toArray(new FluidStack[0]),
                                         ItemInputs.toArray(new ItemStack[0]));
-                                if (RoutingRecipe == null) {
+                                if (routingRecipe == null) {
                                     box.routingStatus = 3;
                                     return;
                                 }
-                                RoutingRecipe = RoutingRecipe.copy();
-                                for (ItemStack item : RoutingRecipe.mInputs) {
+                                routingRecipe = routingRecipe.copy();
+                                for (ItemStack item : routingRecipe.mInputs) {
                                     if (ItemUtils.isCatalyst(item)) {
                                         item.stackSize = 0;
                                         break;
                                     }
                                 }
                             }
-                            case "largefusioncomputer5" -> {
-                                // Why there are two fusionRecipeMaps?! FK!
-                                RoutingRecipe = GT_Recipe.GT_Recipe_Map.sFusionRecipes.findRecipe(
-                                    box.getBaseMetaTileEntity(),
-                                    null,
-                                    false,
-                                    Long.MAX_VALUE / 10,
-                                    FluidInputs.toArray(new FluidStack[0]));
-                                if (RoutingRecipe == null) RecipeMap = GT_Recipe.GT_Recipe_Map.sComplexFusionRecipes;
-                            }
                             case "circuitassemblyline" -> {
                                 // Circuitassemblyline will check imprint first. Let us do the same thing here.
-                                RecipeMap = BWRecipes.instance.getMappingsFor((byte) 3);
+                                recipeMap = BartWorksRecipeMaps.circuitAssemblyLineRecipes;
                                 if (inputBus.getStackInSlot(i)
                                     .getTagCompound() == null
                                     || !inputBus.getStackInSlot(i)
@@ -561,7 +553,7 @@ public class BoxRoutings {
                                     box.routingStatus = 6;
                                     return;
                                 }
-                                for (GT_Recipe recipe : RecipeMap.mRecipeList) {
+                                for (GT_Recipe recipe : recipeMap.getAllRecipes()) {
                                     if (GT_Utility.areStacksEqual(
                                         recipe.mOutputs[0],
                                         ItemStack.loadItemStackFromNBT(
@@ -574,7 +566,7 @@ public class BoxRoutings {
                                             true,
                                             FluidInputs.toArray(new FluidStack[0]),
                                             ItemInputs.toArray(new ItemStack[0]))) {
-                                            RoutingRecipe = recipe;
+                                            routingRecipe = recipe;
                                             break;
                                         }
                                     }
@@ -587,8 +579,8 @@ public class BoxRoutings {
                                     return;
                                 }
                                 switch (Circuit.getItemDamage()) {
-                                    case 1 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sArcFurnaceRecipes;
-                                    case 2 -> RecipeMap = GT_Recipe.GT_Recipe_Map.sPlasmaArcFurnaceRecipes;
+                                    case 1 -> recipeMap = RecipeMaps.arcFurnaceRecipes;
+                                    case 2 -> recipeMap = RecipeMaps.plasmaArcFurnaceRecipes;
                                     default -> {
                                         box.routingStatus = 4;
                                         return;
@@ -597,7 +589,7 @@ public class BoxRoutings {
                                 ItemInputs.remove(Circuit);
                             }
                             case "gtpp.multimachine.replicator" -> {
-                                RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sElementalDuplicatorRecipes;
+                                recipeMap = RecipeMaps.replicatorRecipes;
                                 Materials replicatorItem = null;
                                 for (ItemStack item : ItemInputs) {
                                     if (Behaviour_DataOrb.getDataName(item) == null) continue;
@@ -609,7 +601,7 @@ public class BoxRoutings {
                                     box.routingStatus = 7;
                                     return;
                                 }
-                                for (GT_Recipe recipe : RecipeMap.mRecipeList) {
+                                for (GT_Recipe recipe : recipeMap.getAllRecipes()) {
                                     if (!(recipe.mSpecialItems instanceof ItemStack[]var1)) {
                                         continue;
                                     }
@@ -633,33 +625,27 @@ public class BoxRoutings {
                                 box.routingStatus = 0;
                                 return;
                             }
-                            case "preciseassembler" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.PA;
-                            case "frf" -> RecipeMap = goodgenerator.util.MyRecipeAdder.instance.FRF;
-                            case "digester" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DigesterRecipes;
-                            case "dissolution_tank" -> RecipeMap = com.elisis.gtnhlanth.loader.RecipeAdder.instance.DissolutionTankRecipes;
-                            case "cyclotron.tier.single" -> RecipeMap = GTPP_Recipe.GTPP_Recipe_Map.sCyclotronRecipes;
-                            case "multimachine.transcendentplasmamixer" -> RecipeMap = GT_Recipe.GT_Recipe_Map.sTranscendentPlasmaMixerRecipes;
-                            case "projectmoduleassemblert3" -> RecipeMap = IG_RecipeAdder.instance.sSpaceAssemblerRecipes;
+                            case "preciseassembler" -> recipeMap = GoodGeneratorRecipeMaps.preciseAssemblerRecipes;
                             default -> {
-                                RecipeMap = (RoutingMachine instanceof IBoxable boxable)
+                                recipeMap = (RoutingMachine instanceof IBoxable boxable)
                                     ? boxable.getRealRecipeMap(RoutingMachine)
                                     : RoutingMachine.getRecipeMap();
-                                if (RecipeMap == null) {
+                                if (recipeMap == null) {
                                     box.routingStatus = 3;
                                     return;
                                 }
                             }
                         }
                         ItemInputs.remove(inputBus.getStackInSlot(i));
-                        if (RoutingRecipe == null) RoutingRecipe = RecipeMap.findRecipe(
+                        if (routingRecipe == null) routingRecipe = recipeMap.findRecipe(
                             box.getBaseMetaTileEntity(),
                             true,
                             true,
                             Long.MAX_VALUE / 10,
                             FluidInputs.toArray(new FluidStack[0]),
                             ItemInputs.toArray(new ItemStack[0]));
-                        if (RoutingRecipe != null) {
-                            GT_Recipe tempRecipe = RoutingRecipe.copy();
+                        if (routingRecipe != null) {
+                            GT_Recipe tempRecipe = routingRecipe.copy();
                             for (int j = 0; j < tempRecipe.mInputs.length; j++) {
                                 if (tempRecipe.mInputs[j] == null) continue;
                                 if (GT_OreDictUnificator.getAssociation(tempRecipe.mInputs[j]) != null) {
