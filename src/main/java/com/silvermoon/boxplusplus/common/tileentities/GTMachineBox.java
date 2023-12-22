@@ -1684,11 +1684,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setPos(146, 91))
             .widget(// Routing
                 new ButtonWidget().setOnClick((clickData, widget) -> {
+                    Util.boxMap.put(
+                        widget.getContext()
+                            .getPlayer(),
+                        this);
                     if (!widget.isClient()) {
-                        Util.boxMap.put(
-                            widget.getContext()
-                                .getPlayer(),
-                            this);
                         widget.getContext()
                             .openSyncedWindow(10);
                     }
