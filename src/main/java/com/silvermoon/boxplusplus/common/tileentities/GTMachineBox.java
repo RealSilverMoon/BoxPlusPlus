@@ -2837,10 +2837,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
         StringBuilder modules = new StringBuilder();
         modules.append(i18n("tile.boxplusplus.boxUI.27"));
         for (int i : recipe.requireModules.keySet()) {
-            modules
-                .append(
-                    recipe.requireModules.get(i) == 1 ? i18n("tile.boxplusplus.boxUI.module." + (i + 1)) + " (T2)"
-                        : i18n("tile.boxplusplus.boxUI.module." + (i + 1)))
+            modules.append(i18n("tile.boxplusplus.boxUI.module." + (i + 1)))
+                .append(" T")
+                .append(recipe.requireModules.get(i) + 1)
+                .append(" ")
                 .append(" | ");
         }
         builder.widget(
