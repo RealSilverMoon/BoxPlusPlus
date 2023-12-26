@@ -25,12 +25,10 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.HashMultimap;
 import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
-import com.silvermoon.boxplusplus.common.tileentities.GTMachineDroneMaintainingCentre;
 
 import appeng.api.AEApi;
 import appeng.api.definitions.IDefinitions;
@@ -41,7 +39,6 @@ import gregtech.api.util.GT_ModHandler;
 public class Util {
 
     public static HashMap<EntityPlayer, GTMachineBox> boxMap = new HashMap<>();
-    public static HashMultimap<Integer, GTMachineDroneMaintainingCentre> droneMap = HashMultimap.create();
 
     public static String i18n(String info) {
         return StatCollector.translateToLocal(info)
