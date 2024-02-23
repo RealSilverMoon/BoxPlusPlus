@@ -5,11 +5,13 @@ import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
 import com.silvermoon.boxplusplus.common.loader.TileEntitiesLoader;
 import com.silvermoon.boxplusplus.network.NetworkLoader;
+import com.silvermoon.boxplusplus.util.ResultModuleRequirement;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 
 public class CommonProxy {
 
@@ -24,6 +26,7 @@ public class CommonProxy {
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
     public void init(FMLInitializationEvent event) {
         TileEntitiesLoader.register();
+        CheckRecipeResultRegistry.register(new ResultModuleRequirement(0, false));
     }
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)

@@ -6,7 +6,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumChatFormatting;
 
 import gregtech.api.recipe.check.CheckRecipeResult;
-import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 
 public class ResultModuleRequirement implements CheckRecipeResult {
 
@@ -57,9 +56,5 @@ public class ResultModuleRequirement implements CheckRecipeResult {
         if (o == null || getClass() != o.getClass()) return false;
         ResultModuleRequirement that = (ResultModuleRequirement) o;
         return required == that.required && (isUpdated == that.isUpdated);
-    }
-
-    static {
-        CheckRecipeResultRegistry.register(new ResultModuleRequirement(0, false));
     }
 }
