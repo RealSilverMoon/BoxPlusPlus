@@ -42,6 +42,7 @@ import com.gtnewhorizons.modularui.api.drawable.UITexture;
 import com.gtnewhorizons.modularui.api.forge.ItemStackHandler;
 import com.gtnewhorizons.modularui.api.math.Alignment;
 import com.gtnewhorizons.modularui.api.math.Color;
+import com.gtnewhorizons.modularui.api.math.MainAxisAlignment;
 import com.gtnewhorizons.modularui.api.screen.ModularWindow;
 import com.gtnewhorizons.modularui.api.screen.UIBuildContext;
 import com.gtnewhorizons.modularui.common.internal.network.NetworkUtils;
@@ -52,10 +53,9 @@ import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
 
 import appeng.api.AEApi;
-import gregtech.api.enums.*;
+import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GT_UIInfos;
 import gregtech.api.gui.modularui.GT_UITextures;
-import gregtech.api.interfaces.IGlobalWirelessEnergy;
 import gregtech.api.interfaces.IIconContainer;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -66,12 +66,14 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.*;
+import gregtech.api.util.GT_Multiblock_Tooltip_Builder;
+import gregtech.api.util.GT_OverclockCalculator;
+import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 
 public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox>
-    implements ISurvivalConstructable, IGlobalWirelessEnergy {
+    implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MainFrames = "Mainframes";
     private static final String STRUCTURE_PIECE_FirstRing = "FirstRing";
@@ -98,7 +100,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     private static final char[] coreElement = { 'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M' };
     public BoxRecipe recipe = new BoxRecipe();
     protected TEBoxRing teBoxRing;
-    public String userUUID;
+    public UUID userUUID;
     public boolean debug = false;
     public static IStructureDefinition<GTMachineBox> STRUCTURE_DEFINITION;
 
@@ -1373,7 +1375,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             lEUt = -recipe.FinalVoteage;
         }
         if (moduleActive[12] && moduleTier[12] == 1
-            && !addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
+            && !WirelessNetworkManager.addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
             return SimpleCheckRecipeResult.ofFailure("no_wireless_power");
         }
         calTime();
@@ -1457,9 +1459,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     public void onPreTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
         super.onPreTick(aBaseMetaTileEntity, aTick);
         if (aTick == 1) {
-            userUUID = String.valueOf(getBaseMetaTileEntity().getOwnerUuid());
-            String Name = getBaseMetaTileEntity().getOwnerName();
-            strongCheckOrAddUser(userUUID, Name);
+            userUUID = getBaseMetaTileEntity().getOwnerUuid();
+            WirelessNetworkManager.strongCheckOrAddUser(userUUID);
         }
     }
 
@@ -2140,6 +2141,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 ButtonWidget.closeWindowButton(true)
                     .setPos(240, 5));
+        // Import GUI
         builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
             if (!widget.isClient()) {
                 widget.getContext()
@@ -2156,45 +2158,6 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
             .setPos(200, 25)
             .setEnabled(routingMap.size() == 0));
-        // Next Page & Previous Page
-        builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-            routingPageCode += 1;
-            if (!widget.isClient()) {
-                widget.getWindow()
-                    .closeWindow();
-                widget.getContext()
-                    .openSyncedWindow(10);
-            }
-        })
-            .setSize(16, 16)
-            .setBackground(() -> {
-                List<UITexture> UI = new ArrayList<>();
-                UI.add(GT_UITextures.BUTTON_STANDARD);
-                UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
-                return UI.toArray(new IDrawable[0]);
-            })
-            .addTooltip(i18n("tile.boxplusplus.boxUI.38"))
-            .setPos(200, 48)
-            .setEnabled(routingPageCode < Math.ceil((routingMap.size() + (recipe.islocked ? 0 : 1)) / 10.0)))
-            .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                routingPageCode -= 1;
-                if (!widget.isClient()) {
-                    widget.getWindow()
-                        .closeWindow();
-                    widget.getContext()
-                        .openSyncedWindow(10);
-                }
-            })
-                .setSize(16, 16)
-                .setBackground(() -> {
-                    List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_UP);
-                    return UI.toArray(new IDrawable[0]);
-                })
-                .addTooltip(i18n("tile.boxplusplus.boxUI.39"))
-                .setPos(200, 71)
-                .setEnabled(routingPageCode != 1));
         // export
         builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
             if (widget.isClient()) {
@@ -2221,30 +2184,21 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .addTooltip(i18n("tile.boxplusplus.boxUI.31"))
             .setPos(200, 25)
             .setEnabled(recipe.islocked));
-        for (int i = 10 * routingPageCode - 9; i
-            <= Math.min(10 * routingPageCode, routingMap.size() + (recipe.islocked ? 0 : 1)); i++) {
-            int finalI = i;
-            int posY = 18 * (i % 10 == 0 ? 10 : i % 10);
-            builder.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + i).setPos(43, 9 + posY))
-                .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                    BoxRoutings.checkRouting(this);
-                    if (!widget.isClient()) {
-                        player.closeScreen();
-                        GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
-                    }
-                })
+
+        Scrollable routingContainer = new Scrollable().setVerticalScroll();
+        for (int i = 0; i < routingMap.size(); i++) {
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
+            ItemStackHandler drawitem = new ItemStackHandler(1);
+            drawitem.setStackInSlot(0, routingMap.get(i).RoutingMachine);
+            row.widget(
+                SlotWidget.phantom(drawitem, 0)
+                    .disableInteraction()
                     .setSize(16, 16)
-                    .setBackground(() -> {
-                        List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
-                        return UI.toArray(new IDrawable[0]);
-                    })
-                    .addTooltip(i18n("tile.boxplusplus.boxUI.08") + i)
-                    .setPos(81, 7 + posY)
-                    .setEnabled(routingMap.size() == (i - 1)))
+                    .setPos(0, 0));
+            int finalI = i;
+            row.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + (i + 1)).setPos(0, 4))
                 .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                    moduleSN = finalI;
+                    moduleSN = finalI + 1;
                     if (!widget.isClient()) {
                         widget.getContext()
                             .openSyncedWindow(11);
@@ -2258,12 +2212,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.09"))
-                    .setPos(81, 7 + posY)
-                    .setEnabled(routingMap.size() >= i))
+                    .setPos(0, 0))
                 .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                     if (!clickData.shift) return;
-                    moduleSN = finalI;
-                    routingMap.remove(moduleSN - 1);
+                    moduleSN = finalI + 1;
+                    routingMap.remove(finalI);
                     if (!widget.isClient()) {
                         widget.getWindow()
                             .closeWindow();
@@ -2279,18 +2232,40 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
-                    .setPos(101, 7 + posY)
-                    .setEnabled(routingMap.size() >= i && !recipe.islocked));
-            if (routingMap.size() != i - 1) {
-                ItemStackHandler drawitem = new ItemStackHandler(1);
-                drawitem.setStackInSlot(0, routingMap.get(i - 1).RoutingMachine);
-                builder.widget(
-                    SlotWidget.phantom(drawitem, 0)
-                        .disableInteraction()
-                        .setSize(16, 16)
-                        .setPos(21, 7 + posY));
-            }
+                    .setPos(0, 0));
+            routingContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setPos(0, 20 * i));
         }
+        if (!recipe.islocked) {
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
+            row.widget(new TextWidget(i18n("tile.boxplusplus.boxUI.07") + (routingMap.size() + 1)).setPos(0, 0))
+                .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
+                    BoxRoutings.checkRouting(this);
+                    if (!widget.isClient()) {
+                        player.closeScreen();
+                        GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
+                    }
+                })
+                    .setSize(16, 16)
+                    .setBackground(() -> {
+                        List<UITexture> UI = new ArrayList<>();
+                        UI.add(GT_UITextures.BUTTON_STANDARD);
+                        UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                        return UI.toArray(new IDrawable[0]);
+                    })
+                    .addTooltip(i18n("tile.boxplusplus.boxUI.08") + (routingMap.size() + 1))
+                    .setPos(0, 0));
+            routingContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setPos(0, 20 * (routingMap.size())));
+        }
+        builder.widget(
+            routingContainer.setPos(21, 20)
+                .setSize(110, 180));
+        // Error X
         builder.widget(
             new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CROSS)
                 .setPos(140, 71)
@@ -2303,6 +2278,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(36, 36)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.19"))
                     .setEnabled(routingStatus == 0 && !recipe.islocked));
+        // Build Recipe
         builder.widget(new ButtonWidget().setOnClick((clickData, widget) -> {
             if (!recipe.islocked) buildRecipe();
             if (!widget.isClient()) {
@@ -2419,10 +2395,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      * @param player who is using the box
      */
     protected ModularWindow createRoutingWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(
-            220,
-            80 + routingMap.get(moduleSN - 1)
-                .calHeight() * 18);
+        ModularWindow.Builder builder = ModularWindow.builder(220, 200);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
@@ -2434,46 +2407,57 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(
                 ButtonWidget.closeWindowButton(true)
                     .setPos(200, 5));
-        int Ycord = 9;
+        Scrollable recipeContainer = new Scrollable().setVerticalScroll();
+        int posY = 0;
         for (int i = 0; i < routingMap.get(moduleSN - 1).InputItem.size(); i++) {
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
             ItemStackHandler drawitem = new ItemStackHandler(1);
             drawitem.setStackInSlot(0, routingMap.get(moduleSN - 1).InputItem.get(i));
-            builder.widget(
+            row.widget(
                 SlotWidget.phantom(drawitem, 0)
-                    .disableInteraction()
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .disableInteraction());
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.11") + (i + 1)
                         + ": "
                         + routingMap.get(moduleSN - 1).InputItem.get(i)
-                            .getDisplayName()).setPos(50, Ycord + 4));
+                            .getDisplayName()).setPos(0, 4));
+            recipeContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setPos(0, posY));
+            posY += 16;
         }
         for (int i = 0; i < routingMap.get(moduleSN - 1).InputFluid.size(); i++) {
-            builder.widget(
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
+            row.widget(
                 FluidSlotWidget
                     .phantom(
                         new FluidTank(
                             routingMap.get(moduleSN - 1).InputFluid.get(i),
                             routingMap.get(moduleSN - 1).InputFluid.get(i).amount),
                         true)
-                    .setInteraction(false, false)
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .setInteraction(false, false));
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.12") + (i + 1)
                         + ": "
                         + routingMap.get(moduleSN - 1).InputFluid.get(i)
-                            .getLocalizedName()).setPos(50, Ycord + 4));
+                            .getLocalizedName()).setPos(0, 4));
+            recipeContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setPos(0, posY));
+            posY += 16;
         }
         for (int i = 0; i < routingMap.get(moduleSN - 1).OutputItem.size(); i++) {
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
             ItemStackHandler drawitem = new ItemStackHandler(1);
             drawitem.setStackInSlot(0, routingMap.get(moduleSN - 1).OutputItem.get(i));
-            builder.widget(
+            row.widget(
                 SlotWidget.phantom(drawitem, 0)
-                    .disableInteraction()
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .disableInteraction());
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.13") + (i + 1)
                         + ": "
@@ -2481,48 +2465,65 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             .getDisplayName()
                         + "("
                         + routingMap.get(moduleSN - 1).OutputChance.get(i) / 10000.0
-                        + ")").setPos(50, Ycord + 4));
+                        + ")").setPos(0, 4));
+            recipeContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setPos(0, posY));
+            posY += 16;
         }
         for (int i = 0; i < routingMap.get(moduleSN - 1).OutputFluid.size(); i++) {
-            builder.widget(
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
+            row.widget(
                 FluidSlotWidget
                     .phantom(
                         new FluidTank(
                             routingMap.get(moduleSN - 1).OutputFluid.get(i),
                             routingMap.get(moduleSN - 1).OutputFluid.get(i).amount),
                         true)
-                    .setInteraction(false, false)
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .setInteraction(false, false));
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.14") + (i + 1)
                         + ": "
                         + routingMap.get(moduleSN - 1).OutputFluid.get(i)
-                            .getLocalizedName()).setPos(50, Ycord + 4));
+                            .getLocalizedName()).setPos(0, 4));
+            recipeContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setPos(0, posY));
+            posY += 16;
         }
+        builder.widget(
+            recipeContainer.setPos(20, 24)
+                .setSize(180, 110))
+            .widget(
+                new TextWidget("------------------------------------------").setMaxWidth(10000)
+                    .setPos(21, 132));
         ItemStackHandler drawitem = new ItemStackHandler(1);
         drawitem.setStackInSlot(0, routingMap.get(moduleSN - 1).RoutingMachine);
         builder.widget(
             SlotWidget.phantom(drawitem, 0)
                 .disableInteraction()
-                .setPos(25, Ycord += 20));
+                .setSize(16, 16)
+                .setPos(21, 146));
         builder.widget(
             new TextWidget(
                 i18n("tile.boxplusplus.boxUI.15") + routingMap.get(moduleSN - 1).RoutingMachine.getDisplayName())
-                    .setPos(50, Ycord + 4));
+                    .setPos(45, 140));
         builder.widget(
             new TextWidget(i18n("tile.boxplusplus.boxUI.16") + routingMap.get(moduleSN - 1).voltage + "eu/t")
-                .setPos(50, Ycord += 16));
+                .setPos(45, 150));
         builder.widget(
             new TextWidget(
                 i18n("tile.boxplusplus.boxUI.17") + routingMap.get(moduleSN - 1).time / 20.00
                     + "s ("
                     + routingMap.get(moduleSN - 1).time
-                    + "tick)").setPos(50, Ycord += 16));
+                    + "tick)").setPos(45, 160));
         builder.widget(
             new TextWidget(new Text(i18n("tile.boxplusplus.boxUI.23"))).setTextAlignment(Alignment.Center)
                 .setSize(30, 16)
-                .setPos(22, Ycord - 15))
+                .setPos(21, 170))
             .widget(
                 new TextFieldWidget().setGetterInt(() -> routingMap.get(moduleSN - 1).Parallel)
                     .setSetterInt(val -> routingMap.get(moduleSN - 1).Parallel = val)
@@ -2531,14 +2532,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.24"))
                     .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD)
-                    .setSize(40, 14)
-                    .setPos(5, Ycord)
+                    .setSize(60, 12)
+                    .setPos(50, 171)
                     .setEnabled(!recipe.islocked))
             .widget(
-                new TextWidget(new Text(String.valueOf(routingMap.get(moduleSN - 1).Parallel))).setScale(1.2f)
+                new TextWidget(new Text(String.valueOf(routingMap.get(moduleSN - 1).Parallel)))
                     .setTextAlignment(Alignment.Center)
-                    .setSize(20, 16)
-                    .setPos(25, Ycord - 2)
+                    .setSize(60, 12)
+                    .setPos(50, 171)
                     .setEnabled(recipe.islocked));
         return builder.build();
     }
@@ -2753,7 +2754,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      * @param player who is using the box
      */
     protected ModularWindow createFinalRecipeWindow(final EntityPlayer player) {
-        ModularWindow.Builder builder = ModularWindow.builder(220, 150 + recipe.calHeight() * 20);
+        ModularWindow.Builder builder = ModularWindow.builder(360, 220);
         builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         builder.widget(
@@ -2763,89 +2764,155 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.22")).setPos(25, 9))
             .widget(
                 ButtonWidget.closeWindowButton(true)
-                    .setPos(200, 5));
-        int Ycord = 9;
+                    .setPos(345, 5));
+        Scrollable inputContainer = new Scrollable().setVerticalScroll()
+            .setHorizontalScroll();
+        int posY = 0;
+        int maxX = 0;
         for (int i = 0; i < recipe.FinalItemInput.size(); i++) {
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
             ItemStackHandler drawitem = new ItemStackHandler(1);
             drawitem.setStackInSlot(0, recipe.FinalItemInput.get(i));
-            builder.widget(
+            maxX = Math.max(
+                9 * recipe.FinalItemInput.get(i)
+                    .getDisplayName()
+                    .length(),
+                maxX);
+            row.widget(
                 SlotWidget.phantom(drawitem, 0)
-                    .disableInteraction()
-                    .disableInteraction()
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .disableInteraction());
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.11") + (i + 1)
                         + ": "
                         + recipe.FinalItemInput.get(i)
-                            .getDisplayName()).setPos(50, Ycord + 4));
+                            .getDisplayName()).setPos(0, 4));
+            inputContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setSize(75 + maxX, 16)
+                    .setPos(0, posY));
+            posY += 16;
         }
+        maxX = 0;
         for (int i = 0; i < recipe.FinalFluidInput.size(); i++) {
-            builder.widget(
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
+            maxX = Math.max(
+                9 * recipe.FinalFluidInput.get(i)
+                    .getLocalizedName()
+                    .length(),
+                maxX);
+            row.widget(
                 FluidSlotWidget
                     .phantom(new FluidTank(recipe.FinalFluidInput.get(i), recipe.FinalFluidInput.get(i).amount), true)
-                    .setInteraction(false, false)
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .setInteraction(false, false));
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.12") + (i + 1)
                         + ": "
                         + recipe.FinalFluidInput.get(i)
-                            .getLocalizedName()).setPos(50, Ycord + 4));
+                            .getLocalizedName()).setPos(0, 4));
+            inputContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setSize(50 + maxX, 16)
+                    .setPos(0, posY));
+            posY += 16;
         }
+        builder.widget(
+            inputContainer.setPos(20, 24)
+                .setSize(150, 130));
+        Scrollable outputContainer = new Scrollable().setVerticalScroll()
+            .setHorizontalScroll();
+        posY = 0;
+        maxX = 0;
         for (int i = 0; i < recipe.FinalItemOutput.size(); i++) {
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
             ItemStackHandler drawitem = new ItemStackHandler(1);
             drawitem.setStackInSlot(0, recipe.FinalItemOutput.get(i));
-            builder.widget(
+            maxX = Math.max(
+                9 * recipe.FinalItemOutput.get(i)
+                    .getDisplayName()
+                    .length(),
+                maxX);
+            row.widget(
                 SlotWidget.phantom(drawitem, 0)
-                    .disableInteraction()
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .disableInteraction());
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.13") + (i + 1)
                         + ": "
                         + recipe.FinalItemOutput.get(i)
-                            .getDisplayName()).setPos(50, Ycord + 4));
+                            .getDisplayName()).setPos(0, 4));
+            outputContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setSize(75 + maxX, 16)
+                    .setPos(0, posY));
+            posY += 16;
         }
+        maxX = 0;
         for (int i = 0; i < recipe.FinalFluidOutput.size(); i++) {
-            builder.widget(
+            DynamicPositionedRow row = new DynamicPositionedRow().setSynced(false);
+            maxX = Math.max(
+                9 * recipe.FinalFluidOutput.get(i)
+                    .getLocalizedName()
+                    .length(),
+                maxX);
+            row.widget(
                 FluidSlotWidget
                     .phantom(new FluidTank(recipe.FinalFluidOutput.get(i), recipe.FinalFluidOutput.get(i).amount), true)
-                    .setInteraction(false, false)
-                    .setPos(25, Ycord += 16));
-            builder.widget(
+                    .setInteraction(false, false));
+            row.widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.14") + (i + 1)
                         + ": "
                         + recipe.FinalFluidOutput.get(i)
-                            .getLocalizedName()).setPos(50, Ycord + 4));
+                            .getLocalizedName()).setPos(0, 4));
+            outputContainer.widget(
+                row.setAlignment(MainAxisAlignment.SPACE_BETWEEN)
+                    .setSpace(4)
+                    .setSize(75 + maxX, 16)
+                    .setPos(0, posY));
+            posY += 16;
         }
         builder.widget(
-            new TextWidget(i18n("tile.boxplusplus.boxUI.16") + recipe.FinalVoteage + " eu/t").setPos(50, Ycord += 20))
+            outputContainer.setPos(180, 24)
+                .setSize(150, 130))
+            .widget(
+                new TextWidget("---------------------------------------------------------------" + "---------------")
+                    .setMaxWidth(10000)
+                    .setPos(20, 153));
+
+        builder
+            .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.16") + recipe.FinalVoteage + " eu/t").setPos(20, 160))
             .widget(
                 new TextWidget(
                     i18n("tile.boxplusplus.boxUI.17") + recipe.FinalTime / 20.00 + "s (" + recipe.FinalTime + "tick)")
-                        .setPos(50, Ycord += 16));
+                        .setPos(20, 172));
         builder.widget(
             new TextWidget(i18n("tile.boxplusplus.boxUI.29") + recipe.parallel).setMaxWidth(180)
-                .setPos(50, Ycord += 16));
+                .setPos(20, 184));
         builder.widget(
             new TextWidget(i18n("tile.boxplusplus.boxUI.32").replace("%max", String.valueOf(maxParallel)))
                 .setMaxWidth(180)
-                .setPos(25, Ycord += 16)
+                .setPos(25, 196)
                 .setEnabled(recipe.parallel > maxParallel));
+
         StringBuilder modules = new StringBuilder();
         modules.append(i18n("tile.boxplusplus.boxUI.27"));
         for (int i : recipe.requireModules.keySet()) {
-            modules.append(i18n("tile.boxplusplus.boxUI.module." + (i + 1)))
+            modules.append(moduleActive[i] ? "" : "§4")
+                .append(i18n("tile.boxplusplus.boxUI.module." + (i + 1)))
                 .append(" T")
                 .append(recipe.requireModules.get(i) + 1)
                 .append(" ")
-                .append(" | ");
+                .append(" §r| ");
         }
         builder.widget(
-            new TextWidget(modules.toString()).setMaxWidth(180)
-                .setPos(25, Ycord += 32))
+            new TextWidget(modules.toString()).setTextAlignment(TopLeft)
+                .setMaxWidth(130)
+                .setPos(200, 160))
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
                 recipe.islocked = true;
                 if (!widget.isClient()) {
@@ -2861,27 +2928,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.25"))
-                .setPos(80, Ycord + 20)
-                .setEnabled(!recipe.islocked && recipe.parallel <= maxParallel))
-            .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
-                recipe = new BoxRecipe();
-                if (!widget.isClient()) {
-                    widget.getWindow()
-                        .closeWindow();
-                    widget.getContext()
-                        .openSyncedWindow(10);
-                }
-            })
-                .setSize(20, 20)
-                .setBackground(() -> {
-                    List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_CROSS);
-                    return UI.toArray(new IDrawable[0]);
-                })
-                .addTooltip(i18n("tile.boxplusplus.boxUI.35"))
-                .setPos(120, Ycord + 20)
-                .setEnabled(!recipe.islocked));
+                .setPos(170, 160)
+                .setEnabled(!recipe.islocked && recipe.parallel <= maxParallel));
         return builder.build();
     }
 
