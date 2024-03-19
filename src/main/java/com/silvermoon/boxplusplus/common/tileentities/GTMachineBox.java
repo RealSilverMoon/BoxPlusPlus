@@ -1529,7 +1529,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             recipe.FinalVoteage += boxRoutings.voltage;
             recipe.parallel += boxRoutings.Parallel;
             int[] machine = transMachinesToModule(boxRoutings);
-            if (!recipe.requireModules.containsKey(machine[0])) recipe.requireModules.put(machine[0], machine[1]);
+            if (!recipe.requireModules.containsKey(machine[0]) || recipe.requireModules.get(machine[0]) < machine[1])
+                recipe.requireModules.put(machine[0], machine[1]);
         });
         recipe.FinalItemInput = inputItemContainer.getItemStack();
         recipe.FinalItemOutput = outputItemContainer.getItemStack();
