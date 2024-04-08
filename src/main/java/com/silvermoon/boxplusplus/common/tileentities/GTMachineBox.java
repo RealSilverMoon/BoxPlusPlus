@@ -1378,9 +1378,9 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             && !WirelessNetworkManager.addEUToGlobalEnergyMap(userUUID, -recipe.FinalVoteage * recipe.FinalTime)) {
             return SimpleCheckRecipeResult.ofFailure("no_wireless_power");
         }
+        if (recipe.FinalTime >= Integer.MAX_VALUE - 1) return CheckRecipeResultRegistry.DURATION_OVERFLOW;
         calTime();
         if (this.lEUt >= Long.MAX_VALUE - 1) return CheckRecipeResultRegistry.POWER_OVERFLOW;
-        if (this.mMaxProgresstime >= Integer.MAX_VALUE - 1) return CheckRecipeResultRegistry.DURATION_OVERFLOW;
         mEfficiencyIncrease = 10000;
         mEfficiency = 10000 - (this.getIdealStatus() - this.getRepairStatus()) * 1000;
         List<ItemStack> requireItem = deepCopyItemList(recipe.FinalItemInput);
@@ -1399,11 +1399,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             return;
         }
         GT_OverclockCalculator cal = new GT_OverclockCalculator().setRecipeEUt(recipe.FinalVoteage)
-            .setDuration(recipe.FinalTime)
+            .setDuration((int) recipe.FinalTime)
             .setEUt(getMaxInputEu());
         switch (ringCount) {
             case 1:
-                this.mMaxProgresstime = recipe.FinalTime;
+                this.mMaxProgresstime = (int) recipe.FinalTime;
                 return;
             case 2:
                 break;
@@ -1525,7 +1525,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .addItemStackList(boxRoutings.OutputItem, boxRoutings.OutputChance, boxRoutings.Parallel);
             inputFluidContainer.addFluidStackList(boxRoutings.InputFluid, boxRoutings.Parallel);
             OutputFluidContainer.addFluidStackList(boxRoutings.OutputFluid, boxRoutings.Parallel);
-            recipe.FinalTime += boxRoutings.time * 5000 / (1 + Math.exp(-(boxRoutings.Parallel - 2000) / 320.0));
+            recipe.FinalTime += boxRoutings.time * 5000L / (1 + Math.exp(-(boxRoutings.Parallel - 2000) / 320.0));
             recipe.FinalVoteage += boxRoutings.voltage;
             recipe.parallel += boxRoutings.Parallel;
             int[] machine = transMachinesToModule(boxRoutings);

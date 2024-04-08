@@ -27,7 +27,7 @@ public class BoxRecipe {
     public List<FluidStack> FinalFluidInput = new ArrayList<>();
     public List<FluidStack> FinalFluidOutput = new ArrayList<>();
     public HashMap<Integer, Integer> requireModules = new HashMap<>();
-    public int FinalTime = 0;
+    public long FinalTime = 0;
     public Long parallel = 0L;
     public Long FinalVoteage = 0L;
     public boolean islocked = false;
@@ -60,7 +60,7 @@ public class BoxRecipe {
             if (requireModule.hasKey(String.valueOf(i)))
                 requireModules.put(i, requireModule.getInteger(String.valueOf(i)));
         }
-        FinalTime = nbt.getInteger("Time");
+        FinalTime = nbt.getLong("Time");
         FinalVoteage = nbt.getLong("Voteage");
         islocked = nbt.getBoolean("islocked");
         parallel = nbt.getLong("parallel");
@@ -132,7 +132,7 @@ public class BoxRecipe {
         requireModules.forEach((k, v) -> requireModule.setInteger(String.valueOf(k), v));
         recipe.setLong("Voteage", FinalVoteage);
         recipe.setTag("requireModule", requireModule);
-        recipe.setInteger("Time", FinalTime);
+        recipe.setLong("Time", FinalTime);
         recipe.setBoolean("islocked", islocked);
         recipe.setLong("parallel", parallel);
         return recipe;
@@ -168,10 +168,6 @@ public class BoxRecipe {
         encodedValue.setBoolean("substitute", false);
         encodedValue.setBoolean("beSubstitute", false);
         return encodedValue;
-    }
-
-    public int calHeight() {
-        return FinalItemInput.size() + FinalFluidInput.size() + FinalItemOutput.size() + FinalFluidOutput.size();
     }
 
     public IAEItemStack[] transInputsToAE2Stuff() {

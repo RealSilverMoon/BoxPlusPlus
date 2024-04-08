@@ -293,24 +293,3 @@ tile.boxplusplus.chatmessage.8=在输入总线中没有找到空白样板
 
 GT5U.gui.text.box_debugmode=这个配方不可能运行。(除非...)
 GT5U.gui.text.no_wireless_power=无线网络剩余电力不足运行本配方
-
-tile.boxplusplus.DroneMaintainingCentre=无人机维护中心
-
-tile.boxplusplus.DMCinfo.01=维护中心
-tile.boxplusplus.DMCinfo.02=无人机维护中心控制器
-tile.boxplusplus.DMCinfo.03=&d10032号，准许起飞!
-tile.boxplusplus.DMCinfo.04=自动维护大范围内所有多方块机器
-tile.boxplusplus.DMCinfo.05=使用无人机中心下行模块替换其他机器的常规维护仓
-tile.boxplusplus.DMCinfo.06=维护范围由无人机等级N决定，T1-64格,T2-256格,T3-1024格
-tile.boxplusplus.DMCinfo.07=在输入总线可以放置备用无人机,但只需要1台即可工作.停机后使用螺丝刀右键取出无人机.
-tile.boxplusplus.DMCinfo.08=无人机每秒有0.028%*(3-N)的概率坠毁，会导致维护中心停机！
-tile.boxplusplus.DMCinfo.09=一旦维护中心停机,所有范围内的多方块机器都会故障(放置备用无人机可以防止停机)
-tile.boxplusplus.DMCinfo.10=无需维护仓
-GT5U.gui.text.maintaining=无人机正在维护中
-GT5U.gui.text.noDrone=没有找到维护无人机
-tile.boxplusplus_maintainingDrone0.desc=四轴旋翼稳态小型航空器
-tile.boxplusplus_maintainingDrone1.desc=双涡轮高喷射中型航空器
-tile.boxplusplus_maintainingDrone2.desc=单引擎反重力大型航空器
-item.maintainingDrone0.name=维护无人机(1级)
-item.maintainingDrone1.name=维护无人机(2级)
-item.maintainingDrone2.name=维护无人机(3级)
