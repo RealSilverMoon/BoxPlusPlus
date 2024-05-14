@@ -680,7 +680,8 @@ public class BoxRoutings {
             .map(v -> v.item)
             .collect(Collectors.toList());
         for (ItemStack machine : machineList) {
-            if (getMetaTileEntity(machine) instanceof GT_MetaTileEntity_MultiBlockBase) {
+            if (getMetaTileEntity(machine) instanceof GT_MetaTileEntity_MultiBlockBase mte
+                && !mte.mName.startsWith("TST")) {
                 NetworkLoader.instance.sendToServer(
                     new MessageRouting(
                         new BoxRoutings(
