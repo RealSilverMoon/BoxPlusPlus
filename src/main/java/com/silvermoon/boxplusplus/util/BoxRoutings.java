@@ -592,7 +592,8 @@ public class BoxRoutings {
                                 recipeMap = RecipeMaps.replicatorRecipes;
                                 Materials replicatorItem = null;
                                 for (ItemStack item : ItemInputs) {
-                                    if (Behaviour_DataOrb.getDataName(item).isEmpty()) continue;
+                                    if (Behaviour_DataOrb.getDataName(item)
+                                        .isEmpty()) continue;
                                     replicatorItem = Element.get(Behaviour_DataOrb.getDataName(item)).mLinkedMaterials
                                         .get(0);
                                     break;
