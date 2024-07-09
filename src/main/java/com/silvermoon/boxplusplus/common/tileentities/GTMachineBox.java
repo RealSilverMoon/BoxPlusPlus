@@ -1047,7 +1047,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             case 1 -> {
                 switch (stack.stackSize) {
                     case 1 -> {
-                        count += survivialBuildPiece(
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_MainFrames,
                             stack,
                             3,
@@ -1057,7 +1057,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             env,
                             false,
                             true);
-                        count += survivialBuildPiece(
+                        if (count > -1) {
+                            break;
+                        }
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_FirstRing,
                             stack,
                             11,
@@ -1067,9 +1070,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             env,
                             false,
                             true);
+
                     }
                     case 2 -> {
-                        count += survivialBuildPiece(
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_MainFrames,
                             stack,
                             3,
@@ -1079,7 +1083,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             env,
                             false,
                             true);
-                        count += survivialBuildPiece(
+                        if (count > -1) {
+                            break;
+                        }
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_FirstRing,
                             stack,
                             11,
@@ -1089,7 +1096,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             env,
                             false,
                             true);
-                        count += survivialBuildPiece(
+                        if (count > -1) {
+                            break;
+                        }
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_SecondRing,
                             stack,
                             17,
@@ -1101,7 +1111,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             true);
                     }
                     default -> {
-                        count += survivialBuildPiece(
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_MainFrames,
                             stack,
                             3,
@@ -1111,7 +1121,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             env,
                             false,
                             true);
-                        count += survivialBuildPiece(
+                        if (count > -1) {
+                            break;
+                        }
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_FirstRing,
                             stack,
                             11,
@@ -1121,7 +1134,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             env,
                             false,
                             true);
-                        count += survivialBuildPiece(
+                        if (count > -1) {
+                            break;
+                        }
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_SecondRing,
                             stack,
                             17,
@@ -1131,7 +1147,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                             env,
                             false,
                             true);
-                        count += survivialBuildPiece(
+                        if (count > -1) {
+                            break;
+                        }
+                        count = survivialBuildPiece(
                             STRUCTURE_PIECE_Final,
                             stack,
                             23,
@@ -1145,7 +1164,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 }
             }
             case 2 -> {
-                count += survivialBuildPiece(
+                count = survivialBuildPiece(
                     STRUCTURE_PIECE_MainFrames,
                     stack,
                     3,
@@ -1155,7 +1174,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     env,
                     false,
                     true);
-                count += survivialBuildPiece(
+                if (count > -1) {
+                    break;
+                }
+                count = survivialBuildPiece(
                     STRUCTURE_PIECE_FirstRing,
                     stack,
                     11,
@@ -1165,7 +1187,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     env,
                     false,
                     true);
-                count += survivialBuildPiece(
+                if (count > -1) {
+                    break;
+                }
+                count = survivialBuildPiece(
                     STRUCTURE_PIECE_SecondRing,
                     stack,
                     17,
@@ -1177,7 +1202,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     true);
             }
             case 3 -> {
-                count += survivialBuildPiece(
+                count = survivialBuildPiece(
                     STRUCTURE_PIECE_MainFrames,
                     stack,
                     3,
@@ -1187,7 +1212,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     env,
                     false,
                     true);
-                count += survivialBuildPiece(
+                if (count > -1) {
+                    break;
+                }
+                count = survivialBuildPiece(
                     STRUCTURE_PIECE_FirstRing,
                     stack,
                     11,
@@ -1197,7 +1225,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     env,
                     false,
                     true);
-                count += survivialBuildPiece(
+                if (count > -1) {
+                    break;
+                }
+                count = survivialBuildPiece(
                     STRUCTURE_PIECE_SecondRing,
                     stack,
                     17,
@@ -1207,10 +1238,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     env,
                     false,
                     true);
-                count += survivialBuildPiece(STRUCTURE_PIECE_Final, stack, 23, 5, 20, elementBudget, env, false, true);
+                if (count > -1) {
+                    break;
+                }
+                count = survivialBuildPiece(STRUCTURE_PIECE_Final, stack, 23, 5, 20, elementBudget, env, false, true);
             }
         }
-        return count <= 0 ? -1 : count;
+        return count;
     }
 
     @Override
