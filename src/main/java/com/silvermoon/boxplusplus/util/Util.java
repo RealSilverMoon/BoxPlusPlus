@@ -1,14 +1,13 @@
 package com.silvermoon.boxplusplus.util;
 
-import appeng.api.AEApi;
-import appeng.api.definitions.IDefinitions;
-import com.gtnewhorizon.structurelib.StructureLibAPI;
-import com.gtnewhorizon.structurelib.structure.IStructureElement;
-import com.silvermoon.boxplusplus.common.loader.BlockRegister;
-import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
-import gregtech.api.recipe.RecipeMap;
-import gregtech.api.recipe.RecipeMaps;
-import gregtech.api.util.GTModHandler;
+import java.io.IOException;
+import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -22,16 +21,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import com.gtnewhorizon.structurelib.StructureLibAPI;
+import com.gtnewhorizon.structurelib.structure.IStructureElement;
+import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
+
+import appeng.api.AEApi;
+import appeng.api.definitions.IDefinitions;
+import gregtech.api.recipe.RecipeMap;
+import gregtech.api.recipe.RecipeMaps;
+import gregtech.api.util.GTModHandler;
 
 public class Util {
 

@@ -1,6 +1,31 @@
 package com.silvermoon.boxplusplus.common.tileentities;
 
-import appeng.api.AEApi;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
+import static com.gtnewhorizons.modularui.api.math.Alignment.TopCenter;
+import static com.gtnewhorizons.modularui.api.math.Alignment.TopLeft;
+import static com.silvermoon.boxplusplus.common.BoxModule.getModuleByIndex;
+import static com.silvermoon.boxplusplus.common.BoxModule.transMachinesToModule;
+import static com.silvermoon.boxplusplus.util.Util.*;
+import static gregtech.api.enums.HatchElement.*;
+import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+
+import java.io.IOException;
+import java.util.*;
+
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -24,6 +49,8 @@ import com.gtnewhorizons.modularui.common.widget.textfield.TextFieldWidget;
 import com.silvermoon.boxplusplus.Tags;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.util.*;
+
+import appeng.api.AEApi;
 import gregtech.api.enums.Textures;
 import gregtech.api.gui.modularui.GTUIInfos;
 import gregtech.api.gui.modularui.GTUITextures;
@@ -42,32 +69,8 @@ import gregtech.api.util.OverclockCalculator;
 import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
-import org.jetbrains.annotations.NotNull;
 import tectech.thing.metaTileEntity.hatch.MTEHatchEnergyMulti;
 import tectech.thing.metaTileEntity.hatch.MTEHatchEnergyTunnel;
-
-import java.io.IOException;
-import java.util.*;
-
-import static com.gtnewhorizon.structurelib.structure.StructureUtility.*;
-import static com.gtnewhorizons.modularui.api.math.Alignment.TopCenter;
-import static com.gtnewhorizons.modularui.api.math.Alignment.TopLeft;
-import static com.silvermoon.boxplusplus.common.BoxModule.getModuleByIndex;
-import static com.silvermoon.boxplusplus.common.BoxModule.transMachinesToModule;
-import static com.silvermoon.boxplusplus.util.Util.*;
-import static gregtech.api.enums.HatchElement.*;
-import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
-import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> implements ISurvivalConstructable {
 

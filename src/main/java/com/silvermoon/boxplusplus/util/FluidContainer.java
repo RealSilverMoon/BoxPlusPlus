@@ -13,12 +13,12 @@ public class FluidContainer {
     public void addFluidStack(FluidStack input, int multiple) {
         String name = input.getUnlocalizedName();
         if (!stack.containsKey(name)) {
-            stack.put(name,
+            stack.put(
+                name,
                 new FluidStack(input.getFluid(), (int) Math.min((long) input.amount * multiple, Integer.MAX_VALUE)));
         } else {
-            stack.get(name).amount = (int) Math.min(
-                stack.get(name).amount + (long) input.amount * multiple,
-                Integer.MAX_VALUE);
+            stack.get(name).amount = (int) Math
+                .min(stack.get(name).amount + (long) input.amount * multiple, Integer.MAX_VALUE);
         }
     }
 
