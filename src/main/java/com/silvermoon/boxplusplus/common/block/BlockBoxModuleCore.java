@@ -44,8 +44,9 @@ public class BlockBoxModuleCore extends Block {
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
         for (int i = 0; i < 15; i++) {
-            ModuleIcon[i] = iconRegister
-                .registerIcon(Tags.MODID + (!isUpdate ? ":modules/BoxModule" : ":modules/BoxModulePlus") + i);
+            ModuleIcon[i] = iconRegister.registerIcon(Tags.MODID + (!isUpdate
+                ? ":modules/BoxModule"
+                : ":modules/BoxModulePlus") + i);
         }
     }
 

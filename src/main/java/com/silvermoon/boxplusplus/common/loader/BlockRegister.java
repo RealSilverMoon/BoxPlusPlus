@@ -8,20 +8,26 @@ import com.silvermoon.boxplusplus.common.block.BlockMachineBase;
 
 public class BlockRegister {
 
-    public static BlockMachineBase SpaceExtend = new BlockMachineBase("boxplusplus_SpaceExtend", Material.iron, 0)
-        .setHarvest("wrench", 3);
-    public static BlockMachineBase SpaceConstraint = new BlockMachineBase(
-        "boxplusplus_SpaceConstraint",
+    public static BlockMachineBase SpaceExtend = new BlockMachineBase(
+        "boxplusplus_SpaceExtend",
+        Material.iron,
+        0).setHarvest("wrench", 3);
+    public static BlockMachineBase SpaceConstraint = new BlockMachineBase("boxplusplus_SpaceConstraint",
         Material.iron,
         2).setHarvest("wrench", 3);
-    public static BlockMachineBase SpaceCompress = new BlockMachineBase("boxplusplus_SpaceCompress", Material.iron, 1)
-        .setHarvest("wrench", 3);
-    public static BlockMachineBase SpaceWall = new BlockMachineBase("boxplusplus_SpaceWall", Material.iron, 3)
-        .setHarvest("wrench", 3);
-    public static BlockBoxModuleCore BoxModule = new BlockBoxModuleCore("boxplusplus_boxmodule", Material.iron, false)
-        .setHarvest("wrench", 5);
-    public static BlockBoxModuleCore BoxModuleUpgrad = new BlockBoxModuleCore(
-        "boxplusplus_boxmoduleplus",
+    public static BlockMachineBase SpaceCompress = new BlockMachineBase(
+        "boxplusplus_SpaceCompress",
+        Material.iron,
+        1).setHarvest("wrench", 3);
+    public static BlockMachineBase SpaceWall = new BlockMachineBase(
+        "boxplusplus_SpaceWall",
+        Material.iron,
+        3).setHarvest("wrench", 3);
+    public static BlockBoxModuleCore BoxModule = new BlockBoxModuleCore(
+        "boxplusplus_boxmodule",
+        Material.iron,
+        false).setHarvest("wrench", 5);
+    public static BlockBoxModuleCore BoxModuleUpgrad = new BlockBoxModuleCore("boxplusplus_boxmoduleplus",
         Material.iron,
         true).setHarvest("wrench", 5);
     public static BlockBoxRing BoxRing = new BlockBoxRing(1);
