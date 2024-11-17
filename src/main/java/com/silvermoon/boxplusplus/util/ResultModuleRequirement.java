@@ -2,8 +2,13 @@ package com.silvermoon.boxplusplus.util;
 
 import static com.silvermoon.boxplusplus.util.Util.i18n;
 
+import javax.annotation.Nonnull;
+
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumChatFormatting;
+
+import org.jetbrains.annotations.NotNull;
 
 import gregtech.api.recipe.check.CheckRecipeResult;
 
@@ -31,6 +36,17 @@ public class ResultModuleRequirement implements CheckRecipeResult {
     public String getDisplayString() {
         return EnumChatFormatting.AQUA + i18n("tile.boxplusplus.boxUI.37")
             + i18n("tile.boxplusplus_" + (isUpdated ? "boxmoduleplus." : "boxmodule." + required + ".name"));
+    }
+
+    @NotNull
+    @Override
+    public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound tag) {
+        return null;
+    }
+
+    @Override
+    public void readFromNBT(@Nonnull NBTTagCompound tag) {
+
     }
 
     @Override

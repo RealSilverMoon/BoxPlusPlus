@@ -13,17 +13,17 @@ import net.minecraft.world.World;
 import com.silvermoon.boxplusplus.Tags;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTech_API;
+import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Textures;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GT_Utility;
+import gregtech.api.util.GTUtility;
 
 public class BlockMachineBase extends Block {
 
     private IIcon BoxIcon;
     private final int value;
     static {
-        GT_Utility.addTexturePage((byte) 114);
+        GTUtility.addTexturePage((byte) 114);
     }
 
     public BlockMachineBase(String name, Material material, int value) {
@@ -37,7 +37,7 @@ public class BlockMachineBase extends Block {
         super.setHardness(5);
         super.setCreativeTab(BoxTab);
         GameRegistry.registerBlock(this, getUnlocalizedName());
-        GregTech_API.registerMachineBlock(this, -1);
+        GregTechAPI.registerMachineBlock(this, -1);
     }
 
     @Override
@@ -69,15 +69,15 @@ public class BlockMachineBase extends Block {
 
     @Override
     public void onBlockAdded(World aWorld, int aX, int aY, int aZ) {
-        if (GregTech_API.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
-            GregTech_API.causeMachineUpdate(aWorld, aX, aY, aZ);
+        if (GregTechAPI.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
+            GregTechAPI.causeMachineUpdate(aWorld, aX, aY, aZ);
         }
     }
 
     @Override
     public void breakBlock(World aWorld, int aX, int aY, int aZ, Block aBlock, int aMetaData) {
-        if (GregTech_API.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
-            GregTech_API.causeMachineUpdate(aWorld, aX, aY, aZ);
+        if (GregTechAPI.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
+            GregTechAPI.causeMachineUpdate(aWorld, aX, aY, aZ);
         }
     }
 }
