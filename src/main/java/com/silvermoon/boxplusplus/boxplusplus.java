@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.silvermoon.boxplusplus.common.CommonProxy;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -64,6 +65,7 @@ public class boxplusplus {
     // register server commands in this event handler (Remove if not needed)
     public void serverStarting(FMLServerStartingEvent event) {
         proxy.serverStarting(event);
+        new RecipeLoader().run();
     }
 
     public static final CreativeTabs BoxTab = new CreativeTabs("BoxPlusPlus") {

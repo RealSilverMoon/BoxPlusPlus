@@ -2,7 +2,6 @@ package com.silvermoon.boxplusplus.common;
 
 import com.silvermoon.boxplusplus.common.config.Config;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
-import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
 import com.silvermoon.boxplusplus.common.loader.TileEntitiesLoader;
 import com.silvermoon.boxplusplus.network.NetworkLoader;
 import com.silvermoon.boxplusplus.util.ResultModuleRequirement;
@@ -31,7 +30,7 @@ public class CommonProxy {
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {
-        new RecipeLoader().run();
+
     }
 
     // register server commands in this event handler (Remove if not needed)
