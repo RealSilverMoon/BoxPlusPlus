@@ -1,10 +1,5 @@
 package com.silvermoon.boxplusplus.common;
 
-import static com.silvermoon.boxplusplus.boxplusplus.LOG;
-import static gregtech.api.enums.Mods.BartWorks;
-
-import net.minecraft.item.ItemStack;
-
 import com.silvermoon.boxplusplus.common.config.Config;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
@@ -17,11 +12,12 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
-import gregtech.api.util.GTModHandler;
 
 public class CommonProxy {
 
-    // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
+    private static boolean hasRunRecipeLoader = true;
+
+    // preInit "Run before anything else. Read your config, create blocks, items, etc., and register them with the
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
@@ -42,14 +38,10 @@ public class CommonProxy {
 
     // register server commands in this event handler (Remove if not needed)
     public void serverStarting(FMLServerStartingEvent event) {
-        ItemStack modItem = GTModHandler.getModItem(BartWorks.ID, "gt.bwMetaGeneratedItem0", 64, 3);
-        if (modItem != null) {
-            LOG.info(
-                "{} is already registered",
-                modItem.getItem()
-                    .getUnlocalizedName());
-        } else {
+        if (hasRunRecipeLoader) {
             new RecipeLoader().run();
+            hasRunRecipeLoader = false;
         }
+
     }
 }
