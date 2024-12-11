@@ -25,31 +25,27 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.HashMultimap;
 import com.gtnewhorizon.structurelib.StructureLibAPI;
 import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
-import com.silvermoon.boxplusplus.common.tileentities.GTMachineDroneMaintainingCentre;
 
 import appeng.api.AEApi;
 import appeng.api.definitions.IDefinitions;
 import gregtech.api.recipe.RecipeMap;
-import gregtech.api.recipe.RecipeMapBackend;
 import gregtech.api.recipe.RecipeMaps;
-import gregtech.api.util.GT_ModHandler;
+import gregtech.api.util.GTModHandler;
 
 public class Util {
 
     public static HashMap<EntityPlayer, GTMachineBox> boxMap = new HashMap<>();
-    public static HashMultimap<Integer, GTMachineDroneMaintainingCentre> droneMap = HashMultimap.create();
 
     public static String i18n(String info) {
         return StatCollector.translateToLocal(info)
             .replace("&", "§");
     }
 
-    public static RecipeMap<RecipeMapBackend> getMMRecipeMap(int Mode) {
+    public static RecipeMap<?> getMMRecipeMap(int Mode) {
         return switch (Mode) {
             case 1 -> RecipeMaps.compressorRecipes;
             case 2 -> RecipeMaps.latheRecipes;
@@ -134,11 +130,8 @@ public class Util {
         if (itemDamage < 0) {
             itemDamage = 0;
         }
-        ItemStack boxItem = GT_ModHandler.getModItem(
-            nbt.getString("modID"),
-            nbt.getString("name"),
-            stackSize,
-            itemDamage);
+        ItemStack boxItem = GTModHandler
+            .getModItem(nbt.getString("modID"), nbt.getString("name"), stackSize, itemDamage);
         if (nbt.hasKey("tag", 10)) {
             boxItem.stackTagCompound = nbt.getCompoundTag("tag");
         }
@@ -182,11 +175,11 @@ public class Util {
 
             @Override
             public boolean placeBlock(T t, World world, int x, int y, int z, ItemStack trigger) {
-                world.setBlock(x,
+                world.setBlock(
+                    x,
                     y,
                     z,
-                    trigger.stackSize == 1
-                        ? RingAdder.apply(t)
+                    trigger.stackSize == 1 ? RingAdder.apply(t)
                         : (trigger.stackSize == 2 ? BlockRegister.BoxRing2 : BlockRegister.BoxRing3),
                     hintMeta,
                     2);
@@ -198,8 +191,7 @@ public class Util {
     public static String serialize(NBTTagCompound nbt) {
         try {
             return org.apache.commons.codec.binary.Base64.encodeBase64String(CompressedStreamTools.compress(nbt));
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
         return null;
     }
 
@@ -208,8 +200,7 @@ public class Util {
             byte[] b = org.apache.commons.codec.binary.Base64.decodeBase64(str);
             try {
                 return CompressedStreamTools.func_152457_a(b, new NBTSizeTracker(2097152L));
-            } catch (IOException ignored) {
-            }
+            } catch (IOException ignored) {}
         }
         return null;
     }
@@ -286,8 +277,10 @@ public class Util {
         for (Object player : MinecraftServer.getServer()
             .getConfigurationManager().playerEntityList) {
             if (player instanceof EntityPlayer player1) {
-                if (uuid.equals(player1.getUniqueID()
-                    .toString())) return player1;
+                if (uuid.equals(
+                    player1.getUniqueID()
+                        .toString()))
+                    return player1;
             }
         }
         return null;

@@ -17,8 +17,8 @@ import com.glodblock.github.common.item.ItemFluidDrop;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.item.AEItemStack;
-import gregtech.api.util.GT_OreDictUnificator;
-import gregtech.api.util.GT_Utility;
+import gregtech.api.util.GTOreDictUnificator;
+import gregtech.api.util.GTUtility;
 
 public class BoxRecipe {
 
@@ -27,7 +27,7 @@ public class BoxRecipe {
     public List<FluidStack> FinalFluidInput = new ArrayList<>();
     public List<FluidStack> FinalFluidOutput = new ArrayList<>();
     public HashMap<Integer, Integer> requireModules = new HashMap<>();
-    public int FinalTime = 0;
+    public long FinalTime = 0;
     public Long parallel = 0L;
     public Long FinalVoteage = 0L;
     public boolean islocked = false;
@@ -60,7 +60,7 @@ public class BoxRecipe {
             if (requireModule.hasKey(String.valueOf(i)))
                 requireModules.put(i, requireModule.getInteger(String.valueOf(i)));
         }
-        FinalTime = nbt.getInteger("Time");
+        FinalTime = nbt.getLong("Time");
         FinalVoteage = nbt.getLong("Voteage");
         islocked = nbt.getBoolean("islocked");
         parallel = nbt.getLong("parallel");
@@ -69,10 +69,9 @@ public class BoxRecipe {
     public static void ItemOnBox(List<ItemStack> input, List<ItemStack> output) {
         for (ItemStack iItem : input) {
             for (ItemStack oItem : output) {
-                if (GT_Utility.areStacksEqual(oItem, iItem, true) || (oItem.getUnlocalizedName()
-                    .startsWith("item.Circuit") && GT_OreDictUnificator.isInputStackEqual(
-                    iItem,
-                    GT_OreDictUnificator.get(oItem)))) {
+                if (GTUtility.areStacksEqual(oItem, iItem, true) || (oItem.getUnlocalizedName()
+                    .startsWith("item.Circuit")
+                    && GTOreDictUnificator.isInputStackEqual(iItem, GTOreDictUnificator.get(oItem)))) {
                     if (iItem.stackSize == oItem.stackSize) {
                         iItem.stackSize = 0;
                         oItem.stackSize = 0;
@@ -121,19 +120,19 @@ public class BoxRecipe {
             recipe.setTag("InputItem" + (i + 1), writeBoxItemToNBT(FinalItemInput.get(i), new NBTTagCompound()));
         for (int i = 0; i < FinalItemOutput.size(); i++)
             recipe.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(FinalItemOutput.get(i), new NBTTagCompound()));
-        for (int i = 0; i < FinalFluidInput.size(); i++)
-            recipe.setTag("InputFluid" + (i + 1),
-                FinalFluidInput.get(i)
-                    .writeToNBT(new NBTTagCompound()));
-        for (int i = 0; i < FinalFluidOutput.size(); i++)
-            recipe.setTag("OutputFluid" + (i + 1),
-                FinalFluidOutput.get(i)
-                    .writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < FinalFluidInput.size(); i++) recipe.setTag(
+            "InputFluid" + (i + 1),
+            FinalFluidInput.get(i)
+                .writeToNBT(new NBTTagCompound()));
+        for (int i = 0; i < FinalFluidOutput.size(); i++) recipe.setTag(
+            "OutputFluid" + (i + 1),
+            FinalFluidOutput.get(i)
+                .writeToNBT(new NBTTagCompound()));
         NBTTagCompound requireModule = new NBTTagCompound();
         requireModules.forEach((k, v) -> requireModule.setInteger(String.valueOf(k), v));
         recipe.setLong("Voteage", FinalVoteage);
         recipe.setTag("requireModule", requireModule);
-        recipe.setInteger("Time", FinalTime);
+        recipe.setLong("Time", FinalTime);
         recipe.setBoolean("islocked", islocked);
         recipe.setLong("parallel", parallel);
         return recipe;
@@ -169,10 +168,6 @@ public class BoxRecipe {
         encodedValue.setBoolean("substitute", false);
         encodedValue.setBoolean("beSubstitute", false);
         return encodedValue;
-    }
-
-    public int calHeight() {
-        return FinalItemInput.size() + FinalFluidInput.size() + FinalItemOutput.size() + FinalFluidOutput.size();
     }
 
     public IAEItemStack[] transInputsToAE2Stuff() {

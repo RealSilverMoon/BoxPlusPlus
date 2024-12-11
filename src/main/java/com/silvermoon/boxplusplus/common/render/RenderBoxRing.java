@@ -19,9 +19,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class RenderBoxRing extends TileEntitySpecialRenderer {
 
     private static final ResourceLocation BoxRingTexture = new ResourceLocation(Tags.MODID, "textures/models/ring.png");
-    private static final IModelCustom Ring = AdvancedModelLoader.loadModel(new ResourceLocation(
-        Tags.MODID,
-        "models/Ring.obj"));
+    private static final IModelCustom Ring = AdvancedModelLoader
+        .loadModel(new ResourceLocation(Tags.MODID, "models/Ring.obj"));
 
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
         if (!(tile instanceof TEBoxRing ring)) return;
