@@ -6,9 +6,9 @@ import static com.gtnewhorizons.modularui.api.math.Alignment.TopLeft;
 import static com.silvermoon.boxplusplus.common.BoxModule.getModuleByIndex;
 import static com.silvermoon.boxplusplus.common.BoxModule.transMachinesToModule;
 import static com.silvermoon.boxplusplus.util.Util.*;
-import static gregtech.api.enums.GT_HatchElement.*;
+import static gregtech.api.enums.HatchElement.*;
 import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
-import static gregtech.api.util.GT_StructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 
 import java.io.IOException;
 import java.util.*;
@@ -26,8 +26,6 @@ import net.minecraftforge.fluids.FluidTank;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyMulti;
-import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyTunnel;
 import com.glodblock.github.loader.ItemAndBlockHolder;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -54,26 +52,27 @@ import com.silvermoon.boxplusplus.util.*;
 
 import appeng.api.AEApi;
 import gregtech.api.enums.Textures;
-import gregtech.api.gui.modularui.GT_UIInfos;
-import gregtech.api.gui.modularui.GT_UITextures;
+import gregtech.api.gui.modularui.GTUIInfos;
+import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.IIconContainer;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
-import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_ExtendedPowerMultiBlockBase;
-import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch;
+import gregtech.api.metatileentity.implementations.MTEExtendedPowerMultiBlockBase;
+import gregtech.api.metatileentity.implementations.MTEHatch;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GT_Multiblock_Tooltip_Builder;
-import gregtech.api.util.GT_OverclockCalculator;
+import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.api.util.OverclockCalculator;
 import gregtech.common.misc.WirelessNetworkManager;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
+import tectech.thing.metaTileEntity.hatch.MTEHatchEnergyMulti;
+import tectech.thing.metaTileEntity.hatch.MTEHatchEnergyTunnel;
 
-public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<GTMachineBox>
-    implements ISurvivalConstructable {
+public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MainFrames = "Mainframes";
     private static final String STRUCTURE_PIECE_FirstRing = "FirstRing";
@@ -954,8 +953,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
     }
 
     @Override
-    protected GT_Multiblock_Tooltip_Builder createTooltip() {
-        GT_Multiblock_Tooltip_Builder tt = new GT_Multiblock_Tooltip_Builder();
+    protected MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType(i18n("tile.boxplusplus.boxtype"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.02"))
             .addInfo(i18n("tile.boxplusplus.boxinfo.03"))
@@ -1324,12 +1323,12 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             }
         }
         // If you want it, then you'll have to take it.
-        for (GT_MetaTileEntity_Hatch hatch : getExoticEnergyHatches()) {
-            if (hatch instanceof GT_MetaTileEntity_Hatch_EnergyMulti && ringCount == 1) {
+        for (MTEHatch hatch : getExoticEnergyHatches()) {
+            if (hatch instanceof MTEHatchEnergyMulti && ringCount == 1) {
                 machineError[0] = 5;
                 return false;
             }
-            if (hatch instanceof GT_MetaTileEntity_Hatch_EnergyTunnel && !moduleActive[12]) {
+            if (hatch instanceof MTEHatchEnergyTunnel && !moduleActive[12]) {
                 machineError[0] = 6;
                 return false;
             }
@@ -1432,7 +1431,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             mMaxProgresstime = Math.max((int) Math.pow(recipe.FinalTime, 0.2), 10);
             return;
         }
-        GT_OverclockCalculator cal = new GT_OverclockCalculator().setRecipeEUt(recipe.FinalVoteage)
+        OverclockCalculator cal = new OverclockCalculator().setRecipeEUt(recipe.FinalVoteage)
             .setDuration((int) recipe.FinalTime)
             .setEUt(getMaxInputEu());
         switch (ringCount) {
@@ -1695,8 +1694,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_WHITELIST);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_WHITELIST);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.01"))
@@ -1712,8 +1711,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_CYCLIC);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_CYCLIC);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.02"))
@@ -1732,8 +1731,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_IMPORT);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_IMPORT);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.03"))
@@ -1747,8 +1746,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxwiki.1"))
@@ -1782,8 +1781,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.module.20"))
@@ -1806,8 +1805,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.module.21"))
@@ -1826,8 +1825,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.module.22"))
@@ -2081,7 +2080,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     protected ModularWindow createSingleModuleWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(150, 200);
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         builder.widget(
             ButtonWidget.closeWindowButton(true)
@@ -2122,8 +2121,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .setSize(20, 20)
             .setBackground(() -> {
                 List<UITexture> UI = new ArrayList<>();
-                UI.add(GT_UITextures.BUTTON_STANDARD);
-                UI.add(GT_UITextures.OVERLAY_BUTTON_CHECKMARK);
+                UI.add(GTUITextures.BUTTON_STANDARD);
+                UI.add(GTUITextures.OVERLAY_BUTTON_CHECKMARK);
                 return UI.toArray(new IDrawable[0]);
             })
             .addTooltip(i18n("tile.boxplusplus.boxUI.module.16"))
@@ -2141,8 +2140,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(20, 20)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_CROSS);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_CROSS);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.module.16a"))
@@ -2158,7 +2157,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     protected ModularWindow createInitialingWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(260, 215);
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         randomSN = new ArrayList<>();
@@ -2166,7 +2165,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             randomSN.add(new Random().nextInt(5) + 1);
         }
         builder.widget(
-            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_UP)
+            new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_ARROW_GREEN_UP)
                 .setPos(5, 5)
                 .setSize(16, 16))
             .widget(
@@ -2186,8 +2185,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .setSize(16, 16)
             .setBackground(() -> {
                 List<UITexture> UI = new ArrayList<>();
-                UI.add(GT_UITextures.BUTTON_STANDARD);
-                UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                UI.add(GTUITextures.BUTTON_STANDARD);
+                UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
                 return UI.toArray(new IDrawable[0]);
             })
             .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
@@ -2212,8 +2211,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .setSize(16, 16)
             .setBackground(() -> {
                 List<UITexture> UI = new ArrayList<>();
-                UI.add(GT_UITextures.BUTTON_STANDARD);
-                UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                UI.add(GTUITextures.BUTTON_STANDARD);
+                UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
                 return UI.toArray(new IDrawable[0]);
             })
             .addTooltip(i18n("tile.boxplusplus.boxUI.31"))
@@ -2242,8 +2241,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_ALLOW_INPUT);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_ALLOW_INPUT);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.09"))
@@ -2262,8 +2261,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_BLOCK_INPUT);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_BLOCK_INPUT);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.26"))
@@ -2280,14 +2279,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     BoxRoutings.checkRouting(this);
                     if (!widget.isClient()) {
                         player.closeScreen();
-                        GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
+                        GTUIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
                     }
                 })
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.08") + (routingMap.size() + 1))
@@ -2302,13 +2301,13 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(110, 180));
         // Error X
         builder.widget(
-            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CROSS)
+            new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_CROSS)
                 .setPos(140, 71)
                 .setSize(24, 24)
                 .addTooltip(i18n("tile.boxplusplus.boxUI.ErrorCode." + routingStatus))
                 .setEnabled(routingStatus != 0 && !recipe.islocked))
             .widget(
-                new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_CHECKMARK)
+                new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_CHECKMARK)
                     .setPos(140, 71)
                     .setSize(36, 36)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.19"))
@@ -2324,8 +2323,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
             .setSize(32, 32)
             .setBackground(() -> {
                 List<UITexture> UI = new ArrayList<>();
-                UI.add(GT_UITextures.BUTTON_STANDARD);
-                UI.add(GT_UITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
+                UI.add(GTUITextures.BUTTON_STANDARD);
+                UI.add(GTUITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
                 return UI.toArray(new IDrawable[0]);
             })
             .addTooltip(i18n("tile.boxplusplus.boxUI.20"))
@@ -2344,7 +2343,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(14, 14)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
                     UI.add(AdaptableUITexture.of(Tags.MODID, "textures/gui/double.png", 16, 16, 1));
                     return UI.toArray(new IDrawable[0]);
                 })
@@ -2364,7 +2363,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(14, 14)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
                     UI.add(AdaptableUITexture.of(Tags.MODID, "textures/gui/halve.png", 16, 16, 1));
                     return UI.toArray(new IDrawable[0]);
                 })
@@ -2381,7 +2380,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(14, 14)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
                     UI.add(AdaptableUITexture.of(Tags.MODID, "textures/gui/AE.png", 16, 16, 1));
                     return UI.toArray(new IDrawable[0]);
                 })
@@ -2398,7 +2397,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(14, 14)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
                     UI.add(AdaptableUITexture.of(Tags.MODID, "textures/gui/clear.png", 16, 16, 1));
                     return UI.toArray(new IDrawable[0]);
                 })
@@ -2414,8 +2413,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(32, 32)
                 .setBackground(() -> {
                     List<UITexture> ret = new ArrayList<>();
-                    ret.add(GT_UITextures.BUTTON_STANDARD);
-                    ret.add(GT_UITextures.OVERLAY_BUTTON_WHITELIST);
+                    ret.add(GTUITextures.BUTTON_STANDARD);
+                    ret.add(GTUITextures.OVERLAY_BUTTON_WHITELIST);
                     return ret.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.21"))
@@ -2431,11 +2430,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     protected ModularWindow createRoutingWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(220, 200);
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         builder.widget(
-            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID)
+            new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID)
                 .setPos(5, 5)
                 .setSize(16, 16))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.10") + moduleSN).setPos(25, 9))
@@ -2566,7 +2565,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setTextColor(Color.WHITE.normal)
                     .setTextAlignment(Alignment.Center)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.24"))
-                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD)
+                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD)
                     .setSize(60, 12)
                     .setPos(50, 171)
                     .setEnabled(!recipe.islocked))
@@ -2584,7 +2583,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     protected ModularWindow createImportWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(300, 48);
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         TextFieldWidget textField = new TextFieldWidget() {
@@ -2600,7 +2599,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 return super.onKeyPressed(character, keyCode);
             }
 
-            @NotNull
+            @org.jetbrains.annotations.NotNull
             public String getText() {
                 if (handler.getText()
                     .isEmpty()) {
@@ -2631,7 +2630,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setTextAlignment(Alignment.CenterLeft)
                     .setTextColor(Color.WHITE.dark(1))
                     .setFocusOnGuiOpen(true)
-                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
+                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
                     .setPos(5, 16)
                     .setSize(250, 16))
             .widget(new ButtonWidget().setOnClick((clickData, widget) -> {
@@ -2666,8 +2665,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.30"))
@@ -2677,7 +2676,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
 
     protected ModularWindow createExportPatternWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(168, 125);
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         TextFieldWidget inputItem = new TextFieldWidget().setValidator(var -> Util.validator(recipe, var, false));
@@ -2687,7 +2686,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 inputItem.setTextAlignment(Alignment.CenterLeft)
                     .setTextColor(Color.WHITE.dark(1))
                     .setFocusOnGuiOpen(false)
-                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
+                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
                     .setPos(12, 10)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.13"))
                     .setSize(60, 12))
@@ -2695,7 +2694,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 inputFluid.setTextAlignment(Alignment.CenterLeft)
                     .setTextColor(Color.WHITE.dark(1))
                     .setFocusOnGuiOpen(false)
-                    .setBackground(GT_UITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
+                    .setBackground(GTUITextures.BACKGROUND_TEXT_FIELD_LIGHT_GRAY.withOffset(-1, -1, 2, 2))
                     .setPos(96, 10)
                     .addTooltip(i18n("tile.boxplusplus.boxUI.14"))
                     .setSize(60, 12))
@@ -2710,8 +2709,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_ITEM);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.36"))
@@ -2724,7 +2723,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     protected ModularWindow createClearWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(146, 60 + (randomSN.size() == 1 ? 15 : 0));
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         builder
@@ -2768,7 +2767,7 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(24, 24)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
                     UI.add(
                         AdaptableUITexture.of(
                             Tags.MODID,
@@ -2790,10 +2789,10 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     protected ModularWindow createFinalRecipeWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(360, 220);
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         builder.widget(
-            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID)
+            new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_AUTOOUTPUT_FLUID)
                 .setPos(5, 5)
                 .setSize(16, 16))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxUI.22")).setPos(25, 9))
@@ -2952,14 +2951,14 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 recipe.islocked = true;
                 if (!widget.isClient()) {
                     player.closeScreen();
-                    GT_UIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
+                    GTUIInfos.openGTTileEntityUI(getBaseMetaTileEntity(), player);
                 }
             })
                 .setSize(20, 20)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_CHECKMARK);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_CHECKMARK);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.25"))
@@ -2973,11 +2972,11 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
      */
     protected ModularWindow createWikiWindow(final EntityPlayer player) {
         ModularWindow.Builder builder = ModularWindow.builder(300, 210);
-        builder.setBackground(GT_UITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
+        builder.setBackground(GTUITextures.BACKGROUND_SINGLEBLOCK_DEFAULT);
         builder.setGuiTint(getGUIColorization());
         Synchronize(builder);
         builder.widget(
-            new DrawableWidget().setDrawable(GT_UITextures.OVERLAY_BUTTON_NEI)
+            new DrawableWidget().setDrawable(GTUITextures.OVERLAY_BUTTON_NEI)
                 .setPos(5, 5)
                 .setSize(16, 16))
             .widget(new TextWidget(i18n("tile.boxplusplus.boxwiki.1")).setPos(25, 9))
@@ -2997,8 +2996,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_INVERT_REDSTONE);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxwiki.3"))
@@ -3015,8 +3014,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_BATCH_MODE_ON);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_BATCH_MODE_ON);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxwiki.4"))
@@ -3033,8 +3032,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_POWER_SWITCH_ON);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxwiki.5"))
@@ -3051,8 +3050,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_PROGRESS);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_PROGRESS);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxwiki.6"))
@@ -3069,8 +3068,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                 .setSize(16, 16)
                 .setBackground(() -> {
                     List<UITexture> UI = new ArrayList<>();
-                    UI.add(GT_UITextures.BUTTON_STANDARD);
-                    UI.add(GT_UITextures.OVERLAY_BUTTON_WHITELIST);
+                    UI.add(GTUITextures.BUTTON_STANDARD);
+                    UI.add(GTUITextures.OVERLAY_BUTTON_WHITELIST);
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxwiki.7"))
@@ -3131,8 +3130,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxwiki.0"))
@@ -3169,8 +3168,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                     .setSize(16, 16)
                     .setBackground(() -> {
                         List<UITexture> UI = new ArrayList<>();
-                        UI.add(GT_UITextures.BUTTON_STANDARD);
-                        UI.add(GT_UITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
+                        UI.add(GTUITextures.BUTTON_STANDARD);
+                        UI.add(GTUITextures.OVERLAY_BUTTON_ARROW_GREEN_DOWN);
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxwiki.0"))
@@ -3193,8 +3192,8 @@ public class GTMachineBox extends GT_MetaTileEntity_ExtendedPowerMultiBlockBase<
                         .setSize(16, 16)
                         .setBackground(() -> {
                             List<UITexture> UI = new ArrayList<>();
-                            UI.add(GT_UITextures.BUTTON_STANDARD);
-                            UI.add(GT_UITextures.OVERLAY_BUTTON_EMIT_REDSTONE);
+                            UI.add(GTUITextures.BUTTON_STANDARD);
+                            UI.add(GTUITextures.OVERLAY_BUTTON_EMIT_REDSTONE);
                             return UI.toArray(new IDrawable[0]);
                         })
                         .addTooltip(i18n("tile.boxplusplus.boxUI.module." + i))

@@ -1,7 +1,7 @@
 package com.silvermoon.boxplusplus.util;
 
 import static com.silvermoon.boxplusplus.util.Util.*;
-import static gregtech.common.blocks.GT_Item_Machines.getMetaTileEntity;
+import static gregtech.common.blocks.ItemMachines.getMetaTileEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.github.bartimaeusnek.bartworks.API.recipe.BartWorksRecipeMaps;
 import com.silvermoon.boxplusplus.api.IBoxable;
 import com.silvermoon.boxplusplus.boxplusplus;
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
@@ -27,19 +26,20 @@ import com.silvermoon.boxplusplus.network.MessageRouting;
 import com.silvermoon.boxplusplus.network.NetworkLoader;
 
 import appeng.container.ContainerNull;
+import bartworks.API.recipe.BartWorksRecipeMaps;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.RecipeCatalysts;
 import fox.spiteful.avaritia.crafting.ExtremeShapedOreRecipe;
 import fox.spiteful.avaritia.crafting.ExtremeShapedRecipe;
 import goodgenerator.api.recipe.GoodGeneratorRecipeMaps;
 import gregtech.api.enums.*;
-import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_Hatch_InputBus;
-import gregtech.api.metatileentity.implementations.GT_MetaTileEntity_MultiBlockBase;
+import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
+import gregtech.api.metatileentity.implementations.MTEMultiBlockBase;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.*;
-import gregtech.common.items.behaviors.Behaviour_DataOrb;
-import gregtech.nei.GT_NEI_DefaultHandler;
+import gregtech.common.items.behaviors.BehaviourDataOrb;
+import gregtech.nei.GTNEIDefaultHandler;
 import gtPlusPlus.core.util.minecraft.ItemUtils;
 
 public class BoxRoutings {
@@ -55,7 +55,7 @@ public class BoxRoutings {
     public int time;
     public Long voltage;
 
-    public BoxRoutings(GT_Recipe recipe, ItemStack machine) {
+    public BoxRoutings(GTRecipe recipe, ItemStack machine) {
         InputItem.addAll(Arrays.asList(recipe.mInputs));
         InputItem.removeAll(Collections.singleton(null));
         OutputItem.addAll(Arrays.asList(recipe.mOutputs));
@@ -240,9 +240,9 @@ public class BoxRoutings {
             return;
         }
         RecipeMap<?> recipeMap;
-        GT_Recipe routingRecipe = null;
+        GTRecipe routingRecipe = null;
         List<ItemStack> allInputItems = box.getStoredInputs();
-        for (GT_MetaTileEntity_Hatch_InputBus inputBus : box.mInputBusses) {
+        for (MTEHatchInputBus inputBus : box.mInputBusses) {
             for (int i = inputBus.getSizeInventory() - 1; i >= 0; i--) {
                 if (inputBus.getStackInSlot(i) != null) {
                     {
@@ -251,14 +251,18 @@ public class BoxRoutings {
                             .getUnlocalizedName()
                             .equals("gt.blockmachines.basicmachine.electromagneticseparator.tier.06")) {
                             recipeMap = RecipeMaps.electroMagneticSeparatorRecipes;
-                            routingRecipe = recipeMap.findRecipe(
-                                box.getBaseMetaTileEntity(),
-                                true,
-                                true,
-                                Long.MAX_VALUE / 10,
-                                box.getStoredFluids()
-                                    .toArray(new FluidStack[0]),
-                                allInputItems.toArray(new ItemStack[0]));
+                            routingRecipe = recipeMap.findRecipeQuery()
+                                .items(allInputItems.toArray(new ItemStack[0]))
+                                .fluids(
+                                    box.getStoredFluids()
+                                        .toArray(new FluidStack[0]))
+                                .voltage(Long.MAX_VALUE / 10)
+                                .dontCheckStackSizes(true)
+                                .notUnificated(true)
+                                .find();
+
+                            // box.getBaseMetaTileEntity(),
+
                             if (routingRecipe != null) {
                                 box.routingMap.add(new BoxRoutings(routingRecipe.copy(), inputBus.getStackInSlot(i)));
                                 box.routingStatus = 0;
@@ -297,9 +301,9 @@ public class BoxRoutings {
                                     .getRecipeList();
                                 for (Object recipe : recipeList) {
                                     if (recipe instanceof ExtremeShapedRecipe exRecipe) {
-                                        if (GT_OreDictUnificator.isInputStackEqual(
+                                        if (GTOreDictUnificator.isInputStackEqual(
                                             item,
-                                            GT_OreDictUnificator.get(exRecipe.getRecipeOutput()))) {
+                                            GTOreDictUnificator.get(exRecipe.getRecipeOutput()))) {
                                             ItemStack[] in = exRecipe.recipeItems;
                                             ItemContainer var = new ItemContainer();
                                             for (ItemStack itemIn : in) {
@@ -322,15 +326,15 @@ public class BoxRoutings {
                                             return;
                                         }
                                     } else if (recipe instanceof ExtremeShapedOreRecipe exRecipe) {
-                                        if (GT_OreDictUnificator.isInputStackEqual(item, exRecipe.getRecipeOutput())) {
+                                        if (GTOreDictUnificator.isInputStackEqual(item, exRecipe.getRecipeOutput())) {
                                             Object[] in = exRecipe.getInput();
                                             ItemContainer var = new ItemContainer();
                                             for (Object ObjtecIn : in) {
                                                 if (ObjtecIn == null) continue;
                                                 if (ObjtecIn instanceof ItemStack itemIn)
-                                                    var.addItemStack(GT_OreDictUnificator.get(itemIn), 1, 10000);
+                                                    var.addItemStack(GTOreDictUnificator.get(itemIn), 1, 10000);
                                                 if (ObjtecIn instanceof ArrayList listIn) var.addItemStack(
-                                                    GT_OreDictUnificator.get((ItemStack) listIn.get(0)),
+                                                    GTOreDictUnificator.get((ItemStack) listIn.get(0)),
                                                     1,
                                                     10000);
                                             }
@@ -356,8 +360,7 @@ public class BoxRoutings {
                             return;
                         }
                     }
-                    if (getMetaTileEntity(
-                        inputBus.getStackInSlot(i)) instanceof GT_MetaTileEntity_MultiBlockBase RoutingMachine) {
+                    if (getMetaTileEntity(inputBus.getStackInSlot(i)) instanceof MTEMultiBlockBase RoutingMachine) {
                         boxplusplus.LOG.debug(RoutingMachine.mName);
                         List<ItemStack> ItemInputs = deepCopyItemList(box.getStoredInputs());
                         List<FluidStack> FluidInputs = deepCopyFluidList(box.getStoredFluids());
@@ -373,7 +376,7 @@ public class BoxRoutings {
                             }
                             case "multimachine.multifurnace" -> {
                                 for (ItemStack input : ItemInputs) {
-                                    ItemStack output = GT_OreDictUnificator.get(
+                                    ItemStack output = GTOreDictUnificator.get(
                                         FurnaceRecipes.smelting()
                                             .getSmeltingResult(input));
                                     if (output != null) {
@@ -482,20 +485,20 @@ public class BoxRoutings {
                                 }
                                 // We can find assemblyline recipe using the original method, but no need to update it,
                                 // nor check it
-                                GT_AssemblyLineUtils.LookupResult tLookupResult = GT_AssemblyLineUtils
+                                AssemblyLineUtils.LookupResult tLookupResult = AssemblyLineUtils
                                     .findAssemblyLineRecipeFromDataStick(data, false);
-                                if (tLookupResult.getType() == GT_AssemblyLineUtils.LookupResultType.INVALID_STICK) {
+                                if (tLookupResult.getType() == AssemblyLineUtils.LookupResultType.INVALID_STICK) {
                                     box.routingStatus = 5;
                                     return;
                                 }
-                                GT_Recipe.GT_Recipe_AssemblyLine tRecipe = tLookupResult.getRecipe();
+                                GTRecipe.RecipeAssemblyLine tRecipe = tLookupResult.getRecipe();
                                 ItemStack[] in = Arrays.copyOf(tRecipe.mInputs, tRecipe.mInputs.length);
                                 for (int j = 0; j < tRecipe.mOreDictAlt.length; j++) {
                                     if (tRecipe.mOreDictAlt[j] == null) continue;
-                                    in[j] = GT_OreDictUnificator.get(false, in[j]);
+                                    in[j] = GTOreDictUnificator.get(false, in[j]);
                                     for (ItemStack replace : ItemInputs) {
-                                        if (GT_OreDictUnificator.getAssociation(replace) != null
-                                            && GT_OreDictUnificator.isInputStackEqual(replace, in[j])) {
+                                        if (GTOreDictUnificator.getAssociation(replace) != null
+                                            && GTOreDictUnificator.isInputStackEqual(replace, in[j])) {
                                             in[j] = new ItemStack(
                                                 replace.getItem(),
                                                 in[j].stackSize,
@@ -524,12 +527,13 @@ public class BoxRoutings {
                                 // it.
                                 // But not anymore.
                                 routingRecipe = RoutingMachine.getRecipeMap()
-                                    .findRecipe(
-                                        box.getBaseMetaTileEntity(),
-                                        true,
-                                        Long.MAX_VALUE / 10,
-                                        FluidInputs.toArray(new FluidStack[0]),
-                                        ItemInputs.toArray(new ItemStack[0]));
+                                    .findRecipeQuery()
+                                    .notUnificated(true)
+                                    .voltage(Long.MAX_VALUE / 10)
+                                    .fluids(FluidInputs.toArray(new FluidStack[0]))
+                                    .items(ItemInputs.toArray(new ItemStack[0]))
+                                    .find();
+
                                 if (routingRecipe == null) {
                                     box.routingStatus = 3;
                                     return;
@@ -553,8 +557,8 @@ public class BoxRoutings {
                                     box.routingStatus = 6;
                                     return;
                                 }
-                                for (GT_Recipe recipe : recipeMap.getAllRecipes()) {
-                                    if (GT_Utility.areStacksEqual(
+                                for (GTRecipe recipe : recipeMap.getAllRecipes()) {
+                                    if (GTUtility.areStacksEqual(
                                         recipe.mOutputs[0],
                                         ItemStack.loadItemStackFromNBT(
                                             inputBus.getStackInSlot(i)
@@ -592,9 +596,9 @@ public class BoxRoutings {
                                 recipeMap = RecipeMaps.replicatorRecipes;
                                 Materials replicatorItem = null;
                                 for (ItemStack item : ItemInputs) {
-                                    if (Behaviour_DataOrb.getDataName(item)
+                                    if (BehaviourDataOrb.getDataName(item)
                                         .isEmpty()) continue;
-                                    replicatorItem = Element.get(Behaviour_DataOrb.getDataName(item)).mLinkedMaterials
+                                    replicatorItem = Element.get(BehaviourDataOrb.getDataName(item)).mLinkedMaterials
                                         .get(0);
                                     break;
                                 }
@@ -602,12 +606,12 @@ public class BoxRoutings {
                                     box.routingStatus = 7;
                                     return;
                                 }
-                                for (GT_Recipe recipe : recipeMap.getAllRecipes()) {
+                                for (GTRecipe recipe : recipeMap.getAllRecipes()) {
                                     if (!(recipe.mSpecialItems instanceof ItemStack[]var1)) {
                                         continue;
                                     }
                                     if (replicatorItem.equals(
-                                        Element.get(Behaviour_DataOrb.getDataName(var1[0])).mLinkedMaterials.get(0))) {
+                                        Element.get(BehaviourDataOrb.getDataName(var1[0])).mLinkedMaterials.get(0))) {
                                         box.routingMap.add(new BoxRoutings(recipe, RoutingMachine.getStackForm(1)));
                                         box.routingStatus = 0;
                                         return;
@@ -638,22 +642,23 @@ public class BoxRoutings {
                             }
                         }
                         ItemInputs.remove(inputBus.getStackInSlot(i));
-                        if (routingRecipe == null) routingRecipe = recipeMap.findRecipe(
-                            box.getBaseMetaTileEntity(),
-                            true,
-                            true,
-                            Long.MAX_VALUE / 10,
-                            FluidInputs.toArray(new FluidStack[0]),
-                            ItemInputs.toArray(new ItemStack[0]));
+                        if (routingRecipe == null) routingRecipe = recipeMap.findRecipeQuery()
+                            .notUnificated(true)
+                            .dontCheckStackSizes(true)
+                            .voltage(Long.MAX_VALUE / 10)
+                            .items(ItemInputs.toArray(new ItemStack[0]))
+                            .fluids(FluidInputs.toArray(new FluidStack[0]))
+                            .find();
+
                         if (routingRecipe != null) {
-                            GT_Recipe tempRecipe = routingRecipe.copy();
+                            GTRecipe tempRecipe = routingRecipe.copy();
                             for (int j = 0; j < tempRecipe.mInputs.length; j++) {
                                 if (tempRecipe.mInputs[j] == null) continue;
-                                if (GT_OreDictUnificator.getAssociation(tempRecipe.mInputs[j]) != null) {
+                                if (GTOreDictUnificator.getAssociation(tempRecipe.mInputs[j]) != null) {
                                     for (ItemStack si : box.getStoredInputs()) {
-                                        if (GT_OreDictUnificator.isInputStackEqual(
+                                        if (GTOreDictUnificator.isInputStackEqual(
                                             tempRecipe.mInputs[j],
-                                            GT_OreDictUnificator.get(false, si))) {
+                                            GTOreDictUnificator.get(false, si))) {
                                             tempRecipe.mInputs[j] = new ItemStack(
                                                 si.getItem(),
                                                 tempRecipe.mInputs[j].stackSize,
@@ -675,19 +680,18 @@ public class BoxRoutings {
         box.routingStatus = 2;
     }
 
-    public static void makeRouting(GT_NEI_DefaultHandler recipe, int recipeIndex, EntityPlayer player) {
+    public static void makeRouting(GTNEIDefaultHandler recipe, int recipeIndex, EntityPlayer player) {
         List<PositionedStack> machineListWithPos = RecipeCatalysts.getRecipeCatalysts(recipe);
         List<ItemStack> machineList = machineListWithPos.stream()
             .map(v -> v.item)
             .collect(Collectors.toList());
         for (ItemStack machine : machineList) {
-            if (getMetaTileEntity(machine) instanceof GT_MetaTileEntity_MultiBlockBase mte
-                && !mte.mName.startsWith("TST")
+            if (getMetaTileEntity(machine) instanceof MTEMultiBlockBase mte && !mte.mName.startsWith("TST")
                 && !mte.mName.startsWith("name")) {
                 NetworkLoader.instance.sendToServer(
                     new MessageRouting(
                         new BoxRoutings(
-                            ((GT_NEI_DefaultHandler.CachedDefaultRecipe) recipe.arecipes.get(recipeIndex)).mRecipe,
+                            ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes.get(recipeIndex)).mRecipe,
                             machine).routingToNbt(),
                         player));
                 break;

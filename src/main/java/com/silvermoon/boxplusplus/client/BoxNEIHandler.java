@@ -20,7 +20,7 @@ import codechicken.nei.GuiNEIButton;
 import codechicken.nei.recipe.*;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import gregtech.nei.GT_NEI_DefaultHandler;
+import gregtech.nei.GTNEIDefaultHandler;
 
 public class BoxNEIHandler {
 
@@ -76,7 +76,7 @@ public class BoxNEIHandler {
                         GuiPatternTermEx.class,
                         gui.getHandler()
                             .getOverlayIdentifier())
-                        && gui.getHandler() instanceof GT_NEI_DefaultHandler;
+                        && gui.getHandler() instanceof GTNEIDefaultHandler;
                 }
             }
             Collections.addAll(buttonList, buttons);
@@ -100,7 +100,7 @@ public class BoxNEIHandler {
                 if (recipesPerPage >= 0 && handler != null) {
                     int recipe = gui.page * recipesPerPage + event.button.id - OVERLAY_BUTTON_ID_START;
                     BoxRoutings
-                        .makeRouting((GT_NEI_DefaultHandler) gui.currenthandlers.get(gui.recipetype), recipe, player);
+                        .makeRouting((GTNEIDefaultHandler) gui.currenthandlers.get(gui.recipetype), recipe, player);
                     event.setCanceled(true);
                 }
             }

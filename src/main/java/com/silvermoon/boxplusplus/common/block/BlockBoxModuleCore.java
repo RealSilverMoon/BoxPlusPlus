@@ -19,7 +19,7 @@ import com.silvermoon.boxplusplus.Tags;
 import com.silvermoon.boxplusplus.common.items.IB_BoxModule;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import gregtech.api.GregTech_API;
+import gregtech.api.GregTechAPI;
 
 public class BlockBoxModuleCore extends Block {
 
@@ -30,7 +30,7 @@ public class BlockBoxModuleCore extends Block {
         super(material);
         this.isUpdate = isUpdate;
         setBlockName(name);
-        GregTech_API.registerMachineBlock(this, -1);
+        GregTechAPI.registerMachineBlock(this, -1);
     }
 
     public void registerBlock() {
@@ -78,15 +78,15 @@ public class BlockBoxModuleCore extends Block {
 
     @Override
     public void onBlockAdded(World aWorld, int aX, int aY, int aZ) {
-        if (GregTech_API.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
-            GregTech_API.causeMachineUpdate(aWorld, aX, aY, aZ);
+        if (GregTechAPI.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
+            GregTechAPI.causeMachineUpdate(aWorld, aX, aY, aZ);
         }
     }
 
     @Override
     public void breakBlock(World aWorld, int aX, int aY, int aZ, Block aBlock, int aMetaData) {
-        if (GregTech_API.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
-            GregTech_API.causeMachineUpdate(aWorld, aX, aY, aZ);
+        if (GregTechAPI.isMachineBlock(this, aWorld.getBlockMetadata(aX, aY, aZ))) {
+            GregTechAPI.causeMachineUpdate(aWorld, aX, aY, aZ);
         }
     }
 }

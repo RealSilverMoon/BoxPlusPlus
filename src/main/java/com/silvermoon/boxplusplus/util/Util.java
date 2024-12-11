@@ -34,7 +34,7 @@ import appeng.api.AEApi;
 import appeng.api.definitions.IDefinitions;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
-import gregtech.api.util.GT_ModHandler;
+import gregtech.api.util.GTModHandler;
 
 public class Util {
 
@@ -130,7 +130,7 @@ public class Util {
         if (itemDamage < 0) {
             itemDamage = 0;
         }
-        ItemStack boxItem = GT_ModHandler
+        ItemStack boxItem = GTModHandler
             .getModItem(nbt.getString("modID"), nbt.getString("name"), stackSize, itemDamage);
         if (nbt.hasKey("tag", 10)) {
             boxItem.stackTagCompound = nbt.getCompoundTag("tag");
