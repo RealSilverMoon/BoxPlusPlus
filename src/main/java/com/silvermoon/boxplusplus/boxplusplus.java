@@ -11,10 +11,7 @@ import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.*;
 
 @Mod(
     modid = Tags.MODID,
@@ -64,6 +61,11 @@ public class boxplusplus {
     // register server commands in this event handler (Remove if not needed)
     public void serverStarting(FMLServerStartingEvent event) {
         proxy.serverStarting(event);
+    }
+
+    @Mod.EventHandler
+    public void serverStarted(FMLServerStartedEvent event) {
+        proxy.serverStarted(event);
     }
 
     public static final CreativeTabs BoxTab = new CreativeTabs("BoxPlusPlus") {

@@ -24,6 +24,16 @@ public class RecipeLoader implements Runnable {
         addMachineBlockRecipe();
         addModuleRecipe();
         addRingRecipe();
+    }
+
+    public static boolean hasLoadedAddUpgradeModuleRecipe = false;
+
+    public static void loadAddUpgradeModuleRecipe() {
+
+        if (hasLoadedAddUpgradeModuleRecipe) {
+            return;
+        }
+        hasLoadedAddUpgradeModuleRecipe = true;
         addUpgradeModuleRecipe();
     }
 
@@ -427,7 +437,7 @@ public class RecipeLoader implements Runnable {
     }
 
     // All - ResearchAssemblyLine
-    public void addUpgradeModuleRecipe() {
+    public static void addUpgradeModuleRecipe() {
         GTValues.RA.stdBuilder()
             .metadata(RESEARCH_ITEM, new ItemStack(BlockRegister.BoxModule, 1, 0))
             .metadata(RESEARCH_TIME, 12000)
