@@ -19,6 +19,6 @@ public class ServerEvent {
         LOG.info("PlayerJoinServerEvent running");
         if (event == null || !(event.player instanceof EntityPlayerMP player) || !SideReference.Side.Server) return;
         NetworkLoader.instance.sendTo(new ServerJoinedPacket(), player);
-        LOG.info("PlayerJoinedPacket run finished");
+        LOG.info("PlayerJoinServerEvent run finished");
     }
 }
