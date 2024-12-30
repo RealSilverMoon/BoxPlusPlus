@@ -8,6 +8,7 @@ import com.silvermoon.boxplusplus.common.tileentities.TEBoxRing;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 
 public class ClientProxy extends CommonProxy {
 
@@ -22,5 +23,10 @@ public class ClientProxy extends CommonProxy {
          * new RenderDrone());
          */
         MinecraftForge.EVENT_BUS.register(BoxNEIHandler.instance);
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent event) {
+        super.postInit(event);
     }
 }
