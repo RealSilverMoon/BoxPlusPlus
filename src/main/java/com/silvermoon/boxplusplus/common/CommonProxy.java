@@ -1,7 +1,5 @@
 package com.silvermoon.boxplusplus.common;
 
-import static com.silvermoon.boxplusplus.common.loader.RecipeLoader.loadAddUpgradeModuleRecipe;
-
 import net.minecraftforge.common.MinecraftForge;
 
 import com.silvermoon.boxplusplus.common.config.Config;
@@ -46,9 +44,5 @@ public class CommonProxy {
     // register server commands in this event handler (Remove if not needed)
     public void serverStarting(FMLServerStartingEvent event) {
         new RecipeLoader().run();
-    }
-
-    public void serverStarted(FMLServerStartedEvent event) {
-        loadAddUpgradeModuleRecipe();
     }
 }
