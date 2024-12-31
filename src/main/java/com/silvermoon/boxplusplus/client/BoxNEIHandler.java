@@ -15,7 +15,6 @@ import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
 import com.silvermoon.boxplusplus.util.BoxRoutings;
 import com.silvermoon.boxplusplus.util.Util;
 
-import appeng.client.gui.implementations.GuiPatternTermEx;
 import codechicken.nei.GuiNEIButton;
 import codechicken.nei.recipe.*;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
@@ -38,7 +37,8 @@ public class BoxNEIHandler {
             GTMachineBox box = Util.boxMap.get(player);
             if (box == null || box.getBaseMetaTileEntity()
                 .isDead() || box.recipe.islocked) return;
-            List buttonList = ObfuscationReflectionHelper.getPrivateValue(GuiScreen.class, gui, "field_146292_n");
+            List buttonList = ObfuscationReflectionHelper
+                .getPrivateValue(GuiScreen.class, gui, "field_146292_n", "buttonList");
             if (buttons != null) {
                 buttonList.removeIf(Arrays.asList(buttons)::contains);
             }
@@ -49,17 +49,17 @@ public class BoxNEIHandler {
                 recipesPerPage = (int) getRecipesPerPage.invoke(gui);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ignored) {}
             buttons = new GuiButton[recipesPerPage];
-            int OVERLAY_BUTTON_ID_START = ObfuscationReflectionHelper
-                .getPrivateValue(GuiRecipe.class, gui, "OVERLAY_BUTTON_ID_START");
-            int guiTop = ObfuscationReflectionHelper.getPrivateValue(GuiContainer.class, gui, "field_147009_r");
+            int OVERLAY_BUTTON_ID_START = 4;
+            int guiTop = ObfuscationReflectionHelper
+                .getPrivateValue(GuiContainer.class, gui, "field_147009_r", "guiTop");
             int buttonWidth = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "buttonWidth");
             int buttonHeight = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "buttonHeight");
             HandlerInfo handlerInfo = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "handlerInfo");
             for (int i = 0; i < recipesPerPage; i++) {
                 buttons[i] = new GuiNEIButton(
                     OVERLAY_BUTTON_ID_START + i,
-                    (gui.width / 2) + 65,
-                    guiTop + 16 + (handlerInfo.getHeight() * (i + 1)) - 2,
+                    (gui.width / 2) + 69,
+                    guiTop + ((handlerInfo.getHeight() - handlerInfo.getYShift()) * (i + 1)),
                     buttonWidth,
                     buttonHeight,
                     "B");
@@ -72,11 +72,7 @@ public class BoxNEIHandler {
                 if (i >= counts) {
                     buttons[i].visible = false;
                 } else {
-                    buttons[i].visible = RecipeInfo.hasOverlayHandler(
-                        GuiPatternTermEx.class,
-                        gui.getHandler()
-                            .getOverlayIdentifier())
-                        && gui.getHandler() instanceof GTNEIDefaultHandler;
+                    buttons[i].visible = gui.getHandler() instanceof GTNEIDefaultHandler;
                 }
             }
             Collections.addAll(buttonList, buttons);
@@ -92,8 +88,7 @@ public class BoxNEIHandler {
                 .getPlayer();
             List<GuiButton> overlayButtons = new ArrayList<>(
                 Arrays.asList(ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "overlayButtons")));
-            int OVERLAY_BUTTON_ID_START = ObfuscationReflectionHelper
-                .getPrivateValue(GuiRecipe.class, gui, "OVERLAY_BUTTON_ID_START");
+            int OVERLAY_BUTTON_ID_START = 4;
             if (event.button.id >= OVERLAY_BUTTON_ID_START
                 && event.button.id < OVERLAY_BUTTON_ID_START + overlayButtons.size()) {
                 IRecipeHandler handler = (IRecipeHandler) gui.currenthandlers.get(gui.recipetype);
