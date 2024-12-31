@@ -24,6 +24,7 @@ public class RecipeLoader implements Runnable {
         addMachineBlockRecipe();
         addModuleRecipe();
         addRingRecipe();
+        addUpgradeModuleRecipe();
     }
 
     public static boolean hasLoadedAddUpgradeModuleRecipe = false;
@@ -34,10 +35,14 @@ public class RecipeLoader implements Runnable {
             return;
         }
         hasLoadedAddUpgradeModuleRecipe = true;
+        addBoxRecipe();
+        addMachineBlockRecipe();
+        addModuleRecipe();
+        addRingRecipe();
         addUpgradeModuleRecipe();
     }
 
-    public void addBoxRecipe() {
+    public static void addBoxRecipe() {
         GTValues.RA.stdBuilder()
             .metadata(RESEARCH_ITEM, GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 13532))
             .metadata(RESEARCH_TIME, 64000)
@@ -67,7 +72,7 @@ public class RecipeLoader implements Runnable {
             .addTo(AssemblyLine);
     }
 
-    public void addMachineBlockRecipe() {
+    public static void addMachineBlockRecipe() {
         GTValues.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.SpaceExtend, 32, 0))
             .itemInputs(
@@ -136,7 +141,7 @@ public class RecipeLoader implements Runnable {
             (int) TierEU.RECIPE_UEV);
     }
 
-    public void addRingRecipe() {
+    public static void addRingRecipe() {
         GTValues.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.BoxRing, 1, 0))
             .itemInputs(
@@ -200,7 +205,7 @@ public class RecipeLoader implements Runnable {
     }
 
     // Normally - R1-Assembler; R2-AssemblyLine; R3-ResearchAssemblyLine
-    public void addModuleRecipe() {
+    public static void addModuleRecipe() {
         GTValues.RA.stdBuilder()
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 0))
             .itemInputs(
