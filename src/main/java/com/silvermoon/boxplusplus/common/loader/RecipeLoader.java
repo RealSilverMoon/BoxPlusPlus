@@ -224,7 +224,7 @@ public class RecipeLoader implements Runnable {
             .itemInputs(
                 new ItemStack(BlockRegister.BoxRing, 1),
                 GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 876),
-                GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 14101),
+                GTModHandler.getModItem(Avaritia.ID, "Triple_Craft", 64),
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 64, 43),
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemMultiMaterial", 64, 44))
             .fluidInputs(FluidRegistry.getFluidStack("glue", 16000))
