@@ -1,5 +1,6 @@
 package com.silvermoon.boxplusplus.util;
 
+import static com.silvermoon.boxplusplus.boxplusplus.LOG;
 import static com.silvermoon.boxplusplus.util.Util.*;
 import static gregtech.common.blocks.ItemMachines.getMetaTileEntity;
 
@@ -19,8 +20,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.silvermoon.boxplusplus.api.IBoxable;
-import com.silvermoon.boxplusplus.boxplusplus;
 import com.silvermoon.boxplusplus.common.tileentities.GTMachineBox;
 import com.silvermoon.boxplusplus.network.MessageRouting;
 import com.silvermoon.boxplusplus.network.NetworkLoader;
@@ -54,6 +56,8 @@ public class BoxRoutings {
     public int Parallel = 1;
     public int time;
     public Long voltage;
+
+    public BoxRoutings() {}
 
     public BoxRoutings(GTRecipe recipe, ItemStack machine) {
         InputItem.addAll(Arrays.asList(recipe.mInputs));
@@ -191,6 +195,11 @@ public class BoxRoutings {
             routing.setTag("OutputItem" + (i + 1), writeBoxItemToNBT(OutputItem.get(i), new NBTTagCompound()));
             routing.setInteger("OutputChance" + (i + 1), OutputChance.get(i));
         }
+        return getNbtTagCompound(routing);
+    }
+
+    @NotNull
+    private NBTTagCompound getNbtTagCompound(NBTTagCompound routing) {
         for (int i = 0; i < InputFluid.size(); i++) routing.setTag(
             "InputFluid" + (i + 1),
             InputFluid.get(i)
@@ -215,19 +224,7 @@ public class BoxRoutings {
             routing.setTag("OutputItem" + (i + 1), writeBoxItemToUNBT(OutputItem.get(i), new NBTTagCompound()));
             routing.setInteger("OutputChance" + (i + 1), OutputChance.get(i));
         }
-        for (int i = 0; i < InputFluid.size(); i++) routing.setTag(
-            "InputFluid" + (i + 1),
-            InputFluid.get(i)
-                .writeToNBT(new NBTTagCompound()));
-        for (int i = 0; i < OutputFluid.size(); i++) routing.setTag(
-            "OutputFluid" + (i + 1),
-            OutputFluid.get(i)
-                .writeToNBT(new NBTTagCompound()));
-        routing.setLong("Voltage", voltage);
-        routing.setInteger("Parallel", Parallel);
-        routing.setInteger("Time", time);
-        routing.setInteger("Sp", special);
-        return routing;
+        return getNbtTagCompound(routing);
     }
 
     public int calHeight() {
@@ -361,7 +358,7 @@ public class BoxRoutings {
                         }
                     }
                     if (getMetaTileEntity(inputBus.getStackInSlot(i)) instanceof MTEMultiBlockBase RoutingMachine) {
-                        boxplusplus.LOG.debug(RoutingMachine.mName);
+                        LOG.debug(RoutingMachine.mName);
                         List<ItemStack> ItemInputs = deepCopyItemList(box.getStoredInputs());
                         List<FluidStack> FluidInputs = deepCopyFluidList(box.getStoredFluids());
                         switch (RoutingMachine.mName) {
@@ -680,6 +677,18 @@ public class BoxRoutings {
         box.routingStatus = 2;
     }
 
+    public static List<ItemStack> convertToItemStackList(List<PositionedStack> positionedStacks) {
+        List<ItemStack> itemStacks = new ArrayList<>();
+        if (positionedStacks != null) {
+            for (PositionedStack positionedStack : positionedStacks) {
+                if (positionedStack != null) {
+                    itemStacks.add(positionedStack.item); // PositionedStack 继承自 ItemStack，直接访问 item 属性
+                }
+            }
+        }
+        return itemStacks;
+    }
+
     public static void makeRouting(GTNEIDefaultHandler recipe, int recipeIndex, EntityPlayer player) {
         List<PositionedStack> machineListWithPos = RecipeCatalysts.getRecipeCatalysts(recipe);
         List<ItemStack> machineList = machineListWithPos.stream()
@@ -688,12 +697,56 @@ public class BoxRoutings {
         for (ItemStack machine : machineList) {
             if (getMetaTileEntity(machine) instanceof MTEMultiBlockBase mte && !mte.mName.startsWith("TST")
                 && !mte.mName.startsWith("name")) {
-                NetworkLoader.instance.sendToServer(
-                    new MessageRouting(
-                        new BoxRoutings(
-                            ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes.get(recipeIndex)).mRecipe,
-                            machine).routingToNbt(),
-                        player));
+
+                List<PositionedStack> mInputs = ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes
+                    .get(recipeIndex)).mInputs;
+                List<ItemStack> itemStackList1 = convertToItemStackList(mInputs);
+
+                itemStackList1.removeAll(Collections.singletonList(null));
+                List<PositionedStack> mOutputs = ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes
+                    .get(recipeIndex)).mOutputs;
+                List<ItemStack> itemStackList2 = convertToItemStackList(mOutputs);
+                List<FluidStack> fluidStacks = new ArrayList<>(
+                    Arrays.asList(
+                        ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes
+                            .get(recipeIndex)).mRecipe.mFluidInputs));
+                List<FluidStack> fluidStacks2 = new ArrayList<>(
+                    Arrays.asList(
+                        ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes
+                            .get(recipeIndex)).mRecipe.mFluidOutputs));
+
+                BoxRoutings boxRoutings = new BoxRoutings();
+                boxRoutings.InputItem = itemStackList1;
+                boxRoutings.OutputItem = itemStackList2;
+                if (machine.getUnlocalizedName()
+                    .contains("multimachine.plasmaforge")) {
+                    for (int i = 0; i < boxRoutings.OutputItem.size(); i++) boxRoutings.OutputChance.add(7500);
+                } else for (int i = 0; i < boxRoutings.OutputItem.size(); i++) boxRoutings.OutputChance.add(
+                    ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes.get(recipeIndex)).mRecipe
+                        .getOutputChance(i));
+                boxRoutings.OutputItem.removeAll(Collections.singleton(null));
+                boxRoutings.InputFluid = fluidStacks;
+                boxRoutings.OutputFluid = fluidStacks2;
+                boxRoutings.RoutingMachine = machine;
+                boxRoutings.voltage = (long) ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes
+                    .get(recipeIndex)).mRecipe.mEUt;
+                boxRoutings.time = ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes
+                    .get(recipeIndex)).mRecipe.mDuration;
+                // do some special service
+                switch (machine.getUnlocalizedName()
+                    .substring(17)) {
+                    case "multimachine.plasmaforge" -> {
+                        boxRoutings.time *= 4;
+                        boxRoutings.OutputFluid.forEach(f -> f.amount = (int) (f.amount * 0.75));
+                    }
+                    case "multimachine.blastfurnace", "multimachine.adv.blastfurnace", "megablastfurnace" -> boxRoutings.special = ((GTNEIDefaultHandler.CachedDefaultRecipe) recipe.arecipes
+                        .get(recipeIndex)).mRecipe.mSpecialValue;
+                    case "componentassemblyline" -> boxRoutings.time /= 16;
+                    case "quantumforcetransformer.controller.tier.single" -> boxRoutings.OutputFluid.forEach(
+                        f -> f.amount = f.amount / (boxRoutings.OutputFluid.size() + boxRoutings.OutputItem.size()));
+                }
+
+                NetworkLoader.instance.sendToServer(new MessageRouting(boxRoutings.routingToNbt(), player));
                 break;
             }
         }
