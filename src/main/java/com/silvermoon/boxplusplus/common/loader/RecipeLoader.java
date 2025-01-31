@@ -520,7 +520,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack[] { GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 356),
                 GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12735),
                 GTModHandler.getModItem(BartWorks.ID, "gt.bwMetaGeneratedItem0", 64, 3),
-                GTOreDictUnificator.get("gemExquisitePrasiolite", 64),
+                //GTOreDictUnificator.get("gemExquisitePrasiolite", 64),
                 GTModHandler.getModItem(GregTech.ID, "gt.blockcasings8", 8, 14),
                 GTModHandler.getModItem(GregTech.ID, "gt.blockcasings8", 16, 10),
                 GTModHandler.getModItem(GregTech.ID, "gt.blockcasings8", 32, 12),
