@@ -63,11 +63,6 @@ public class boxplusplus {
         proxy.serverStarting(event);
     }
 
-    @Mod.EventHandler
-    public void serverStarted(FMLServerStartedEvent event) {
-        proxy.serverStarted(event);
-    }
-
     public static final CreativeTabs BoxTab = new CreativeTabs("BoxPlusPlus") {
 
         @Override
