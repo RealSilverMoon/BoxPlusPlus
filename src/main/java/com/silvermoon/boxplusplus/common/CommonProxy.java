@@ -29,6 +29,7 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
         TileEntitiesLoader.register();
         CheckRecipeResultRegistry.register(new ResultModuleRequirement(0, false));
+
         ServerEvent serverEvent = new ServerEvent();
         if (SideReference.Side.Server) {
             MinecraftForge.EVENT_BUS.register(serverEvent);
@@ -41,13 +42,7 @@ public class CommonProxy {
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {}
 
-    public static boolean isRecipeLoaded;
-
-    // register server commands in this event handler (Remove if not needed)
-    public void serverStarting(FMLServerStartingEvent event) {
-        if (!isRecipeLoaded) {
-            new RecipeLoader().run();
-            isRecipeLoaded = true;
-        }
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        new RecipeLoader().run();
     }
 }
