@@ -31,6 +31,7 @@ public class RecipeLoader implements Runnable {
         addModuleRecipe();
         addRingRecipe();
         addUpgradeModuleRecipe();
+        addModuleResearchRecipe();
     }
 
     public static void addBoxRecipe() {
@@ -252,7 +253,7 @@ public class RecipeLoader implements Runnable {
             .duration(2400)
             .addTo(assemblerRecipes);
         GTValues.RA.stdBuilder()
-            .metadata(RESEARCH_ITEM, GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 860))
+            .metadata(RESEARCH_ITEM, new ItemStack(ItemRegister.bmResearchItem, 1, 0))
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 4))
             .itemInputs(
@@ -269,7 +270,7 @@ public class RecipeLoader implements Runnable {
             .duration(1200)
             .addTo(AssemblyLine);
         GTValues.RA.stdBuilder()
-            .metadata(RESEARCH_ITEM, GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 31077))
+            .metadata(RESEARCH_ITEM, new ItemStack(ItemRegister.bmResearchItem, 1, 1))
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 5))
             .itemInputs(
@@ -290,7 +291,7 @@ public class RecipeLoader implements Runnable {
             .duration(1200)
             .addTo(AssemblyLine);
         GTValues.RA.stdBuilder()
-            .metadata(RESEARCH_ITEM, GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 992))
+            .metadata(RESEARCH_ITEM, new ItemStack(ItemRegister.bmResearchItem, 1, 2))
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 6))
             .itemInputs(
@@ -312,7 +313,7 @@ public class RecipeLoader implements Runnable {
             .duration(1200)
             .addTo(AssemblyLine);
         GTValues.RA.stdBuilder()
-            .metadata(RESEARCH_ITEM, GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 850))
+            .metadata(RESEARCH_ITEM, new ItemStack(ItemRegister.bmResearchItem, 1, 3))
             .metadata(RESEARCH_TIME, 12000)
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 7))
             .itemInputs(
@@ -335,7 +336,7 @@ public class RecipeLoader implements Runnable {
             .duration(1200)
             .addTo(AssemblyLine);
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 12730),
+            new ItemStack(ItemRegister.bmResearchItem, 1, 4),
             25600,
             64,
             8000000,
@@ -353,7 +354,7 @@ public class RecipeLoader implements Runnable {
             2000,
             (int) TierEU.RECIPE_UEV);
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 17001),
+            new ItemStack(ItemRegister.bmResearchItem, 1, 5),
             102400,
             256,
             8000000,
@@ -374,7 +375,7 @@ public class RecipeLoader implements Runnable {
             2000,
             (int) TierEU.RECIPE_UEV);
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 31150),
+            new ItemStack(ItemRegister.bmResearchItem, 1, 6),
             51200,
             128,
             8000000,
@@ -392,7 +393,7 @@ public class RecipeLoader implements Runnable {
             2000,
             (int) TierEU.RECIPE_UEV);
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15472),
+            new ItemStack(ItemRegister.bmResearchItem, 1, 7),
             100000,
             100,
             10000000,
@@ -412,7 +413,7 @@ public class RecipeLoader implements Runnable {
             2000,
             (int) TierEU.RECIPE_UEV);
         TTRecipeAdder.addResearchableAssemblylineRecipe(
-            GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 1, 3),
+            new ItemStack(ItemRegister.bmResearchItem, 1, 8),
             (int) TierEU.RECIPE_UEV,
             512,
             (int) TierEU.RECIPE_UIV,
@@ -729,5 +730,71 @@ public class RecipeLoader implements Runnable {
          * Integer.MAX_VALUE - 1,
          * Integer.MAX_VALUE - 1);
          */
+    }
+
+    public static void addModuleResearchRecipe() {
+        // AMD 晶圆厂技术资料（基础）
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 0))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 860))
+            .eut(TierEU.RECIPE_LuV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 液位调节器实验模型
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 1))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 31077))
+            .eut(TierEU.RECIPE_UV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 固态物质重塑理论研究
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 2))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 992))
+            .eut(TierEU.RECIPE_UV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 抽水马桶设计图纸（初版）
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 3))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 850))
+            .eut(TierEU.RECIPE_UV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 温差产生原理实验装置
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 4))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 12730))
+            .eut(TierEU.RECIPE_UEV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 超结构装配理论框架
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 5))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 17001))
+            .eut(TierEU.RECIPE_UEV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 物态并联原理研究笔记
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 6))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 31150))
+            .eut(TierEU.RECIPE_UEV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 聚焦技术实验报告
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 7))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 15472))
+            .eut(TierEU.RECIPE_UEV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
+        // 深蓝物质研究样本
+        GTValues.RA.stdBuilder()
+            .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 8))
+            .itemInputs(GTModHandler.getModItem(AppliedEnergistics2.ID, "tile.BlockAdvancedCraftingUnit", 1, 3))
+            .eut(TierEU.RECIPE_UIV)
+            .duration(1200)
+            .addTo(assemblerRecipes);
     }
 }

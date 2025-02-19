@@ -4,6 +4,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import com.silvermoon.boxplusplus.common.config.Config;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import com.silvermoon.boxplusplus.common.loader.ItemRegister;
 import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
 import com.silvermoon.boxplusplus.common.loader.TileEntitiesLoader;
 import com.silvermoon.boxplusplus.event.ServerEvent;
@@ -22,6 +23,7 @@ public class CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
         BlockRegister.register();
+        ItemRegister.register();
         NetworkLoader.init();
     }
 
