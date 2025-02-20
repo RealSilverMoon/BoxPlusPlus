@@ -4,6 +4,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import com.silvermoon.boxplusplus.common.config.Config;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
+import com.silvermoon.boxplusplus.common.loader.ItemRegister;
 import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
 import com.silvermoon.boxplusplus.common.loader.TileEntitiesLoader;
 import com.silvermoon.boxplusplus.event.ServerEvent;
@@ -22,6 +23,7 @@ public class CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
         BlockRegister.register();
+        ItemRegister.register();
         NetworkLoader.init();
     }
 
@@ -29,6 +31,7 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
         TileEntitiesLoader.register();
         CheckRecipeResultRegistry.register(new ResultModuleRequirement(0, false));
+
         ServerEvent serverEvent = new ServerEvent();
         if (SideReference.Side.Server) {
             MinecraftForge.EVENT_BUS.register(serverEvent);
@@ -41,13 +44,7 @@ public class CommonProxy {
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {}
 
-    public static boolean isRecipeLoaded;
-
-    // register server commands in this event handler (Remove if not needed)
-    public void serverStarting(FMLServerStartingEvent event) {
-        if (!isRecipeLoaded) {
-            new RecipeLoader().run();
-            isRecipeLoaded = true;
-        }
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        new RecipeLoader().run();
     }
 }

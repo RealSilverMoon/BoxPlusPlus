@@ -4,6 +4,25 @@ item.boxplusplus_SpaceCore.name=空间核心
 item.boxplusplus_GravitationalWaveDetector.name=引力波探测器
 item.boxplusplus_Spring.name="弦"
 
+item.box_module_research0.name=AMD 晶圆厂技术资料（基础）
+item.box_module_research1.name=液位调节器实验模型
+item.box_module_research2.name=固态物质重塑理论研究
+item.box_module_research3.name=抽水马桶设计图纸（初版）
+item.box_module_research4.name=温差产生原理实验装置
+item.box_module_research5.name=超结构装配理论框架
+item.box_module_research6.name=物态并联原理研究笔记
+item.box_module_research7.name=聚焦技术实验报告
+item.box_module_research8.name=深蓝物质研究样本
+item.box_module_research.tooltip0=收集了AMD晶圆厂的基础技术资料，涵盖了晶圆制造的基本工艺流程、设备参数、质量控制标准等。通过对这些资料的研究，可以深入了解晶圆制造技术的核心要点，为后续的晶圆厂升级和技术创新提供理论支持。但目前资料还不够全面，需要进一步获取更深入的技术细节。
+item.box_module_research.tooltip1=这是一个用于液位调节实验的简单模型，可以模拟不同场景下的液位变化情况，并测试各种调节方法的效果。通过对实验模型的研究和数据分析，可以优化液位调节算法，为研发更精准、高效的液位调节器提供实验依据。模型还可以根据需要进行调整和改进，以适应不同的实验需求。
+item.box_module_research.tooltip2=深入研究了固态物质的结构和性质，探讨了在特定条件下对固态物质进行重塑的可能性和方法。通过对不同固态物质的实验和分析，总结出了一些基本的重塑规律和技巧，为固态重塑器的研发提供了理论基础。研究过程中还发现了一些有趣的现象和潜在的应用方向。
+item.box_module_research.tooltip3=这是抽水马桶的初步设计图纸，展示了其基本的结构和工作原理。图纸中包含了马桶的各个部件的尺寸、形状和连接方式，以及水箱的容量和冲水系统的设计。通过对该图纸的研究和改进，可以优化马桶的性能和使用体验，为生产更高质量的抽水马桶提供指导。
+item.box_module_research.tooltip4=用于研究温差产生原理的实验装置，可以通过不同的加热和冷却方法，创造出一定的温差环境。通过对实验装置的操作和数据记录，可以深入了解温差产生的机制和影响因素，为极限温差发生塔的设计和优化提供实验依据。装置还可以用于测试不同的材料和结构在温差环境下的性能表现。
+item.box_module_research.tooltip5=构建了超结构装配的理论框架，包括装配的基本原理、方法和流程。通过对不同超结构的分析和研究，总结出了一些通用的装配规则和技巧，为超结构装配厂的建设和运营提供了理论指导。理论框架还可以根据实际需求进行调整和完善，以适应不同的装配任务。
+item.box_module_research.tooltip6=记录了对物态并联原理的研究过程和成果，包括不同物态之间的相互作用、能量转换等方面的内容。通过对各种物态的实验和观察，总结出了一些基本的并联规律和特性，为物态并联矩阵的研发提供了理论支持。研究笔记中还包含了一些有趣的实验现象和潜在的应用方向。
+item.box_module_research.tooltip7=详细记录了聚焦技术的实验过程和结果，包括不同聚焦方法的优缺点、适用范围等方面的内容。通过对各种聚焦实验的数据分析，总结出了一些有效的聚焦技巧和方法，为聚焦发生器的研发提供了实验依据。实验报告中还提出了一些改进和优化的建议，为后续的研究提供了参考。
+item.box_module_research.tooltip8=收集了一些具有特殊性质的深蓝物质样本，通过对这些样本的分析和研究，发现了它们在光学、电学等方面的一些独特特性。这些特性为如星空般深蓝物品的研发提供了重要的线索和依据。研究过程中还发现了一些潜在的应用领域和开发方向，值得进一步探索。
+
 tile.boxplusplus_SpaceExtend.name=空间延展机械方块
 tile.boxplusplus_SpaceConstraint.name=空间约束机械方块
 tile.boxplusplus_SpaceCompress.name=空间压缩机械方块
@@ -293,3 +312,5 @@ tile.boxplusplus.chatmessage.8=在输入总线中没有找到空白样板
 
 GT5U.gui.text.box_debugmode=这个配方不可能运行。(除非...)
 GT5U.gui.text.no_wireless_power=无线网络剩余电力不足运行本配方
+
+

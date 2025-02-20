@@ -58,9 +58,8 @@ public class boxplusplus {
     }
 
     @Mod.EventHandler
-    // register server commands in this event handler (Remove if not needed)
-    public void serverStarting(FMLServerStartingEvent event) {
-        proxy.serverStarting(event);
+    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+        proxy.serverAboutToStart(event);
     }
 
     public static final CreativeTabs BoxTab = new CreativeTabs("BoxPlusPlus") {
