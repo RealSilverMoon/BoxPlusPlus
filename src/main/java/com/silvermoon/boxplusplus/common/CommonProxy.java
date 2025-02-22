@@ -44,7 +44,7 @@ public class CommonProxy {
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {}
 
-    public void serverAboutToStart(FMLServerAboutToStartEvent event) {
+    public void serverStarted(FMLServerStartedEvent event) {
         new RecipeLoader().run();
     }
 }
