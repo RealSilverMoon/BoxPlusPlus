@@ -113,9 +113,6 @@ public class BoxModule {
             case "tile.dire_crafting" -> {
                 return new int[] { 1, 1 };
             }
-            case "tile.neutronium_compressor" -> {
-                return new int[] { 5, 0 };
-            }
             default -> {
                 return switch (routing.RoutingMachine.getUnlocalizedName()
                     .substring(17)) {
@@ -126,7 +123,7 @@ public class BoxModule {
                     case "multimachine.multifurnace", "industrialthermalcentrifuge.controller.tier.single", "industrialarcfurnace.controller.tier.single", "industrialalloysmelter.controller.tier.single" -> new int[] {
                         3, 0 };
                     case "industrialmultimachine.controller.tier.single" -> new int[] { 4, 0 };
-                    case "industrialrockcrusher.controller.tier.single", "industrialfluidheater.controller.tier.single" -> new int[] {
+                    case "industrialrockcrusher.controller.tier.single", "industrialfluidheater.controller.tier.single", "multimachine.neutroniumcompressor" -> new int[] {
                         5, 0 };
                     case "industrialcuttingmachine.controller.tier.01", "industrialmacerator.controller.tier.single", "industrialbender.controller.tier.single", "industrialextruder.controller.tier.single", "industrialwiremill.controller.tier.single", "industrialhammer.controller.tier.single" -> new int[] {
                         6, 0 };
