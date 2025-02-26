@@ -103,64 +103,57 @@ public class BoxModule {
     }
 
     public static int[] transMachinesToModule(BoxRoutings routing) {
+        String unlocalizedName = routing.RoutingMachine.getUnlocalizedName();
         if (routing.special != 0) {
             if (routing.special > 5402) {
                 return new int[] { 8, 1 };
             }
             return new int[] { 8, 0 };
         }
-        switch (routing.RoutingMachine.getUnlocalizedName()) {
-            case "tile.dire_crafting" -> {
-                return new int[] { 1, 1 };
-            }
-            case "tile.neutronium_compressor" -> {
-                return new int[] { 5, 0 };
-            }
-            default -> {
-                return switch (routing.RoutingMachine.getUnlocalizedName()
-                    .substring(17)) {
-                    case "industrialmixer.controller.tier.single", "multimachine.chemicalreactor" -> new int[] { 0, 0 };
-                    case "gtplusplus.autocrafter.multi", "mxrandomlargemolecularassembler" -> new int[] { 1, 0 };
-                    case "multimachine.cracker", "megadistillationtower", "multimachine.adv.distillationtower", "megaoilcracker", "multimachine.distillationtower" -> new int[] {
-                        2, 0 };
-                    case "multimachine.multifurnace", "industrialthermalcentrifuge.controller.tier.single", "industrialarcfurnace.controller.tier.single", "industrialalloysmelter.controller.tier.single" -> new int[] {
-                        3, 0 };
-                    case "industrialmultimachine.controller.tier.single" -> new int[] { 4, 0 };
-                    case "industrialrockcrusher.controller.tier.single", "industrialfluidheater.controller.tier.single" -> new int[] {
-                        5, 0 };
-                    case "industrialcuttingmachine.controller.tier.01", "industrialmacerator.controller.tier.single", "industrialbender.controller.tier.single", "industrialextruder.controller.tier.single", "industrialwiremill.controller.tier.single", "industrialhammer.controller.tier.single" -> new int[] {
-                        6, 0 };
-                    case "industrialwashplant.controller.tier.single", "industrialsifter.controller.tier.single", "industrialcentrifuge.controller.tier.single", "industrialelectrolyzer.controller.tier.single", "digester", "basicmachine.electromagneticseparator.tier.06" -> new int[] {
-                        7, 0 };
-                    case "industrialcokeoven.controller.tier.single", "multimachine.pyro", "multimachine.vacuumfreezer", "multimachine.adv.industrialfreezer" -> new int[] {
-                        8, 0 };
-                    case "multimachine.assemblyline" -> new int[] { 9, 0 };
-                    case "industrialsalloyamelter.controller.tier.single" -> new int[] { 10, 0 };
-                    case "moleculartransformer.controller.tier.single", "gtpp.multimachine.replicator" -> new int[] { 0,
-                        1 };
-                    case "preciseassembler" -> new int[] { 1, 1 };
-                    case "chemicalplant.controller.tier.single" -> new int[] { 2, 1 };
-                    case "cyclotron.tier.single" -> new int[] { 3, 1 };
-                    case "multimachine.pcbfactory", "circuitassemblyline" -> new int[] { 4, 1 };
-                    case "largefusioncomputer5" -> new int[] { 5, 1 };
-                    case "dissolution_tank", "bw.biovat" -> new int[] { 7, 1 };
-                    case "electricimplosioncompressor", "componentassemblyline", "projectmoduleassemblert3" -> new int[] {
-                        9, 1 };
-                    case "multimachine.plasmaforge", "multimachine.transcendentplasmamixer", "multimachine.nanoforge" -> new int[] {
-                        8, 1 };
-                    case "quantumforcetransformer.controller.tier.single", "frf", "industrialmassfab.controller.tier.single" -> new int[] {
-                        10, 1 };
-                    default -> {
-                        for (MTEMultiBlockBase machine : customerMachineList) {
-                            if (GTUtility.areStacksEqual(machine.getStackForm(1), routing.RoutingMachine, true)) {
-                                yield new int[] { ((IBoxable) machine).getModuleIDSafely(),
-                                    ((IBoxable) machine).isUpdateModule() ? 1 : 0 };
-                            }
-                        }
-                        yield new int[] { 14, 0 };
-                    }
-                };
-            }
+        if ("tile.dire_crafting".equals(unlocalizedName)) {
+            return new int[] { 1, 1 };
         }
+        return switch (unlocalizedName.substring(17)) {
+            case "industrialmixer.controller.tier.single", "multimachine.chemicalreactor" -> new int[] { 0, 0 };
+            case "gtplusplus.autocrafter.multi", "mxrandomlargemolecularassembler" -> new int[] { 1, 0 };
+            case "multimachine.cracker", "megadistillationtower", "multimachine.adv.distillationtower", "megaoilcracker", "multimachine.distillationtower" -> new int[] {
+                2, 0 };
+            case "multimachine.multifurnace", "industrialthermalcentrifuge.controller.tier.single", "industrialarcfurnace.controller.tier.single", "industrialalloysmelter.controller.tier.single" -> new int[] {
+                3, 0 };
+            case "industrialmultimachine.controller.tier.single", "multimachine.basiccompressor", "multimachine.lathe", "multimachine.electromagneticseparator", "multimachine.extractor", "multimachine.fluidextractor", "multimachine.engraver", "multimachine.autoclave", "multimachine.solidifier" -> new int[] {
+                4, 0 };
+            case "industrialrockcrusher.controller.tier.single", "industrialfluidheater.controller.tier.single", "multimachine.neutroniumcompressor" -> new int[] {
+                5, 0 };
+            case "industrialcuttingmachine.controller.tier.01", "industrialmacerator.controller.tier.single", "industrialbender.controller.tier.single", "industrialextruder.controller.tier.single", "industrialwiremill.controller.tier.single", "industrialhammer.controller.tier.single" -> new int[] {
+                6, 0 };
+            case "industrialwashplant.controller.tier.single", "industrialsifter.controller.tier.single", "industrialcentrifuge.controller.tier.single", "industrialelectrolyzer.controller.tier.single", "digester", "basicmachine.electromagneticseparator.tier.06" -> new int[] {
+                7, 0 };
+            case "industrialcokeoven.controller.tier.single", "multimachine.pyro", "multimachine.vacuumfreezer", "multimachine.adv.industrialfreezer" -> new int[] {
+                8, 0 };
+            case "multimachine.assemblyline" -> new int[] { 9, 0 };
+            case "industrialsalloyamelter.controller.tier.single" -> new int[] { 10, 0 };
+            case "moleculartransformer.controller.tier.single", "gtpp.multimachine.replicator" -> new int[] { 0, 1 };
+            case "preciseassembler" -> new int[] { 1, 1 };
+            case "chemicalplant.controller.tier.single" -> new int[] { 2, 1 };
+            case "cyclotron.tier.single" -> new int[] { 3, 1 };
+            case "multimachine.pcbfactory", "circuitassemblyline" -> new int[] { 4, 1 };
+            case "largefusioncomputer5" -> new int[] { 5, 1 };
+            case "dissolution_tank", "bw.biovat" -> new int[] { 7, 1 };
+            case "electricimplosioncompressor", "componentassemblyline", "projectmoduleassemblert3" -> new int[] { 9,
+                1 };
+            case "multimachine.plasma forge", "multimachine.transcendentplasmamixer", "multimachine.nanoforge" -> new int[] {
+                8, 1 };
+            case "quantumforcetransformer.controller.tier.single", "frf", "industrialmassfab.controller.tier.single" -> new int[] {
+                10, 1 };
+            default -> {
+                for (MTEMultiBlockBase machine : customerMachineList) {
+                    if (GTUtility.areStacksEqual(machine.getStackForm(1), routing.RoutingMachine, true)) {
+                        yield new int[] { ((IBoxable) machine).getModuleIDSafely(),
+                            ((IBoxable) machine).isUpdateModule() ? 1 : 0 };
+                    }
+                }
+                yield new int[] { 14, 0 };
+            }
+        };
     }
 }
