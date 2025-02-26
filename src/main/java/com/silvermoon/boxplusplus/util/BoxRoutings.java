@@ -679,14 +679,26 @@ public class BoxRoutings {
 
     public static List<ItemStack> convertToItemStackList(List<PositionedStack> positionedStacks) {
         List<ItemStack> itemStacks = new ArrayList<>();
-        if (positionedStacks != null) {
-            for (PositionedStack positionedStack : positionedStacks) {
-                if (positionedStack != null) {
-                    itemStacks.add(positionedStack.item); // PositionedStack 继承自 ItemStack，直接访问 item 属性
-                }
+
+        if (positionedStacks == null || positionedStacks.isEmpty()) return itemStacks;
+        for (PositionedStack positionedStack : positionedStacks) {
+            if (positionedStack == null) continue;
+            if (!isFluid(positionedStack.item)) {
+                itemStacks.add(positionedStack.item.copy());
             }
         }
         return itemStacks;
+    }
+
+    // 判断流体
+    private static boolean isFluid(ItemStack stack) {
+        if (stack == null || stack.getItem() == null) return false;
+        if (stack.getItem() != ItemList.Display_Fluid.getItem()) return false;
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) return false;
+        return nbt.hasKey("mFluidDisplayAmount") && nbt.hasKey("mFluidDisplayHeat")
+            && nbt.hasKey("mFluidState")
+            && nbt.hasKey("mHideStackSize");
     }
 
     public static void makeRouting(GTNEIDefaultHandler recipe, int recipeIndex, EntityPlayer player) {
