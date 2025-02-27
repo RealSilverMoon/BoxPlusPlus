@@ -269,27 +269,6 @@ public class BoxRoutings {
                             }
                             return;
                         }
-                        // Really? You add neutronium compressor?
-                        if (inputBus.getStackInSlot(i)
-                            .getUnlocalizedName()
-                            .equals("tile.neutronium_compressor")) {
-                            for (ItemStack item : allInputItems) {
-                                ItemStack out = fox.spiteful.avaritia.crafting.CompressorManager.getOutput(item);
-                                if (out != null) {
-                                    ItemStack in = item.copy();
-                                    in.stackSize = fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
-                                    ItemStack machine = inputBus.getStackInSlot(i)
-                                        .copy();
-                                    machine.stackSize = 1;
-                                    box.routingMap
-                                        .add(new BoxRoutings(in, out, machine, TierEU.RECIPE_ZPM, TickTime.MINUTE));
-                                    box.routingStatus = 0;
-                                    return;
-                                }
-                            }
-                            box.routingStatus = 3;
-                            return;
-                        }
                         // Extreme Craft Table
                         if (inputBus.getStackInSlot(i)
                             .getUnlocalizedName()
