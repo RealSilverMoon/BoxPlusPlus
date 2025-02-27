@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -683,22 +684,46 @@ public class BoxRoutings {
         if (positionedStacks == null || positionedStacks.isEmpty()) return itemStacks;
         for (PositionedStack positionedStack : positionedStacks) {
             if (positionedStack == null) continue;
-            if (!isFluid(positionedStack.item)) {
+            if (!isNormalItem(positionedStack.item)) {
                 itemStacks.add(positionedStack.item.copy());
             }
         }
         return itemStacks;
     }
 
-    // 判断流体
-    private static boolean isFluid(ItemStack stack) {
+    public static boolean isValidResearchItem(ItemStack stack) {
+        if (stack == null || !stack.hasTagCompound()) return false;
+
+        NBTTagCompound root = stack.getTagCompound();
+
+        if (!root.hasKey("display", Constants.NBT.TAG_COMPOUND)) {
+            return false;
+        }
+
+        NBTTagCompound displayTag = root.getCompoundTag("display");
+
+        if (!displayTag.hasKey("Name", Constants.NBT.TAG_STRING)) {
+            return false;
+        }
+
+        String nameValue = displayTag.getString("Name");
+        return "Reads Research result".equals(nameValue);
+    }
+
+    // 判断流体 和 特殊物品
+    private static boolean isNormalItem(ItemStack stack) {
         if (stack == null || stack.getItem() == null) return false;
-        if (stack.getItem() != ItemList.Display_Fluid.getItem()) return false;
         NBTTagCompound nbt = stack.getTagCompound();
         if (nbt == null) return false;
-        return nbt.hasKey("mFluidDisplayAmount") && nbt.hasKey("mFluidDisplayHeat")
+
+        boolean isFluidItem = (stack.getItem() == ItemList.Display_Fluid.getItem()) && nbt.hasKey("mFluidDisplayAmount")
+            && nbt.hasKey("mFluidDisplayHeat")
             && nbt.hasKey("mFluidState")
             && nbt.hasKey("mHideStackSize");
+
+        boolean isDataItem = (nbt.hasKey("mDataTitle") && nbt.hasKey("mData"));
+
+        return isFluidItem || isDataItem || isValidResearchItem(stack);
     }
 
     public static void makeRouting(GTNEIDefaultHandler recipe, int recipeIndex, EntityPlayer player) {
