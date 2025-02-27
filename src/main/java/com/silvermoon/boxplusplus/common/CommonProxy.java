@@ -1,18 +1,13 @@
 package com.silvermoon.boxplusplus.common;
 
-import net.minecraftforge.common.MinecraftForge;
-
 import com.silvermoon.boxplusplus.common.config.Config;
 import com.silvermoon.boxplusplus.common.loader.BlockRegister;
 import com.silvermoon.boxplusplus.common.loader.ItemRegister;
 import com.silvermoon.boxplusplus.common.loader.RecipeLoader;
 import com.silvermoon.boxplusplus.common.loader.TileEntitiesLoader;
-import com.silvermoon.boxplusplus.event.ServerEvent;
 import com.silvermoon.boxplusplus.network.NetworkLoader;
 import com.silvermoon.boxplusplus.util.ResultModuleRequirement;
 
-import bartworks.API.SideReference;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.*;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 
@@ -31,20 +26,16 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
         TileEntitiesLoader.register();
         CheckRecipeResultRegistry.register(new ResultModuleRequirement(0, false));
-
-        ServerEvent serverEvent = new ServerEvent();
-        if (SideReference.Side.Server) {
-            MinecraftForge.EVENT_BUS.register(serverEvent);
-        }
-        FMLCommonHandler.instance()
-            .bus()
-            .register(serverEvent);
     }
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {}
 
     public void serverStarted(FMLServerStartedEvent event) {
+
+    }
+
+    public void loadCompeted(FMLLoadCompleteEvent event) {
         new RecipeLoader().run();
     }
 }
