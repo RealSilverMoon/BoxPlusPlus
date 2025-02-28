@@ -672,21 +672,8 @@ public class BoxRoutings {
 
     public static boolean isValidResearchItem(ItemStack stack) {
         if (stack == null || !stack.hasTagCompound()) return false;
-
-        NBTTagCompound root = stack.getTagCompound();
-
-        if (!root.hasKey("display", Constants.NBT.TAG_COMPOUND)) {
-            return false;
-        }
-
-        NBTTagCompound displayTag = root.getCompoundTag("display");
-
-        if (!displayTag.hasKey("Name", Constants.NBT.TAG_STRING)) {
-            return false;
-        }
-
-        String nameValue = displayTag.getString("Name");
-        return "Reads Research result".equals(nameValue);
+        NBTTagCompound nbt = stack.getTagCompound();
+        return nbt.hasKey("display");
     }
 
     // 判断流体 和 特殊物品
