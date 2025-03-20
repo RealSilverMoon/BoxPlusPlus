@@ -19,13 +19,7 @@ import tectech.recipe.TTRecipeAdder;
 
 public class RecipeLoader implements Runnable {
 
-    public static boolean hasLoadedRecipe;
-
     public synchronized void run() {
-        if (hasLoadedRecipe) {
-            return;
-        }
-        hasLoadedRecipe = true;
         addBoxRecipe();
         addMachineBlockRecipe();
         addModuleRecipe();

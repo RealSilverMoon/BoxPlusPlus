@@ -268,27 +268,6 @@ public class BoxRoutings {
                             }
                             return;
                         }
-                        // Really? You add neutronium compressor?
-                        if (inputBus.getStackInSlot(i)
-                            .getUnlocalizedName()
-                            .equals("tile.neutronium_compressor")) {
-                            for (ItemStack item : allInputItems) {
-                                ItemStack out = fox.spiteful.avaritia.crafting.CompressorManager.getOutput(item);
-                                if (out != null) {
-                                    ItemStack in = item.copy();
-                                    in.stackSize = fox.spiteful.avaritia.crafting.CompressorManager.getCost(item);
-                                    ItemStack machine = inputBus.getStackInSlot(i)
-                                        .copy();
-                                    machine.stackSize = 1;
-                                    box.routingMap
-                                        .add(new BoxRoutings(in, out, machine, TierEU.RECIPE_ZPM, TickTime.MINUTE));
-                                    box.routingStatus = 0;
-                                    return;
-                                }
-                            }
-                            box.routingStatus = 3;
-                            return;
-                        }
                         // Extreme Craft Table
                         if (inputBus.getStackInSlot(i)
                             .getUnlocalizedName()
@@ -679,14 +658,37 @@ public class BoxRoutings {
 
     public static List<ItemStack> convertToItemStackList(List<PositionedStack> positionedStacks) {
         List<ItemStack> itemStacks = new ArrayList<>();
-        if (positionedStacks != null) {
-            for (PositionedStack positionedStack : positionedStacks) {
-                if (positionedStack != null) {
-                    itemStacks.add(positionedStack.item); // PositionedStack 继承自 ItemStack，直接访问 item 属性
-                }
+
+        if (positionedStacks == null || positionedStacks.isEmpty()) return itemStacks;
+        for (PositionedStack positionedStack : positionedStacks) {
+            if (positionedStack == null) continue;
+            if (!isNormalItem(positionedStack.item)) {
+                itemStacks.add(positionedStack.item.copy());
             }
         }
         return itemStacks;
+    }
+
+    public static boolean isValidResearchItem(ItemStack stack) {
+        if (stack == null || !stack.hasTagCompound()) return false;
+        NBTTagCompound nbt = stack.getTagCompound();
+        return nbt.hasKey("display");
+    }
+
+    // 判断流体 和 特殊物品
+    private static boolean isNormalItem(ItemStack stack) {
+        if (stack == null || stack.getItem() == null) return false;
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) return false;
+
+        boolean isFluidItem = (stack.getItem() == ItemList.Display_Fluid.getItem()) && nbt.hasKey("mFluidDisplayAmount")
+            && nbt.hasKey("mFluidDisplayHeat")
+            && nbt.hasKey("mFluidState")
+            && nbt.hasKey("mHideStackSize");
+
+        boolean isDataItem = (nbt.hasKey("mDataTitle") && nbt.hasKey("mData"));
+
+        return isFluidItem || isDataItem || isValidResearchItem(stack);
     }
 
     public static void makeRouting(GTNEIDefaultHandler recipe, int recipeIndex, EntityPlayer player) {

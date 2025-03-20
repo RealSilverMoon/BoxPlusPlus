@@ -58,8 +58,8 @@ public class boxplusplus {
     }
 
     @Mod.EventHandler
-    public void serverStarted(FMLServerStartedEvent event) {
-        proxy.serverStarted(event);
+    public void loadCompeted(FMLLoadCompleteEvent event) {
+        proxy.loadCompeted(event);
     }
 
     public static final CreativeTabs BoxTab = new CreativeTabs("BoxPlusPlus") {
