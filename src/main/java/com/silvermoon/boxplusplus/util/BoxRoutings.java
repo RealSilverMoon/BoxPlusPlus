@@ -42,7 +42,7 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.*;
 import gregtech.common.items.behaviors.BehaviourDataOrb;
 import gregtech.nei.GTNEIDefaultHandler;
-import gtPlusPlus.core.util.minecraft.ItemUtils;
+import gtPlusPlus.xmod.gregtech.common.tileentities.machines.multi.production.chemplant.MTEChemicalPlant;
 
 public class BoxRoutings {
 
@@ -461,16 +461,15 @@ public class BoxRoutings {
                                 }
                                 // We can find assemblyline recipe using the original method, but no need to update it,
                                 // nor check it
-                                AssemblyLineUtils.LookupResult tLookupResult = AssemblyLineUtils
-                                    .findAssemblyLineRecipeFromDataStick(data, false);
-                                if (tLookupResult.getType() == AssemblyLineUtils.LookupResultType.INVALID_STICK) {
+                                GTRecipe.RecipeAssemblyLine alRecipe = AssemblyLineUtils
+                                    .assertSingleRecipe(AssemblyLineUtils.findALRecipeFromDataStick(data));
+                                if (alRecipe == null) {
                                     box.routingStatus = 5;
                                     return;
                                 }
-                                GTRecipe.RecipeAssemblyLine tRecipe = tLookupResult.getRecipe();
-                                ItemStack[] in = Arrays.copyOf(tRecipe.mInputs, tRecipe.mInputs.length);
-                                for (int j = 0; j < tRecipe.mOreDictAlt.length; j++) {
-                                    if (tRecipe.mOreDictAlt[j] == null) continue;
+                                ItemStack[] in = Arrays.copyOf(alRecipe.mInputs, alRecipe.mInputs.length);
+                                for (int j = 0; j < alRecipe.mOreDictAlt.length; j++) {
+                                    if (alRecipe.mOreDictAlt[j] == null) continue;
                                     in[j] = GTOreDictUnificator.get(false, in[j]);
                                     for (ItemStack replace : ItemInputs) {
                                         if (GTOreDictUnificator.getAssociation(replace) != null
@@ -485,11 +484,11 @@ public class BoxRoutings {
                                 box.routingMap.add(
                                     new BoxRoutings(
                                         in,
-                                        tRecipe.mOutput,
-                                        tRecipe.mFluidInputs,
+                                        alRecipe.mOutput,
+                                        alRecipe.mFluidInputs,
                                         RoutingMachine.getStackForm(1),
-                                        (long) tRecipe.mEUt,
-                                        tRecipe.mDuration));
+                                        (long) alRecipe.mEUt,
+                                        alRecipe.mDuration));
                                 box.routingStatus = 0;
                                 return;
                             }
@@ -516,7 +515,7 @@ public class BoxRoutings {
                                 }
                                 routingRecipe = routingRecipe.copy();
                                 for (ItemStack item : routingRecipe.mInputs) {
-                                    if (ItemUtils.isCatalyst(item)) {
+                                    if (MTEChemicalPlant.isCatalyst(item)) {
                                         item.stackSize = 0;
                                         break;
                                     }

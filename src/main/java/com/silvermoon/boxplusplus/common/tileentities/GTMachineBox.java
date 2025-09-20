@@ -1046,7 +1046,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
             case 1 -> {
                 switch (stack.stackSize) {
                     case 1 -> {
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_MainFrames,
                             stack,
                             3,
@@ -1059,7 +1059,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         if (count > -1) {
                             break;
                         }
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_FirstRing,
                             stack,
                             11,
@@ -1072,7 +1072,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
 
                     }
                     case 2 -> {
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_MainFrames,
                             stack,
                             3,
@@ -1085,7 +1085,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         if (count > -1) {
                             break;
                         }
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_FirstRing,
                             stack,
                             11,
@@ -1098,7 +1098,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         if (count > -1) {
                             break;
                         }
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_SecondRing,
                             stack,
                             17,
@@ -1110,7 +1110,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                             true);
                     }
                     default -> {
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_MainFrames,
                             stack,
                             3,
@@ -1123,7 +1123,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         if (count > -1) {
                             break;
                         }
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_FirstRing,
                             stack,
                             11,
@@ -1136,7 +1136,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         if (count > -1) {
                             break;
                         }
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_SecondRing,
                             stack,
                             17,
@@ -1149,7 +1149,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         if (count > -1) {
                             break;
                         }
-                        count = survivialBuildPiece(
+                        count = survivalBuildPiece(
                             STRUCTURE_PIECE_Final,
                             stack,
                             23,
@@ -1163,33 +1163,15 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                 }
             }
             case 2 -> {
-                count = survivialBuildPiece(
-                    STRUCTURE_PIECE_MainFrames,
-                    stack,
-                    3,
-                    3,
-                    0,
-                    elementBudget,
-                    env,
-                    false,
-                    true);
+                count = survivalBuildPiece(STRUCTURE_PIECE_MainFrames, stack, 3, 3, 0, elementBudget, env, false, true);
                 if (count > -1) {
                     break;
                 }
-                count = survivialBuildPiece(
-                    STRUCTURE_PIECE_FirstRing,
-                    stack,
-                    11,
-                    3,
-                    8,
-                    elementBudget,
-                    env,
-                    false,
-                    true);
+                count = survivalBuildPiece(STRUCTURE_PIECE_FirstRing, stack, 11, 3, 8, elementBudget, env, false, true);
                 if (count > -1) {
                     break;
                 }
-                count = survivialBuildPiece(
+                count = survivalBuildPiece(
                     STRUCTURE_PIECE_SecondRing,
                     stack,
                     17,
@@ -1201,33 +1183,15 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                     true);
             }
             case 3 -> {
-                count = survivialBuildPiece(
-                    STRUCTURE_PIECE_MainFrames,
-                    stack,
-                    3,
-                    3,
-                    0,
-                    elementBudget,
-                    env,
-                    false,
-                    true);
+                count = survivalBuildPiece(STRUCTURE_PIECE_MainFrames, stack, 3, 3, 0, elementBudget, env, false, true);
                 if (count > -1) {
                     break;
                 }
-                count = survivialBuildPiece(
-                    STRUCTURE_PIECE_FirstRing,
-                    stack,
-                    11,
-                    3,
-                    8,
-                    elementBudget,
-                    env,
-                    false,
-                    true);
+                count = survivalBuildPiece(STRUCTURE_PIECE_FirstRing, stack, 11, 3, 8, elementBudget, env, false, true);
                 if (count > -1) {
                     break;
                 }
-                count = survivialBuildPiece(
+                count = survivalBuildPiece(
                     STRUCTURE_PIECE_SecondRing,
                     stack,
                     17,
@@ -1240,7 +1204,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                 if (count > -1) {
                     break;
                 }
-                count = survivialBuildPiece(STRUCTURE_PIECE_Final, stack, 23, 5, 20, elementBudget, env, false, true);
+                count = survivalBuildPiece(STRUCTURE_PIECE_Final, stack, 23, 5, 20, elementBudget, env, false, true);
             }
         }
         return count;
@@ -1459,14 +1423,6 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
     @Override
     public int getDamageToComponent(ItemStack aStack) {
         return 0;
-    }
-
-    /**
-     * Why we have this property...?! And it doesn't work!!! Why!
-     */
-    @Override
-    public boolean explodesOnComponentBreak(ItemStack aStack) {
-        return true;
     }
 
     /**
@@ -1699,7 +1655,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                     return UI.toArray(new IDrawable[0]);
                 })
                 .addTooltip(i18n("tile.boxplusplus.boxUI.01"))
-                .setPos(94, 91))
+                .setPos(86, 91))
             .widget(// SwitchRender
                 new ButtonWidget().setOnClick((clickData, widget) -> {
                     if (!widget.isClient()) {
@@ -1716,7 +1672,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.02"))
-                    .setPos(146, 91))
+                    .setPos(130, 91))
             .widget(// Routing
                 new ButtonWidget().setOnClick((clickData, widget) -> {
                     Util.boxMap.put(
@@ -1736,7 +1692,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxUI.03"))
-                    .setPos(120, 91))
+                    .setPos(108, 91))
             .widget(// WIKI
                 new ButtonWidget().setOnClick(
                     (clickData, widget) -> {
@@ -1751,7 +1707,7 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                         return UI.toArray(new IDrawable[0]);
                     })
                     .addTooltip(i18n("tile.boxplusplus.boxwiki.1"))
-                    .setPos(172, 91));
+                    .setPos(152, 91));
     }
 
     /**

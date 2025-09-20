@@ -1,5 +1,41 @@
 //version: 1707058017
-
 plugins {
     id 'com.gtnewhorizons.gtnhconvention'
 }
+
+minecraft {
+    extraRunJvmArguments.add("-Xmx8G")
+    extraRunJvmArguments.add("-Xms8G")
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    implementation 'org.ow2.asm:asm-commons:9.2'
+}
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+tasks.named("runClient", JavaExec) {
+    workingDir = file("${projectDir}/run/client")
+    doFirst {
+        workingDir.mkdirs()
+    }
+}
+
+tasks.named("runClient17", JavaExec) {
+    workingDir = file("${projectDir}/run/client17")
+    doFirst {
+        workingDir.mkdirs()
+    }
+}
+
+tasks.named("runServer", JavaExec) {
+    workingDir = file("${projectDir}/run/server")
+    doFirst {
+        workingDir.mkdirs()
+    }
+}
+
