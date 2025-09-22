@@ -10,11 +10,21 @@ import micdoodle8.mods.galacticraft.core.util.Annotations;
 public class TEBoxRing extends TileEntityAdvanced {
 
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
-    public double Rotation = 0;
+    public double scale = 1;
+
+    @Annotations.NetworkedField(targetSide = Side.CLIENT)
+    public double rotation = 0;
+
+    @Annotations.NetworkedField(targetSide = Side.CLIENT)
+    public double prevRotation = 0;
+
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
     public boolean renderStatus = false;
+
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
     public boolean teRingSwitch = true;
+
+    private static final double ROTATION_SPEED = 1.2;
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
@@ -26,15 +36,12 @@ public class TEBoxRing extends TileEntityAdvanced {
         return 65536;
     }
 
-    public double getCurrentRotation() {
-        return Rotation;
-    }
-
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         nbt.setBoolean("renderStatus", renderStatus);
-        nbt.setDouble("Rotation", Rotation);
+        nbt.setDouble("scale", scale);
+        nbt.setDouble("rotation", rotation);
         nbt.setBoolean("switch", teRingSwitch);
     }
 
@@ -42,7 +49,8 @@ public class TEBoxRing extends TileEntityAdvanced {
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
         renderStatus = nbt.getBoolean("renderStatus");
-        Rotation = nbt.getDouble("Rotation");
+        rotation = nbt.getDouble("rotation");
+        scale = nbt.getDouble("scale");
         teRingSwitch = nbt.getBoolean("switch");
     }
 
@@ -64,6 +72,16 @@ public class TEBoxRing extends TileEntityAdvanced {
     @Override
     public void updateEntity() {
         super.updateEntity();
-        Rotation = (Rotation + 1.2) % 360d;
+        prevRotation = rotation;
+        rotation = (rotation + ROTATION_SPEED) % 360d;
+    }
+
+    public double getInterpolatedRotation(float partialTicks) {
+        double delta = rotation - prevRotation;
+
+        if (delta < -180.0) delta += 360.0;
+        if (delta > 180.0) delta -= 360.0;
+
+        return (prevRotation + delta * partialTicks) % 360.0;
     }
 }

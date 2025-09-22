@@ -5,6 +5,7 @@ import static com.silvermoon.boxplusplus.boxplusplus.BoxTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -53,5 +54,40 @@ public class BlockBoxRing extends Block implements ITileEntityProvider {
     @Override
     public boolean isOpaqueCube() {
         return false;
+    }
+
+    @Override
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+        if (!world.isRemote) {
+            TileEntity te = world.getTileEntity(x, y, z);
+            if (te instanceof TEBoxRing ring) {
+                ring.scale -= 0.05f;
+                if (ring.scale < 0.05f) ring.scale = 0.05f;
+
+                ring.markDirty();
+                world.markBlockForUpdate(x, y, z);
+            }
+        }
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX,
+        float hitY, float hitZ) {
+
+        if (!world.isRemote) {
+            TileEntity te = world.getTileEntity(x, y, z);
+            if (te instanceof TEBoxRing ring) {
+                if (player.isSneaking()) {
+                    ring.scale += 0.05f;
+                    if (ring.scale > 3.0f) ring.scale = 3.0f;
+                } else {
+                    ring.renderStatus = !ring.renderStatus;
+                }
+
+                ring.markDirty();
+                world.markBlockForUpdate(x, y, z);
+            }
+        }
+        return true;
     }
 }
