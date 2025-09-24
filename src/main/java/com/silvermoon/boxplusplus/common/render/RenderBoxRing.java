@@ -26,21 +26,26 @@ public class RenderBoxRing extends TileEntitySpecialRenderer {
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partialTicks) {
         if (!(tile instanceof TEBoxRing ring)) return;
 
+        float rotation = ring.getInterpolatedRotation(partialTicks);
+
         GL11.glPushMatrix();
         GL11.glTranslated(x + 0.5, y + 0.5, z + 0.5);
 
-        double rotation = ring.getInterpolatedRotation(partialTicks);
-
         if (ring.teRingSwitch && ring.renderStatus) {
-            GL11.glRotated(rotation, 1, 1, 1);
-            renderRing((float) (1.1f * ring.scale));
-            GL11.glRotated(rotation, 0, 0, 1);
-            renderRing((float) (1.4f * ring.scale));
+            GL11.glRotatef(rotation, 1, 1, 1);
+            renderRing(1.1f * ring.scale);
+            if (ring.count > 1) {
+                GL11.glRotatef(rotation, 0, 0, 1);
+                renderRing(1.4f * ring.scale);
+            }
+            if (ring.count > 2) {
+                GL11.glRotatef(rotation, 1, 0, 0);
+                renderRing(1.8f * ring.scale);
+            }
         }
 
-        GL11.glRotated(rotation, 0, -1, 1);
+        GL11.glRotatef(rotation, 0, -1, 1);
         renderRing(0.0118f);
-
         GL11.glPopMatrix();
     }
 

@@ -2,6 +2,7 @@ package com.silvermoon.boxplusplus.common.tileentities;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import micdoodle8.mods.galacticraft.core.tile.TileEntityAdvanced;
@@ -10,13 +11,13 @@ import micdoodle8.mods.galacticraft.core.util.Annotations;
 public class TEBoxRing extends TileEntityAdvanced {
 
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
-    public double scale = 1;
+    public float scale = 1;
 
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
-    public double rotation = 0;
+    public float rotation = 0;
 
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
-    public double prevRotation = 0;
+    public float prevRotation = 0;
 
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
     public boolean renderStatus = false;
@@ -24,7 +25,10 @@ public class TEBoxRing extends TileEntityAdvanced {
     @Annotations.NetworkedField(targetSide = Side.CLIENT)
     public boolean teRingSwitch = true;
 
-    private static final double ROTATION_SPEED = 1.2;
+    @Annotations.NetworkedField(targetSide = Side.CLIENT)
+    public int count = 1;
+
+    private static float ROTATION_SPEED = 1.2f;
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
@@ -40,18 +44,20 @@ public class TEBoxRing extends TileEntityAdvanced {
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         nbt.setBoolean("renderStatus", renderStatus);
-        nbt.setDouble("scale", scale);
-        nbt.setDouble("rotation", rotation);
+        nbt.setFloat("scale", scale);
+        nbt.setFloat("rotation", rotation);
         nbt.setBoolean("switch", teRingSwitch);
+        nbt.setInteger("count", count);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
         renderStatus = nbt.getBoolean("renderStatus");
-        rotation = nbt.getDouble("rotation");
-        scale = nbt.getDouble("scale");
+        rotation = nbt.getFloat("rotation");
+        scale = nbt.getFloat("scale");
         teRingSwitch = nbt.getBoolean("switch");
+        count = nbt.getInteger("count");
     }
 
     @Override
@@ -73,15 +79,12 @@ public class TEBoxRing extends TileEntityAdvanced {
     public void updateEntity() {
         super.updateEntity();
         prevRotation = rotation;
-        rotation = (rotation + ROTATION_SPEED) % 360d;
+        rotation = (rotation + ROTATION_SPEED) % 360f;
     }
 
-    public double getInterpolatedRotation(float partialTicks) {
-        double delta = rotation - prevRotation;
-
-        if (delta < -180.0) delta += 360.0;
-        if (delta > 180.0) delta -= 360.0;
-
-        return (prevRotation + delta * partialTicks) % 360.0;
+    public float getInterpolatedRotation(float partialTicks) {
+        float delta = MathHelper.wrapAngleTo180_float(rotation - prevRotation);
+        return prevRotation + delta * partialTicks;
     }
+
 }
