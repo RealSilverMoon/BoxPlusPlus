@@ -1297,7 +1297,10 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
                 return false;
             }
         }
-        if (teBoxRing != null && ringCount == 3) teBoxRing.renderStatus = true;
+        if (teBoxRing != null) {
+            teBoxRing.renderStatus = true;
+            teBoxRing.count = ringCount;
+        }
         return true;
     }
 
