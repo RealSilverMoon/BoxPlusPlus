@@ -52,8 +52,8 @@ public class BoxNEIHandler {
             int OVERLAY_BUTTON_ID_START = 4;
             int guiTop = ObfuscationReflectionHelper
                 .getPrivateValue(GuiContainer.class, gui, "field_147009_r", "guiTop");
-            int buttonWidth = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "buttonWidth");
-            int buttonHeight = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "buttonHeight");
+            int buttonWidth = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "BUTTON_WIDTH");
+            int buttonHeight = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "BUTTON_HEIGHT");
             HandlerInfo handlerInfo = ObfuscationReflectionHelper.getPrivateValue(GuiRecipe.class, gui, "handlerInfo");
             for (int i = 0; i < recipesPerPage; i++) {
                 buttons[i] = new GuiNEIButton(
