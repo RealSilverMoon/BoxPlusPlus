@@ -731,7 +731,7 @@ public class RecipeLoader implements Runnable {
         // AMD 晶圆厂技术资料（基础）
         GTValues.RA.stdBuilder()
             .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 0))
-            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 21076))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 3004))
             .eut(TierEU.RECIPE_LuV)
             .duration(1200)
             .addTo(assemblerRecipes);
