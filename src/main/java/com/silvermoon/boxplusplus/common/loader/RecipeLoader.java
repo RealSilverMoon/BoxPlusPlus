@@ -572,7 +572,7 @@ public class RecipeLoader implements Runnable {
             new ItemStack[] { GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 10501),
                 GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12712),
                 GTOreDictUnificator.get("blockGlassUEV", 64), GTOreDictUnificator.get("slabWood", 1),
-                GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12718),
+                GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 12713),
                 GTModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 4, 26),
                 new ItemStack(BlockRegister.BoxRing2, 16), },
             new FluidStack[] { FluidRegistry.getFluidStack("molten.ethylcyanoacrylatesuperglue", 128000),
