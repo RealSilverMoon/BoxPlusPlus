@@ -3,7 +3,6 @@ package com.silvermoon.boxplusplus.common.loader;
 import static gregtech.api.enums.Mods.*;
 import static gregtech.api.recipe.RecipeMaps.assemblerRecipes;
 import static gregtech.api.recipe.RecipeMaps.multiblockChemicalReactorRecipes;
-import static gregtech.api.util.GTRecipeBuilder.*;
 import static gregtech.api.util.GTRecipeConstants.*;
 
 import net.minecraft.item.ItemStack;
@@ -173,8 +172,8 @@ public class RecipeLoader implements Runnable {
                 GTOreDictUnificator.get("ringAstralTitanium", 64), GTOreDictUnificator.get("ringAstralTitanium", 64),
                 GTOreDictUnificator.get("ringAstralTitanium", 64),
                 GTOreDictUnificator.get("plateDenseAstralTitanium", 64),
-                new Object[] { OrePrefixes.circuit.get(Materials.Optical), 32 },
-                GTOreDictUnificator.get("batteryUMV", 4), ItemList.Field_Generator_UEV.get(4),
+                new Object[] { OrePrefixes.circuit.get(Materials.UIV), 32 }, GTOreDictUnificator.get("batteryUMV", 4),
+                ItemList.Field_Generator_UEV.get(4),
                 GTModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 64, 12),
                 GTModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 64, 12),
                 GTModHandler.getModItem(UniversalSingularities.ID, "universal.general.singularity", 64, 12),
@@ -554,7 +553,7 @@ public class RecipeLoader implements Runnable {
             new Object[] { GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 1132),
                 ItemList.Electric_Motor_UEV.get(32), ItemList.Electric_Piston_UEV.get(8),
                 ItemList.Electric_Pump_UEV.get(16), ItemList.Conveyor_Module_UEV.get(8), ItemList.Robot_Arm_UEV.get(8),
-                new Object[] { OrePrefixes.circuit.get(Materials.Optical), 4 },
+                new Object[] { OrePrefixes.circuit.get(Materials.UIV), 4 },
                 GTModHandler.getModItem(AppliedEnergistics2.ID, "item.ItemExtremeStorageCell.Singularity", 1),
                 GTOreDictUnificator.get(OrePrefixes.plateDouble, Materials.Titanium, 32),
                 GTOreDictUnificator.get("rotorAstralTitanium", 16), new ItemStack(BlockRegister.BoxRing2, 16), },
@@ -732,7 +731,7 @@ public class RecipeLoader implements Runnable {
         // AMD 晶圆厂技术资料（基础）
         GTValues.RA.stdBuilder()
             .itemOutputs(new ItemStack(ItemRegister.bmResearchItem, 1, 0))
-            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 860))
+            .itemInputs(GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 1, 3004))
             .eut(TierEU.RECIPE_LuV)
             .duration(1200)
             .addTo(assemblerRecipes);
