@@ -253,7 +253,7 @@ public class RecipeLoader implements Runnable {
             .itemOutputs(new ItemStack(BlockRegister.BoxModule, 1, 4))
             .itemInputs(
                 new ItemStack(BlockRegister.BoxRing2, 2),
-                GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 860),
+                GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 64, 3004),
                 GTModHandler.getModItem(GregTech.ID, "gt.metaitem.01", 64, 32764),
                 GTModHandler.getModItem(OpenComputers.ID, "item", 9, 103),
                 GTModHandler.getModItem(GregTech.ID, "gt.blockmachines", 9, 15470),
