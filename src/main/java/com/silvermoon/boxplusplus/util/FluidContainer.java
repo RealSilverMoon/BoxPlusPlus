@@ -23,7 +23,7 @@ public class FluidContainer {
 
         if (stacks.containsKey(key)) {
             FluidStack stack = stacks.get(key);
-            stack.amount = (int) Math.min((long) stack.amount * amountToAdd, Integer.MAX_VALUE);
+            stack.amount = (int) Math.min((long) stack.amount + amountToAdd, Integer.MAX_VALUE);
         } else {
             FluidStack copied = new FluidStack(input, amountToAdd);
             copied.tag = nbt;
