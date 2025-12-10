@@ -1627,7 +1627,10 @@ public class GTMachineBox extends MTEExtendedPowerMultiBlockBase<GTMachineBox> i
         maxRouting = NBT.getInteger("maxRouting");
         recipe = new BoxRecipe(NBT.getCompoundTag("BoxRecipe"));
     }
-
+    @Override
+    protected boolean useMui2() {
+        return false;
+    }
     /**
      * Add main UI with 4 bottoms
      */
