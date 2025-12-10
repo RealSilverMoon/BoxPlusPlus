@@ -25,14 +25,17 @@ public class BoxOverlayButton extends GuiOverlayButton {
     public BoxOverlayButton(GuiOverlayButton button) {
         this(button.firstGui, button.handlerRef, button.xPosition, button.yPosition);
     }
+
     @Override
     public boolean canFillCraftingGrid() {
         return true;
     }
+
     @Override
     public boolean hasOverlay() {
         return true;
     }
+
     @Override
     public void mouseReleased(int mousex, int mousey) {
         if (this.firstGui instanceof ModularGui mui && mui.getContext()
